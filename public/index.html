@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub Pro | Smart Notes & PYQs Platform</title>
+    
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<!-- Script Integration -->
+    <script src="script.js"></script>
+</body>
+</html>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="header">
+        <nav class="navbar">
+            <a href="#" class="logo">
+                <div class="mobile-menu-btn" id="mobileMenuBtn">
+    <i class="fa-solid fa-bars"></i>
+</div>
+                <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <span>StudyHub <strong>Pro</strong></span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#" class="active"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="#notes"><i class="fa-solid fa-book-open"></i> Notes</a></li>
+                <li><a href="#categories"><i class="fa-solid fa-layer-group"></i> Classes</a></li>
+                <li><a href="#upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</a></li>
+            </ul>
+
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline">Log In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="badge">
+                <i class="fa-solid fa-bolt"></i> #1 Free Study Material Platform
+            </div>
+
+            <h1>Learn <span>Smarter</span>, Score <span>Better</span> 🚀</h1>
+            <p>Access high-quality hand-written notes, chapter-wise PYQs, engineering resources, and solved sample papers — all 100% Free.</p>
+
+            <!-- Search Box -->
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" placeholder="Search Physics, Class 12, Calculus, PYQs...">
+                <button class="search-btn">
+                    <span>Search</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Stats Counter -->
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <h3>50K+</h3>
+                    <p>Active Students</p>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <h3>12,000+</h3>
+                    <p>Verified Notes</p>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <h3>4.9 ★</h3>
+                    <p>Student Rating</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORIES SECTION -->
+    <section class="categories" id="categories">
+        <div class="section-header">
+            <h2>Browse By Category</h2>
+            <p>Find study material tailored specifically for your class or competitive exam</p>
+        </div>
+
+        <div class="category-grid">
+            <a href="#" class="category-card">
+                <div class="cat-icon"><i class="fa-solid fa-school"></i></div>
+                <h3>Class 9</h3>
+                <span>250+ Resources</span>
+            </a>
+            <a href="#" class="category-card">
+                <div class="cat-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <h3>Class 10</h3>
+                <span>400+ Resources</span>
+            </a>
+            <a href="#" class="category-card">
+                <div class="cat-icon"><i class="fa-solid fa-book-bookmark"></i></div>
+                <h3>Class 11</h3>
+                <span>550+ Resources</span>
+            </a>
+            <a href="#" class="category-card">
+                <div class="cat-icon"><i class="fa-solid fa-award"></i></div>
+                <h3>Class 12</h3>
+                <span>800+ Resources</span>
+            </a>
+            <a href="#" class="category-card highlight">
+                <div class="cat-icon"><i class="fa-solid fa-atom"></i></div>
+                <h3>JEE Main/Adv</h3>
+                <span>1200+ Resources</span>
+            </a>
+            <a href="#" class="category-card highlight">
+                <div class="cat-icon"><i class="fa-solid fa-dna"></i></div>
+                <h3>NEET Prep</h3>
+                <span>950+ Resources</span>
+            </a>
+            <a href="#" class="category-card">
+                <div class="cat-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                <h3>B.Tech / CS</h3>
+                <span>600+ Resources</span>
+            </a>
+            <a href="#" class="category-card">
+                <div class="cat-icon"><i class="fa-solid fa-landmark"></i></div>
+                <h3>UPSC / Exams</h3>
+                <span>350+ Resources</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- POPULAR NOTES SECTION -->
+    <section class="notes" id="notes">
+        <div class="section-header">
+            <h2>Popular Study Material</h2>
+            <p>Hand-picked top rated notes downloaded by thousands of toppers</p>
+        </div>
+
+        <div class="notes-grid">
+            
+            <!-- Note Card 1 -->
+            <div class="note-card">
+                <div class="note-tag">Class 12 • Physics</div>
+                <h3>Electrostatics Complete Notes</h3>
+                <p>Formula sheets, solved numericals, and chapter summary by top educators.</p>
+                <div class="note-meta">
+                    <span><i class="fa-solid fa-download"></i> 14.2k downloads</span>
+                    <span class="rating"><i class="fa-solid fa-star"></i> 4.9</span>
+                </div>
+                <div class="note-actions">
+                    <button class="btn btn-secondary"><i class="fa-solid fa-eye"></i> Preview</button>
+                    <button class="btn btn-primary"><i class="fa-solid fa-file-arrow-down"></i> Download</button>
+                </div>
+            </div>
+
+            <!-- Note Card 2 -->
+            <div class="note-card featured">
+                <div class="featured-badge"><i class="fa-solid fa-fire"></i> Trending</div>
+                <div class="note-tag">JEE • Mathematics</div>
+                <h3>Complete Calculus Revision</h3>
+                <p>Limits, Derivatives, Integrals & Differential equations with PYQ shortcuts.</p>
+                <div class="note-meta">
+                    <span><i class="fa-solid fa-download"></i> 28.5k downloads</span>
+                    <span class="rating"><i class="fa-solid fa-star"></i> 5.0</span>
+                </div>
+                <div class="note-actions">
+                    <button class="btn btn-secondary"><i class="fa-solid fa-eye"></i> Preview</button>
+                    <button class="btn btn-primary"><i class="fa-solid fa-file-arrow-down"></i> Download</button>
+                </div>
+            </div>
+
+            <!-- Note Card 3 -->
+            <div class="note-card">
+                <div class="note-tag">B.Tech • CS / IT</div>
+                <h3>DBMS & SQL Handcrafted Notes</h3>
+                <p>Normalization, ER diagrams, SQL queries & Interview questions for Engineering.</p>
+                <div class="note-meta">
+                    <span><i class="fa-solid fa-download"></i> 9.8k downloads</span>
+                    <span class="rating"><i class="fa-solid fa-star"></i> 4.8</span>
+                </div>
+                <div class="note-actions">
+                    <button class="btn btn-secondary"><i class="fa-solid fa-eye"></i> Preview</button>
+                    <button class="btn btn-primary"><i class="fa-solid fa-file-arrow-down"></i> Download</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- WHY CHOOSE US -->
+    <section class="features">
+        <div class="section-header">
+            <h2>Why Students Love StudyHub Pro</h2>
+            <p>Everything you need to excel in your exams without spending a single rupee.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
+                <h3>Instant PDF Download</h3>
+                <p>No ads, no countdown timers. Single click direct high-speed PDF downloads.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <h3>Verified Content</h3>
+                <p>All notes are thoroughly reviewed by toppers and subject matter experts.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-users"></i></div>
+                <h3>Community Uploads</h3>
+                <p>Over 10,000+ students share their best handwritten notes every single day.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- UPLOAD CTA BANNER -->
+    <section class="upload-cta" id="upload">
+        <div class="cta-card">
+            <h2>Have Great Notes? Help Millions of Students!</h2>
+            <p>Upload your handwritten notes, assignment PDFs, or exam solutions and get recognized in our community.</p>
+            <a href="#" class="btn btn-cta"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Your Notes Now</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <span>StudyHub <strong>Pro</strong></span>
+                </a>
+                <p>Empowering students across India with free, accessible, and high-quality study resources.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#"><i class="fa-brands fa-telegram"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-github"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#notes">Browse Notes</a></li>
+                    <li><a href="#categories">Class Materials</a></li>
+                    <li><a href="#upload">Upload Notes</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Top Categories</h4>
+                <ul>
+                    <li><a href="#">JEE Main Notes</a></li>
+                    <li><a href="#">NEET Physics & Bio</a></li>
+                    <li><a href="#">Class 12 Boards</a></li>
+                    <li><a href="#">B.Tech Engineering</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 StudyHub Pro. All Rights Reserved.</p>
+            <p class="creator-tag">Crafted with ❤️ by <span>ARVIN</span></p>
+        </div>
+    </footer>
+
+</body>
+</html>

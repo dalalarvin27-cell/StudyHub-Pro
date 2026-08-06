@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            📚 StudyHub Pro
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Notes</a></li>
+            <li><a href="#">Bookmarks</a></li>
+            <li><a href="#">Profile</a></li>
+        </ul>
+
+    </nav>
+
+    <!-- Welcome Section -->
+
+    <section class="hero">
+
+        <h1>Welcome To StudyHub 🚀</h1>
+
+        <p>
+            Find, Read and Download Study Notes
+        </p>
+
+    </section>
+
+    <!-- Search -->
+
+    <section class="search-section">
+
+        <input
+        type="text"
+        id="searchInput"
+        placeholder="Search Notes..."
+        onkeyup="searchNotes()">
+
+    </section>
+
+    <!-- Categories -->
+
+    <section class="categories">
+
+        <h2>Browse Categories</h2>
+
+        <div class="cards">
+
+            <div class="card">Class 9</div>
+            <div class="card">Class 10</div>
+            <div class="card">Class 11</div>
+            <div class="card">Class 12</div>
+            <div class="card">JEE</div>
+            <div class="card">NEET</div>
+            <div class="card">B.Tech</div>
+
+        </div>
+
+    </section>
+
+    <!-- Notes -->
+
+    <section class="notes">
+
+        <h2>📚 Available Notes</h2>
+
+        <div id="notesList">
+
+        </div>
+
+    </section>
+
+    <footer>
+
+        <p>
+            Made By ARVIN ❤️
+        </p>
+
+    </footer>
+
+    <script src="dashboard.js"></script>
+
+</body>
+</html>

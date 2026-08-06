@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | StudyHub Pro</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <!-- ADMIN NAVBAR -->
+    <header class="header">
+        <nav class="navbar">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-user-shield"></i></div>
+                <span>StudyHub <strong>Admin Panel</strong></span>
+            </a>
+
+            <div class="auth-buttons">
+                <a href="index.html" class="btn btn-outline"><i class="fa-solid fa-globe"></i> View Website</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ADMIN CONTENT CONTAINER -->
+    <section style="padding: 40px 24px;">
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; align-items: start;">
+            
+            <!-- UPLOAD FORM -->
+            <div style="background:#fff; padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                <h2 style="font-size: 1.4rem; color: var(--secondary); margin-bottom: 6px;"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--primary);"></i> Upload New Note</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Fill details to publish notes directly to Homepage.</p>
+
+                <form id="adminUploadForm" style="display: flex; flex-direction: column; gap: 16px;">
+                    <div class="input-group">
+                        <label>Note Title</label>
+                        <input type="text" id="noteTitle" placeholder="e.g. Organic Chemistry Complete Notes" required style="padding: 10px; border:1px solid var(--border-color); border-radius:6px;">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Category / Target Exam</label>
+                        <select id="noteCategory" required style="padding: 10px; border:1px solid var(--border-color); border-radius:6px; font-family:inherit;">
+                            <option value="Class 9 • Science">Class 9 • Science</option>
+                            <option value="Class 10 • Maths">Class 10 • Maths</option>
+                            <option value="Class 11 • Chemistry">Class 11 • Chemistry</option>
+                            <option value="Class 12 • Physics">Class 12 • Physics</option>
+                            <option value="JEE • Mathematics">JEE • Mathematics</option>
+                            <option value="NEET • Biology">NEET • Biology</option>
+                            <option value="B.Tech • Computer Science">B.Tech • Computer Science</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Short Description</label>
+                        <textarea id="noteDesc" rows="3" placeholder="Brief summary of formula sheets, PYQs, topics covered..." required style="padding: 10px; border:1px solid var(--border-color); border-radius:6px; font-family:inherit;"></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>PDF File or Drive Link</label>
+                        <input type="text" id="noteLink" placeholder="Paste Google Drive PDF link or file URL" required style="padding: 10px; border:1px solid var(--border-color); border-radius:6px;">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="justify-content: center; padding: 12px; margin-top: 10px;">
+                        <i class="fa-solid fa-upload"></i> Publish Note Live
+                    </button>
+                </form>
+            </div>
+
+            <!-- MANAGE UPLOADED NOTES LIST -->
+            <div style="background:#fff; padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                <h2 style="font-size: 1.4rem; color: var(--secondary); margin-bottom: 6px;"><i class="fa-solid fa-list-check" style="color:var(--primary);"></i> Manage Uploaded Notes</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">List of all notes uploaded by Admin.</p>
+
+                <div id="adminNotesList" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Dynamically rendered uploaded notes -->
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Script Link -->
+    <script src="script.js"></script>
+</body>
+</html>
