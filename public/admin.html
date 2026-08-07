@@ -5,84 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | StudyHub Pro</title>
     
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #0f172a;
+            --bg-main: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg-main); color: var(--text-main); }
+        .header { background:#fff; border-bottom:1px solid var(--border-color); padding: 16px 24px; position:sticky; top:0; }
+        .navbar { max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-size:1.2rem; font-weight:700; color:var(--secondary); text-decoration:none; display:flex; align-items:center; gap:10px; }
+        .btn { padding:8px 16px; border-radius:6px; font-weight:600; cursor:pointer; text-decoration:none; border:none; display:inline-flex; align-items:center; gap:6px; }
+        .btn-primary { background:var(--primary); color:#fff; }
+        .btn-outline { border:1px solid var(--border-color); color:var(--text-main); background:transparent; }
+        
+        .container { max-width:1200px; margin:40px auto; padding:0 24px; display:grid; grid-template-columns:1fr 1.5fr; gap:30px; }
+        .card { background:#fff; padding:28px; border-radius:12px; border:1px solid var(--border-color); margin-bottom:24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .card h2 { font-size:1.3rem; margin-bottom:6px; color:var(--secondary); }
+        .card p { font-size:0.85rem; color:var(--text-muted); margin-bottom:20px; }
+
+        .input-group { margin-bottom:16px; display:flex; flex-direction:column; gap:6px; }
+        .input-group label { font-size:0.85rem; font-weight:600; }
+        .input-group input, .input-group select, .input-group textarea { padding:10px; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; font-family:inherit; outline:none; }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color:var(--primary); }
+
+        .list-item { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:#f8fafc; border:1px solid var(--border-color); border-radius:8px; margin-bottom:10px; }
+        .btn-approve { background:#10b981; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; margin-right:6px; }
+        .btn-del { background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; }
+    </style>
 </head>
 <body>
 
-    <!-- ADMIN NAVBAR -->
     <header class="header">
-        <nav class="navbar">
+        <div class="navbar">
             <a href="index.html" class="logo">
-                <div class="logo-icon"><i class="fa-solid fa-user-shield"></i></div>
-                <span>StudyHub <strong>Admin Panel</strong></span>
+                <i class="fa-solid fa-user-shield" style="color:var(--primary);"></i>
+                <span>StudyHub <strong>Admin Portal</strong></span>
             </a>
-
-            <div class="auth-buttons">
-                <a href="index.html" class="btn btn-outline"><i class="fa-solid fa-globe"></i> View Website</a>
-            </div>
-        </nav>
+            <a href="index.html" class="btn btn-outline"><i class="fa-solid fa-globe"></i> View Website</a>
+        </div>
     </header>
 
-    <!-- ADMIN CONTENT CONTAINER -->
-    <section style="padding: 40px 24px;">
-        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; align-items: start;">
-            
-            <!-- UPLOAD FORM -->
-            <div style="background:#fff; padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
-                <h2 style="font-size: 1.4rem; color: var(--secondary); margin-bottom: 6px;"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--primary);"></i> Upload New Note</h2>
-                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Fill details to publish notes directly to Homepage.</p>
+    <div class="container">
+        <!-- LEFT: DIRECT UPLOAD FORM -->
+        <div class="card">
+            <h2><i class="fa-solid fa-cloud-arrow-up" style="color:var(--primary);"></i> Upload Direct Notes</h2>
+            <p>Publish verified notes directly to Homepage.</p>
 
-                <form id="adminUploadForm" style="display: flex; flex-direction: column; gap: 16px;">
-                    <div class="input-group">
-                        <label>Note Title</label>
-                        <input type="text" id="noteTitle" placeholder="e.g. Organic Chemistry Complete Notes" required style="padding: 10px; border:1px solid var(--border-color); border-radius:6px;">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Category / Target Exam</label>
-                        <select id="noteCategory" required style="padding: 10px; border:1px solid var(--border-color); border-radius:6px; font-family:inherit;">
-                            <option value="Class 9 • Science">Class 9 • Science</option>
-                            <option value="Class 10 • Maths">Class 10 • Maths</option>
-                            <option value="Class 11 • Chemistry">Class 11 • Chemistry</option>
-                            <option value="Class 12 • Physics">Class 12 • Physics</option>
-                            <option value="JEE • Mathematics">JEE • Mathematics</option>
-                            <option value="NEET • Biology">NEET • Biology</option>
-                            <option value="B.Tech • Computer Science">B.Tech • Computer Science</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Short Description</label>
-                        <textarea id="noteDesc" rows="3" placeholder="Brief summary of formula sheets, PYQs, topics covered..." required style="padding: 10px; border:1px solid var(--border-color); border-radius:6px; font-family:inherit;"></textarea>
-                    </div>
-
-                    <div class="input-group">
-                        <label>PDF File or Drive Link</label>
-                        <input type="text" id="noteLink" placeholder="Paste Google Drive PDF link or file URL" required style="padding: 10px; border:1px solid var(--border-color); border-radius:6px;">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="justify-content: center; padding: 12px; margin-top: 10px;">
-                        <i class="fa-solid fa-upload"></i> Publish Note Live
-                    </button>
-                </form>
-            </div>
-
-            <!-- MANAGE UPLOADED NOTES LIST -->
-            <div style="background:#fff; padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
-                <h2 style="font-size: 1.4rem; color: var(--secondary); margin-bottom: 6px;"><i class="fa-solid fa-list-check" style="color:var(--primary);"></i> Manage Uploaded Notes</h2>
-                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">List of all notes uploaded by Admin.</p>
-
-                <div id="adminNotesList" style="display: flex; flex-direction: column; gap: 12px;">
-                    <!-- Dynamically rendered uploaded notes -->
+            <form id="adminUploadForm">
+                <div class="input-group">
+                    <label>Target Class / Category</label>
+                    <select id="noteClass" required onchange="updateAdminSubjects()">
+                        <option value="Class 9">Class 9</option>
+                        <option value="Class 10">Class 10</option>
+                        <option value="Class 11">Class 11</option>
+                        <option value="Class 12">Class 12</option>
+                        <option value="JEE">JEE Main/Adv</option>
+                        <option value="NEET">NEET Prep</option>
+                        <option value="B.Tech">B.Tech / CS</option>
+                        <option value="UPSC">UPSC / Exams</option>
+                    </select>
                 </div>
+
+                <div class="input-group">
+                    <label>Select Subject</label>
+                    <select id="noteSubject" required></select>
+                </div>
+
+                <div class="input-group">
+                    <label>Chapter / Note Title</label>
+                    <input type="text" id="noteTitle" placeholder="e.g. Electrostatics Formula Sheet" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Short Description</label>
+                    <textarea id="noteDesc" rows="3" placeholder="Brief summary..." required></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>PDF Link / Google Drive URL</label>
+                    <input type="text" id="noteLink" placeholder="https://drive.google.com/..." required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;">
+                    <i class="fa-solid fa-upload"></i> Publish Note Live
+                </button>
+            </form>
+        </div>
+
+        <!-- RIGHT: LOGS & MANAGEMENT CARDS -->
+        <div>
+            <!-- 1. DOWNLOAD ACTIVITY TRACKER -->
+            <div class="card" style="border: 2px solid var(--primary);">
+                <h2><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> Download Activity Tracker</h2>
+                <p>Real-time log of which student downloaded which notes.</p>
+                <div id="adminDownloadLogsList"></div>
+                <button onclick="clearDownloadLogs()" class="btn btn-outline" style="margin-top:10px; font-size:0.75rem; color:#ef4444;"><i class="fa-solid fa-trash"></i> Clear All Download Logs</button>
             </div>
 
-        </div>
-    </section>
+            <!-- 2. STUDENT FEEDBACKS & REVIEWS -->
+            <div class="card">
+                <h2><i class="fa-solid fa-comments" style="color:var(--primary);"></i> Student Feedbacks & Reviews</h2>
+                <p>Reviews and ratings submitted by students on website.</p>
+                <div id="adminFeedbackList"></div>
+            </div>
 
-    <!-- Script Link -->
+            <!-- 3. PENDING STUDENT SUBMISSIONS -->
+            <div class="card">
+                <h2><i class="fa-solid fa-clock-history" style="color:var(--primary);"></i> Pending Student Submissions</h2>
+                <p>Notes submitted by students waiting for Admin Approval.</p>
+                <div id="adminPendingList"></div>
+            </div>
+
+            <!-- 4. LIVE PUBLISHED NOTES -->
+            <div class="card">
+                <h2><i class="fa-solid fa-list-check" style="color:var(--primary);"></i> Live Published Notes</h2>
+                <p>List of all live published notes on website.</p>
+                <div id="adminNotesList"></div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

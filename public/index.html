@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudyHub Pro | Smart Notes & PYQs Platform</title>
-    
-    <!-- CSS Link -->
-    <link rel="stylesheet" href="style.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,20 +12,166 @@
 
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- EMBEDDED COMPLETE ULTRA PROFESSIONAL STYLES -->
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0f172a;
+            --accent: #f59e0b;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.08);
+            --shadow-lg: 0 20px 35px -10px rgba(79, 70, 229, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary { background: var(--primary); color: #ffffff; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn-secondary { background: var(--primary-light); color: var(--primary); }
+        .btn-secondary:hover { background: #e0e7ff; }
+        .btn-outline { border: 1px solid var(--border-color); background: transparent; color: var(--text-main); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        .header {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color);
+        }
+
+        .navbar {
+            max-width: 1200px; margin: 0 auto; padding: 16px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 700; color: var(--secondary); }
+        .logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), #818cf8); color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .logo strong { color: var(--primary); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 6px; transition: var(--transition); }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary); }
+        .auth-buttons { display: flex; gap: 12px; }
+
+        .hero { padding: 80px 24px 60px; text-align: center; background: radial-gradient(circle at top, rgba(79, 70, 229, 0.08) 0%, transparent 60%); }
+        .hero-container { max-width: 850px; margin: 0 auto; }
+        .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background: var(--primary-light); color: var(--primary); font-size: 0.85rem; font-weight: 700; border-radius: 50px; margin-bottom: 24px; }
+        .hero h1 { font-size: 3.2rem; font-weight: 800; line-height: 1.2; color: var(--secondary); margin-bottom: 20px; letter-spacing: -1px; }
+        .hero h1 span { background: linear-gradient(135deg, var(--primary), #818cf8); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 36px; max-width: 650px; margin-left: auto; margin-right: auto; }
+
+        .search-box { position: relative; max-width: 650px; margin: 0 auto 48px; display: flex; align-items: center; background: #ffffff; padding: 8px 8px 8px 20px; border-radius: 50px; box-shadow: var(--shadow-md); border: 1px solid var(--border-color); }
+        .search-icon { color: var(--text-muted); font-size: 1.1rem; margin-right: 12px; }
+        .search-box input { width: 100%; border: none; outline: none; font-size: 1rem; font-family: inherit; color: var(--text-main); }
+        .search-btn { background: var(--primary); color: #fff; border: none; padding: 12px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
+
+        .hero-stats { display: flex; justify-content: center; align-items: center; gap: 40px; padding-top: 20px; border-top: 1px dashed var(--border-color); }
+        .stat-item h3 { font-size: 1.6rem; font-weight: 800; color: var(--secondary); }
+        .stat-item p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+        .stat-divider { width: 1px; height: 30px; background: var(--border-color); }
+
+        section { padding: 70px 24px; max-width: 1200px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 48px; }
+        .section-header h2 { font-size: 2rem; font-weight: 700; color: var(--secondary); margin-bottom: 8px; }
+        .section-header p { color: var(--text-muted); font-size: 1rem; }
+
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .category-card { background: var(--bg-card); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: flex-start; transition: var(--transition); }
+        .category-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+        .cat-icon { width: 48px; height: 48px; background: var(--primary-light); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 16px; }
+        .category-card h3 { font-size: 1.1rem; color: var(--secondary); margin-bottom: 4px; }
+        .category-card span { font-size: 0.85rem; color: var(--text-muted); }
+        .category-card.highlight { background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color: #ffffff; border: none; }
+        .category-card.highlight .cat-icon { background: rgba(255, 255, 255, 0.2); color: #ffffff; }
+        .category-card.highlight h3, .category-card.highlight span { color: #ffffff; }
+
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .note-card { background: var(--bg-card); padding: 28px; border-radius: var(--radius-md); border: 1px solid var(--border-color); position: relative; display: flex; flex-direction: column; justify-content: space-between; transition: var(--transition); }
+        .note-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+        .note-card.featured { border: 2px solid var(--primary); }
+        .featured-badge { position: absolute; top: -12px; right: 20px; background: var(--accent); color: #fff; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+        .note-tag { display: inline-block; font-size: 0.8rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 4px 10px; border-radius: 6px; margin-bottom: 12px; width: fit-content; }
+        .note-card h3 { font-size: 1.25rem; color: var(--secondary); margin-bottom: 8px; }
+        .note-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; }
+        .note-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); padding-top: 16px; border-top: 1px solid var(--border-color); margin-bottom: 20px; }
+        .note-meta .rating { color: var(--accent); font-weight: 700; }
+        .note-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* STUDENT SHARE NOTES SECTION */
+        .share-section { background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-color); margin-bottom: 40px; }
+        .share-box { background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%); color: #fff; padding: 40px; border-radius: var(--radius-md); }
+        .share-box h3 { font-size: 1.5rem; margin-bottom: 8px; }
+        .share-box p { font-size: 0.95rem; opacity: 0.9; margin-bottom: 24px; }
+        .share-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .share-form input, .share-form select, .share-form textarea { padding: 12px 14px; border-radius: var(--radius-sm); border: none; font-size: 0.9rem; font-family: inherit; outline: none; width: 100%; }
+        .share-form textarea { grid-column: span 2; }
+        .share-btn-submit { grid-column: span 2; background: var(--secondary); color: #fff; padding: 12px; font-weight: 700; cursor: pointer; border: none; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+        /* STUDENT FEEDBACK & REVIEWS SECTION */
+        .feedback-section { background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 40px; }
+        .feedback-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .feedback-card { background: var(--bg-main); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+        .feedback-card h4 { color: var(--secondary); font-size: 1rem; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .feedback-card .fb-role { font-size: 0.75rem; color: var(--primary); font-weight: 700; background: var(--primary-light); padding: 2px 8px; border-radius: 4px; }
+        .feedback-card .fb-stars { color: var(--accent); margin-bottom: 8px; font-size: 0.85rem; }
+        .feedback-card p { font-size: 0.9rem; color: var(--text-muted); }
+
+        .feedback-form-box { background: var(--primary-light); padding: 30px; border-radius: var(--radius-md); border: 1px solid rgba(79, 70, 229, 0.2); }
+        .feedback-form-box h3 { color: var(--secondary); margin-bottom: 16px; font-size: 1.2rem; }
+        .fb-form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .fb-form-grid input, .fb-form-grid select, .feedback-form-box textarea { width: 100%; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-family: inherit; font-size: 0.9rem; outline: none; }
+        .feedback-form-box textarea { margin-bottom: 12px; }
+
+        .footer { background: var(--secondary); color: #94a3b8; padding: 70px 24px 24px; margin-top: 80px; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 50px; }
+        .footer-brand .logo { color: #ffffff; margin-bottom: 16px; }
+        .footer-brand p { font-size: 0.9rem; margin-bottom: 20px; max-width: 320px; }
+        .social-links { display: flex; gap: 12px; }
+        .social-links a { width: 36px; height: 36px; background: rgba(255, 255, 255, 0.08); color: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .social-links a:hover { background: var(--primary); }
+        .footer-links h4 { color: #ffffff; font-size: 1rem; margin-bottom: 20px; }
+        .footer-links ul { display: flex; flex-direction: column; gap: 12px; }
+        .footer-links a { font-size: 0.9rem; transition: var(--transition); }
+        .footer-links a:hover { color: #ffffff; }
+        .footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; font-size: 0.85rem; }
+
+        @media (max-width: 900px) { .hero h1 { font-size: 2.4rem; } .footer-container { grid-template-columns: 1fr 1fr; } .share-form { grid-template-columns: 1fr; } .share-form textarea, .share-btn-submit { grid-column: span 1; } .fb-form-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .nav-links, .auth-buttons { display: none; } .hero h1 { font-size: 1.9rem; } .search-box { flex-direction: column; background: transparent; box-shadow: none; border: none; padding: 0; } .search-box input { background: #fff; padding: 14px 20px; border-radius: 30px; margin-bottom: 10px; border: 1px solid var(--border-color); } .search-btn { width: 100%; justify-content: center; border-radius: 30px; padding: 14px; } .hero-stats { flex-direction: column; gap: 16px; } .stat-divider { display: none; } .footer-container { grid-template-columns: 1fr; } .footer-bottom { flex-direction: column; gap: 10px; text-align: center; } }
+    </style>
 </head>
-<!-- Script Integration -->
-    <script src="script.js"></script>
-</body>
-</html>
 <body>
 
     <!-- NAVBAR -->
     <header class="header">
         <nav class="navbar">
             <a href="#" class="logo">
-                <div class="mobile-menu-btn" id="mobileMenuBtn">
-    <i class="fa-solid fa-bars"></i>
-</div>
                 <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
                 <span>StudyHub <strong>Pro</strong></span>
             </a>
@@ -37,7 +180,8 @@
                 <li><a href="#" class="active"><i class="fa-solid fa-house"></i> Home</a></li>
                 <li><a href="#notes"><i class="fa-solid fa-book-open"></i> Notes</a></li>
                 <li><a href="#categories"><i class="fa-solid fa-layer-group"></i> Classes</a></li>
-                <li><a href="#upload"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</a></li>
+                <li><a href="#share"><i class="fa-solid fa-cloud-arrow-up"></i> Share Notes</a></li>
+                <li><a href="#feedback"><i class="fa-solid fa-comments"></i> Reviews</a></li>
             </ul>
 
             <div class="auth-buttons">
@@ -57,17 +201,15 @@
             <h1>Learn <span>Smarter</span>, Score <span>Better</span> 🚀</h1>
             <p>Access high-quality hand-written notes, chapter-wise PYQs, engineering resources, and solved sample papers — all 100% Free.</p>
 
-            <!-- Search Box -->
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" placeholder="Search Physics, Class 12, Calculus, PYQs...">
+                <input type="text" placeholder="Search Physics, Class 12, Calculus, Chemistry...">
                 <button class="search-btn">
                     <span>Search</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
 
-            <!-- Stats Counter -->
             <div class="hero-stats">
                 <div class="stat-item">
                     <h3>50K+</h3>
@@ -90,50 +232,50 @@
     <!-- CATEGORIES SECTION -->
     <section class="categories" id="categories">
         <div class="section-header">
-            <h2>Browse By Category</h2>
-            <p>Find study material tailored specifically for your class or competitive exam</p>
+            <h2>Browse By Class & Exam</h2>
+            <p>Select your class to filter all available subjects and handwritten notes</p>
         </div>
 
         <div class="category-grid">
-            <a href="#" class="category-card">
+            <a href="#" class="category-card" data-cat="Class 9">
                 <div class="cat-icon"><i class="fa-solid fa-school"></i></div>
                 <h3>Class 9</h3>
-                <span>250+ Resources</span>
+                <span>Maths, Science, SST, Eng, Hindi</span>
             </a>
-            <a href="#" class="category-card">
+            <a href="#" class="category-card" data-cat="Class 10">
                 <div class="cat-icon"><i class="fa-solid fa-graduation-cap"></i></div>
                 <h3>Class 10</h3>
-                <span>400+ Resources</span>
+                <span>Boards Special All Subjects</span>
             </a>
-            <a href="#" class="category-card">
+            <a href="#" class="category-card" data-cat="Class 11">
                 <div class="cat-icon"><i class="fa-solid fa-book-bookmark"></i></div>
                 <h3>Class 11</h3>
-                <span>550+ Resources</span>
+                <span>PCM, PCB, Commerce, Arts</span>
             </a>
-            <a href="#" class="category-card">
+            <a href="#" class="category-card" data-cat="Class 12">
                 <div class="cat-icon"><i class="fa-solid fa-award"></i></div>
                 <h3>Class 12</h3>
-                <span>800+ Resources</span>
+                <span>Complete Board Exam Notes</span>
             </a>
-            <a href="#" class="category-card highlight">
+            <a href="#" class="category-card highlight" data-cat="JEE">
                 <div class="cat-icon"><i class="fa-solid fa-atom"></i></div>
                 <h3>JEE Main/Adv</h3>
-                <span>1200+ Resources</span>
+                <span>Physics, Chem, Maths</span>
             </a>
-            <a href="#" class="category-card highlight">
+            <a href="#" class="category-card highlight" data-cat="NEET">
                 <div class="cat-icon"><i class="fa-solid fa-dna"></i></div>
                 <h3>NEET Prep</h3>
-                <span>950+ Resources</span>
+                <span>Bio (Botany/Zoo), Physics, Chem</span>
             </a>
-            <a href="#" class="category-card">
+            <a href="#" class="category-card" data-cat="B.Tech">
                 <div class="cat-icon"><i class="fa-solid fa-laptop-code"></i></div>
                 <h3>B.Tech / CS</h3>
-                <span>600+ Resources</span>
+                <span>DBMS, DSA, OS, Networks</span>
             </a>
-            <a href="#" class="category-card">
+            <a href="#" class="category-card" data-cat="UPSC">
                 <div class="cat-icon"><i class="fa-solid fa-landmark"></i></div>
                 <h3>UPSC / Exams</h3>
-                <span>350+ Resources</span>
+                <span>Polity, History, Geo, Economy</span>
             </a>
         </div>
     </section>
@@ -146,88 +288,77 @@
         </div>
 
         <div class="notes-grid">
-            
-            <!-- Note Card 1 -->
-            <div class="note-card">
-                <div class="note-tag">Class 12 • Physics</div>
-                <h3>Electrostatics Complete Notes</h3>
-                <p>Formula sheets, solved numericals, and chapter summary by top educators.</p>
-                <div class="note-meta">
-                    <span><i class="fa-solid fa-download"></i> 14.2k downloads</span>
-                    <span class="rating"><i class="fa-solid fa-star"></i> 4.9</span>
-                </div>
-                <div class="note-actions">
-                    <button class="btn btn-secondary"><i class="fa-solid fa-eye"></i> Preview</button>
-                    <button class="btn btn-primary"><i class="fa-solid fa-file-arrow-down"></i> Download</button>
-                </div>
-            </div>
-
-            <!-- Note Card 2 -->
-            <div class="note-card featured">
-                <div class="featured-badge"><i class="fa-solid fa-fire"></i> Trending</div>
-                <div class="note-tag">JEE • Mathematics</div>
-                <h3>Complete Calculus Revision</h3>
-                <p>Limits, Derivatives, Integrals & Differential equations with PYQ shortcuts.</p>
-                <div class="note-meta">
-                    <span><i class="fa-solid fa-download"></i> 28.5k downloads</span>
-                    <span class="rating"><i class="fa-solid fa-star"></i> 5.0</span>
-                </div>
-                <div class="note-actions">
-                    <button class="btn btn-secondary"><i class="fa-solid fa-eye"></i> Preview</button>
-                    <button class="btn btn-primary"><i class="fa-solid fa-file-arrow-down"></i> Download</button>
-                </div>
-            </div>
-
-            <!-- Note Card 3 -->
-            <div class="note-card">
-                <div class="note-tag">B.Tech • CS / IT</div>
-                <h3>DBMS & SQL Handcrafted Notes</h3>
-                <p>Normalization, ER diagrams, SQL queries & Interview questions for Engineering.</p>
-                <div class="note-meta">
-                    <span><i class="fa-solid fa-download"></i> 9.8k downloads</span>
-                    <span class="rating"><i class="fa-solid fa-star"></i> 4.8</span>
-                </div>
-                <div class="note-actions">
-                    <button class="btn btn-secondary"><i class="fa-solid fa-eye"></i> Preview</button>
-                    <button class="btn btn-primary"><i class="fa-solid fa-file-arrow-down"></i> Download</button>
-                </div>
-            </div>
-
+            <!-- Dynamically populated and filtered notes -->
         </div>
     </section>
 
-    <!-- WHY CHOOSE US -->
-    <section class="features">
+    <!-- 1. DEDICATED STUDENT SHARE NOTES SECTION -->
+    <section class="share-section" id="share">
+        <div class="share-box">
+            <h3><i class="fa-solid fa-hand-holding-heart"></i> Share Your Handwritten Notes</h3>
+            <p>Have great notes? Help thousands of students! Submit your PDF link below. Our admin team will review and publish it live on StudyHub Pro.</p>
+
+            <form id="publicShareForm" class="share-form">
+                <input type="text" id="studentName" placeholder="Your Full Name" required>
+                <select id="studentClass" required>
+                    <option value="">Select Class / Category</option>
+                    <option value="Class 9">Class 9</option>
+                    <option value="Class 10">Class 10</option>
+                    <option value="Class 11">Class 11</option>
+                    <option value="Class 12">Class 12</option>
+                    <option value="JEE">JEE Prep</option>
+                    <option value="NEET">NEET Prep</option>
+                    <option value="B.Tech">B.Tech / CS</option>
+                    <option value="UPSC">UPSC / Exams</option>
+                </select>
+                <input type="text" id="shareTitle" placeholder="Chapter / Note Title (e.g. Organic Chemistry)" required style="grid-column: span 2;">
+                <input type="text" id="shareLink" placeholder="Google Drive Link / PDF URL" required style="grid-column: span 2;">
+                <textarea id="shareDesc" rows="3" placeholder="Short description of what is included in these notes..." required></textarea>
+                <button type="submit" class="share-btn-submit"><i class="fa-solid fa-paper-plane"></i> Submit Notes for Verification</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 2. STUDENT REVIEWS & FEEDBACK SUBMISSION SECTION -->
+    <section class="feedback-section" id="feedback">
         <div class="section-header">
-            <h2>Why Students Love StudyHub Pro</h2>
-            <p>Everything you need to excel in your exams without spending a single rupee.</p>
+            <h2>Student Reviews & Feedback</h2>
+            <p>Read what toppers say about StudyHub Pro or leave your own review</p>
         </div>
 
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
-                <h3>Instant PDF Download</h3>
-                <p>No ads, no countdown timers. Single click direct high-speed PDF downloads.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fa-solid fa-circle-check"></i></div>
-                <h3>Verified Content</h3>
-                <p>All notes are thoroughly reviewed by toppers and subject matter experts.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fa-solid fa-users"></i></div>
-                <h3>Community Uploads</h3>
-                <p>Over 10,000+ students share their best handwritten notes every single day.</p>
-            </div>
+        <!-- Feedback Cards Carousel / Grid -->
+        <div class="feedback-grid" id="feedbackGrid">
+            <!-- Dynamically rendered feedback cards -->
         </div>
-    </section>
 
-    <!-- UPLOAD CTA BANNER -->
-    <section class="upload-cta" id="upload">
-        <div class="cta-card">
-            <h2>Have Great Notes? Help Millions of Students!</h2>
-            <p>Upload your handwritten notes, assignment PDFs, or exam solutions and get recognized in our community.</p>
-            <a href="#" class="btn btn-cta"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Your Notes Now</a>
+        <!-- Submit Feedback Form -->
+        <div class="feedback-form-box">
+            <h3><i class="fa-solid fa-star" style="color:var(--accent);"></i> Leave Your Review & Rating</h3>
+            <form id="publicFeedbackForm">
+                <div class="fb-form-grid">
+                    <input type="text" id="fbName" placeholder="Your Full Name" required>
+                    <select id="fbClass" required>
+                        <option value="">Select Your Class/Role</option>
+                        <option value="Class 9 Student">Class 9 Student</option>
+                        <option value="Class 10 Student">Class 10 Student</option>
+                        <option value="Class 11 Student">Class 11 Student</option>
+                        <option value="Class 12 Student">Class 12 Student</option>
+                        <option value="JEE Aspirant">JEE Aspirant</option>
+                        <option value="NEET Aspirant">NEET Aspirant</option>
+                        <option value="B.Tech Student">B.Tech Student</option>
+                        <option value="UPSC Aspirant">UPSC Aspirant</option>
+                    </select>
+                    <select id="fbRating" required>
+                        <option value="5">⭐⭐⭐⭐⭐ (5/5 Excellent)</option>
+                        <option value="4">⭐⭐⭐⭐ (4/5 Very Good)</option>
+                        <option value="3">⭐⭐⭐ (3/5 Good)</option>
+                        <option value="2">⭐⭐ (2/5 Average)</option>
+                        <option value="1">⭐ (1/5 Poor)</option>
+                    </select>
+                </div>
+                <textarea id="fbMessage" rows="3" placeholder="Write your experience, suggestion, or review about StudyHub Pro..." required></textarea>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Review Live</button>
+            </form>
         </div>
     </section>
 
@@ -240,12 +371,6 @@
                     <span>StudyHub <strong>Pro</strong></span>
                 </a>
                 <p>Empowering students across India with free, accessible, and high-quality study resources.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="#"><i class="fa-brands fa-telegram"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-github"></i></a>
-                </div>
             </div>
 
             <div class="footer-links">
@@ -253,8 +378,8 @@
                 <ul>
                     <li><a href="#">Home</a></li>
                     <li><a href="#notes">Browse Notes</a></li>
-                    <li><a href="#categories">Class Materials</a></li>
-                    <li><a href="#upload">Upload Notes</a></li>
+                    <li><a href="#share">Share Notes</a></li>
+                    <li><a href="#feedback">Student Reviews</a></li>
                 </ul>
             </div>
 
@@ -269,12 +394,10 @@
             </div>
 
             <div class="footer-links">
-                <h4>Support</h4>
+                <h4>Admin Access</h4>
                 <ul>
-                    <li><a href="#">Help Center</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="admin.html"><i class="fa-solid fa-lock"></i> Admin Portal Login</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
                 </ul>
             </div>
         </div>
@@ -285,5 +408,7 @@
         </div>
     </footer>
 
+    <!-- JavaScript Integration -->
+    <script src="script.js"></script>
 </body>
 </html>
