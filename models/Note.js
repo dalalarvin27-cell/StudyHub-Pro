@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 
 const Note =
-require("./temp");
+require("./Note");
 
 const storage =
 multer.diskStorage({
