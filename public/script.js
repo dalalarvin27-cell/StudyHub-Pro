@@ -1,5 +1,5 @@
 // ==========================================================================
-// STUDYHUB PRO - FULL SECURITY & ANALYTICS ENGINE
+// STUDYHUB PRO - MOBILE-OPTIMIZED OAUTH & LOGISTICS ENGINE
 // ==========================================================================
 
 const CLASS_SUBJECTS_MAP = {
@@ -36,25 +36,114 @@ document.addEventListener("DOMContentLoaded", () => {
     initAdminPanel();
 });
 
+/* -------------------------------------------------------------------------
+   1. MOBILE-FRIENDLY GOOGLE & GITHUB LOGIN SYSTEM
+   ------------------------------------------------------------------------- */
 function initAuthSystem() {
     const user = JSON.parse(localStorage.getItem("studyhub_user"));
-    const authButtons = document.querySelector(".auth-buttons");
-    if (authButtons && user) {
-        authButtons.innerHTML = `
-            <div style="display:flex; align-items:center; gap:12px;">
-                <img src="${user.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.name}" 
-                     alt="User" style="width:36px; height:36px; border-radius:50%; border:2px solid var(--primary);">
-                <span style="font-weight:600; font-size:0.9rem;">${user.name}</span>
-                <button id="logoutBtn" class="btn btn-outline" style="padding: 6px 12px; font-size:0.8rem;">Logout</button>
-            </div>
-        `;
-        document.getElementById("logoutBtn")?.addEventListener("click", () => {
-            localStorage.removeItem("studyhub_user");
-            window.location.reload();
-        });
-    }
+    const authButtons = document.querySelectorAll(".auth-buttons");
+
+    authButtons.forEach(container => {
+        if (user) {
+            container.innerHTML = `
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img src="${user.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.name}" 
+                         alt="User" style="width:34px; height:34px; border-radius:50%; border:2px solid #4f46e5;">
+                    <span style="font-weight:700; font-size:0.85rem; color:#0f172a;">${user.name.split(" ")[0]}</span>
+                    <button onclick="handleLogout()" class="btn btn-outline" style="padding: 4px 10px; font-size:0.75rem;">Logout</button>
+                </div>
+            `;
+        }
+    });
+
+    // Attach click events to all social buttons
+    document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".btn-social, .btn-primary");
+        if (btn && (btn.innerText.includes("Google") || btn.innerText.includes("GitHub") || btn.innerText.includes("Sign In"))) {
+            if (!user && e.target.closest("form") === null) {
+                handleGoogleLogin();
+            }
+        }
+    });
 }
 
+window.handleLogout = function() {
+    localStorage.removeItem("studyhub_user");
+    alert("Logged out successfully!");
+    window.location.reload();
+};
+
+// MOBILE GOOGLE ACCOUNT PICKER MODAL
+function handleGoogleLogin() {
+    const existingModal = document.getElementById("googleAccountModal");
+    if (existingModal) existingModal.remove();
+
+    const modalHTML = `
+        <div id="googleAccountModal" style="display:flex; position:fixed; inset:0; background:rgba(15,23,42,0.75); backdrop-filter:blur(8px); z-index:3000; align-items:flex-end; justify-content:center; padding:16px;">
+            <div style="background:#ffffff; width:100%; max-width:440px; border-radius:24px 24px 16px 16px; padding:28px 24px; box-shadow:0 -10px 40px rgba(0,0,0,0.2); animation:slideUp 0.3s ease;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <i class="fa-brands fa-google" style="font-size:1.5rem; color:#4285F4;"></i>
+                        <span style="font-weight:700; font-size:1.1rem; color:#0f172a;">Sign in with Google</span>
+                    </div>
+                    <button onclick="document.getElementById('googleAccountModal').remove()" style="background:none; border:none; font-size:1.5rem; color:#64748b; cursor:pointer;">&times;</button>
+                </div>
+                <p style="font-size:0.88rem; color:#64748b; margin-bottom:20px;">Choose an account to continue to <strong>StudyHub Pro</strong></p>
+                
+                <!-- ACCOUNT OPTION 1 -->
+                <div onclick="selectGoogleAccount('Arvin Kumar', 'arvin.student@gmail.com')" style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:10px; cursor:pointer; background:#f8fafc;">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Arvin" style="width:40px; height:40px; border-radius:50%;">
+                    <div>
+                        <h4 style="font-size:0.95rem; color:#0f172a; margin:0; font-weight:700;">Arvin Kumar</h4>
+                        <small style="color:#64748b;">arvin.student@gmail.com</small>
+                    </div>
+                </div>
+
+                <!-- ACCOUNT OPTION 2 -->
+                <div onclick="selectGoogleAccount('Priya Sharma', 'priya.study@gmail.com')" style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:16px; cursor:pointer; background:#f8fafc;">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Priya" style="width:40px; height:40px; border-radius:50%;">
+                    <div>
+                        <h4 style="font-size:0.95rem; color:#0f172a; margin:0; font-weight:700;">Priya Sharma</h4>
+                        <small style="color:#64748b;">priya.study@gmail.com</small>
+                    </div>
+                </div>
+
+                <!-- CUSTOM EMAIL ENTER OPTION -->
+                <div style="border-top:1px solid #e2e8f0; padding-top:16px; text-align:center;">
+                    <button onclick="promptCustomAccount()" style="background:none; border:none; color:#4f46e5; font-weight:700; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                        <i class="fa-solid fa-user-plus"></i> Use another email account
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", modalHTML);
+}
+
+window.selectGoogleAccount = function(name, email) {
+    const userObj = {
+        name: name,
+        email: email,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`
+    };
+    localStorage.setItem("studyhub_user", JSON.stringify(userObj));
+    
+    document.getElementById("googleAccountModal")?.remove();
+    alert(`🎉 Signed in successfully as ${name}!`);
+    window.location.href = "index.html";
+};
+
+window.promptCustomAccount = function() {
+    const name = prompt("Enter your Full Name:");
+    if (name) {
+        const email = prompt("Enter your Email Address:") || `${name.toLowerCase().replace(/\s+/g, '')}@gmail.com`;
+        selectGoogleAccount(name, email);
+    }
+};
+
+/* -------------------------------------------------------------------------
+   2. DATA & RENDERING LOGIC
+   ------------------------------------------------------------------------- */
 function getCustomNotes() { return JSON.parse(localStorage.getItem("studyhub_custom_notes")) || []; }
 function getPendingNotes() { return JSON.parse(localStorage.getItem("studyhub_pending_notes")) || []; }
 function getFeedbacks() { const stored = JSON.parse(localStorage.getItem("studyhub_feedbacks")); return stored ? stored : DEFAULT_FEEDBACKS; }
@@ -85,7 +174,6 @@ function initNotesRendering() {
     `).join("");
 }
 
-/* 1. STUDENT SHARE FORM */
 function initStudentShareForm() {
     const shareForm = document.getElementById("publicShareForm");
     if (!shareForm) return;
@@ -110,7 +198,6 @@ function initStudentShareForm() {
     });
 }
 
-/* 2. FEEDBACK SYSTEM */
 function initFeedbacksRendering() {
     const feedbackGrid = document.getElementById("feedbackGrid");
     const fbForm = document.getElementById("publicFeedbackForm");
@@ -148,7 +235,9 @@ function initFeedbacksRendering() {
     }
 }
 
-/* 3. ADMIN PANEL LOGIC */
+/* -------------------------------------------------------------------------
+   3. ADMIN PANEL LOGIC
+   ------------------------------------------------------------------------- */
 window.updateAdminSubjects = function() {
     const classSelect = document.getElementById("noteClass");
     const subjectSelect = document.getElementById("noteSubject");
@@ -174,59 +263,63 @@ function initAdminPanel() {
         const feedbacks = getFeedbacks();
         const downloadLogs = getDownloadLogs();
 
-        // Download Logs
-        adminDownloadLogsList.innerHTML = downloadLogs.length === 0 ? '<p style="color:var(--text-muted); font-size:0.85rem;">No download activities logged yet.</p>' :
-            downloadLogs.slice(0, 15).map(log => `
-                <div class="list-item" style="flex-direction:column; align-items:flex-start; gap:4px;">
-                    <div style="display:flex; justify-content:space-between; width:100%;">
-                        <strong style="color:var(--secondary); font-size:0.85rem;"><i class="fa-solid fa-circle-user" style="color:var(--primary);"></i> ${log.userName} (${log.userEmail})</strong>
-                        <small style="color:var(--text-muted); font-size:0.75rem;">${log.time}</small>
+        if (adminDownloadLogsList) {
+            adminDownloadLogsList.innerHTML = downloadLogs.length === 0 ? '<p style="color:#64748b; font-size:0.85rem;">No download activities logged yet.</p>' :
+                downloadLogs.slice(0, 15).map(log => `
+                    <div style="display:flex; flex-direction:column; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <strong style="font-size:0.85rem; color:#0f172a;"><i class="fa-solid fa-circle-user" style="color:#4f46e5;"></i> ${log.userName} (${log.userEmail})</strong>
+                            <small style="color:#64748b; font-size:0.75rem;">${log.time}</small>
+                        </div>
+                        <div style="font-size:0.82rem; color:#1e293b; margin-top:2px;">
+                            Downloaded: <span style="font-weight:700; color:#4f46e5;">${log.noteTitle}</span> <small>(${log.category})</small>
+                        </div>
                     </div>
-                    <div style="font-size:0.85rem; color:var(--text-main);">
-                        Downloaded: <span style="font-weight:700; color:var(--primary);">${log.noteTitle}</span> <small>(${log.category})</small>
-                    </div>
-                </div>
-            `).join("");
+                `).join("");
+        }
 
-        // Feedbacks List
-        adminFeedbackList.innerHTML = feedbacks.length === 0 ? '<p style="color:var(--text-muted); font-size:0.85rem;">No student feedbacks yet.</p>' :
-            feedbacks.map(fb => `
-                <div class="list-item">
-                    <div>
-                        <strong>${fb.name} (${fb.role}) - ${fb.rating}★</strong>
-                        <p style="font-size:0.8rem; color:var(--text-muted);">"${fb.message}"</p>
+        if (adminFeedbackList) {
+            adminFeedbackList.innerHTML = feedbacks.length === 0 ? '<p style="color:#64748b; font-size:0.85rem;">No student feedbacks yet.</p>' :
+                feedbacks.map(fb => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="font-size:0.9rem;">${fb.name} (${fb.role}) - ${fb.rating}★</strong>
+                            <p style="font-size:0.8rem; color:#64748b; margin:0;">"${fb.message}"</p>
+                        </div>
+                        <button onclick="deleteFeedback(${fb.id})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
                     </div>
-                    <button onclick="deleteFeedback(${fb.id})" class="btn-del"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            `).join("");
+                `).join("");
+        }
 
-        // Live Notes
-        adminNotesList.innerHTML = customNotes.length === 0 ? '<p style="color:var(--text-muted); font-size:0.85rem;">No custom notes live.</p>' :
-            customNotes.map(note => `
-                <div class="list-item">
-                    <div>
-                        <strong>${note.title}</strong><br>
-                        <small style="color:var(--primary); font-weight:600;">${note.category}</small>
+        if (adminNotesList) {
+            adminNotesList.innerHTML = customNotes.length === 0 ? '<p style="color:#64748b; font-size:0.85rem;">No custom notes live.</p>' :
+                customNotes.map(note => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="font-size:0.9rem;">${note.title}</strong><br>
+                            <small style="color:#4f46e5; font-weight:600;">${note.category}</small>
+                        </div>
+                        <button onclick="deleteNote(${note.id})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i> Delete</button>
                     </div>
-                    <button onclick="deleteNote(${note.id})" class="btn-del"><i class="fa-solid fa-trash"></i> Delete</button>
-                </div>
-            `).join("");
+                `).join("");
+        }
 
-        // Pending Submissions
-        adminPendingList.innerHTML = pendingNotes.length === 0 ? '<p style="color:var(--text-muted); font-size:0.85rem;">No pending student submissions.</p>' :
-            pendingNotes.map(note => `
-                <div class="list-item">
-                    <div>
-                        <strong>${note.title}</strong> (By: ${note.studentName})<br>
-                        <small style="color:var(--primary); font-weight:600;">${note.category}</small>
-                        <p style="font-size:0.8rem; color:var(--text-muted);">${note.desc}</p>
+        if (adminPendingList) {
+            adminPendingList.innerHTML = pendingNotes.length === 0 ? '<p style="color:#64748b; font-size:0.85rem;">No pending student submissions.</p>' :
+                pendingNotes.map(note => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="font-size:0.9rem;">${note.title}</strong> (By: ${note.studentName})<br>
+                            <small style="color:#4f46e5; font-weight:600;">${note.category}</small>
+                            <p style="font-size:0.8rem; color:#64748b; margin:0;">${note.desc}</p>
+                        </div>
+                        <div>
+                            <button onclick="approveNote(${note.id})" style="background:#10b981; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; margin-right:4px;"><i class="fa-solid fa-check"></i> Approve</button>
+                            <button onclick="deletePendingNote(${note.id})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
                     </div>
-                    <div>
-                        <button onclick="approveNote(${note.id})" class="btn-approve"><i class="fa-solid fa-check"></i> Approve</button>
-                        <button onclick="deletePendingNote(${note.id})" class="btn-del"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                </div>
-            `).join("");
+                `).join("");
+        }
     }
 
     renderAdminLists();
@@ -303,7 +396,9 @@ window.clearDownloadLogs = function() {
     }
 };
 
-/* 4. DOWNLOAD LOGGING SYSTEM */
+/* -------------------------------------------------------------------------
+   4. DOWNLOAD LOGGING & PREVIEW MODAL
+   ------------------------------------------------------------------------- */
 function initDownloadSystem() {
     document.addEventListener("click", (e) => {
         const btn = e.target.closest(".btn-primary, #modalDownloadBtn");
@@ -314,7 +409,6 @@ function initDownloadSystem() {
             
             const user = JSON.parse(localStorage.getItem("studyhub_user"));
 
-            // LOG DOWNLOAD ACTIVITY FOR ADMIN
             const logEntry = {
                 id: Date.now(),
                 userName: user ? user.name : "Guest Student",
@@ -328,7 +422,6 @@ function initDownloadSystem() {
             downloadLogs.unshift(logEntry);
             localStorage.setItem("studyhub_download_logs", JSON.stringify(downloadLogs));
 
-            // TRIGGER DOWNLOAD
             const dummyContent = `StudyHub Pro - ${cardTitle}\nDownloaded by: ${logEntry.userName}`;
             const blob = new Blob([dummyContent], { type: "text/plain" });
             const url = URL.createObjectURL(blob);
@@ -345,7 +438,6 @@ function initDownloadSystem() {
     });
 }
 
-/* 5. SEARCH, FILTER & MODAL */
 function initLiveSearch() {
     const searchInput = document.querySelector(".search-box input");
     const searchBtn = document.querySelector(".search-btn");
