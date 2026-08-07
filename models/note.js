@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 
 const Note =
-require("../models/Note");
+require("./Note");
 
 const storage =
 multer.diskStorage({
