@@ -1,5 +1,5 @@
 // ==========================================================================
-// STUDYHUB PRO - MOBILE-OPTIMIZED OAUTH & LOGISTICS ENGINE
+// STUDYHUB PRO - FULL ENGINE (NO-JUMP CLASS SUBJECT SELECTOR + ALL FEATURES)
 // ==========================================================================
 
 const CLASS_SUBJECTS_MAP = {
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* -------------------------------------------------------------------------
-   1. MOBILE-FRIENDLY GOOGLE & GITHUB LOGIN SYSTEM
+   1. AUTHENTICATION & MOBILE GOOGLE LOGIN
    ------------------------------------------------------------------------- */
 function initAuthSystem() {
     const user = JSON.parse(localStorage.getItem("studyhub_user"));
@@ -48,7 +48,7 @@ function initAuthSystem() {
             container.innerHTML = `
                 <div style="display:flex; align-items:center; gap:8px;">
                     <img src="${user.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.name}" 
-                         alt="User" style="width:34px; height:34px; border-radius:50%; border:2px solid #4f46e5;">
+                         alt="User" style="width:32px; height:34px; border-radius:50%; border:2px solid #4f46e5;">
                     <span style="font-weight:700; font-size:0.85rem; color:#0f172a;">${user.name.split(" ")[0]}</span>
                     <button onclick="handleLogout()" class="btn btn-outline" style="padding: 4px 10px; font-size:0.75rem;">Logout</button>
                 </div>
@@ -56,7 +56,6 @@ function initAuthSystem() {
         }
     });
 
-    // Attach click events to all social buttons
     document.addEventListener("click", (e) => {
         const btn = e.target.closest(".btn-social, .btn-primary");
         if (btn && (btn.innerText.includes("Google") || btn.innerText.includes("GitHub") || btn.innerText.includes("Sign In"))) {
@@ -73,14 +72,13 @@ window.handleLogout = function() {
     window.location.reload();
 };
 
-// MOBILE GOOGLE ACCOUNT PICKER MODAL
 function handleGoogleLogin() {
     const existingModal = document.getElementById("googleAccountModal");
     if (existingModal) existingModal.remove();
 
     const modalHTML = `
         <div id="googleAccountModal" style="display:flex; position:fixed; inset:0; background:rgba(15,23,42,0.75); backdrop-filter:blur(8px); z-index:3000; align-items:flex-end; justify-content:center; padding:16px;">
-            <div style="background:#ffffff; width:100%; max-width:440px; border-radius:24px 24px 16px 16px; padding:28px 24px; box-shadow:0 -10px 40px rgba(0,0,0,0.2); animation:slideUp 0.3s ease;">
+            <div style="background:#ffffff; width:100%; max-width:440px; border-radius:24px 24px 16px 16px; padding:28px 24px; box-shadow:0 -10px 40px rgba(0,0,0,0.2);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <i class="fa-brands fa-google" style="font-size:1.5rem; color:#4285F4;"></i>
@@ -90,7 +88,6 @@ function handleGoogleLogin() {
                 </div>
                 <p style="font-size:0.88rem; color:#64748b; margin-bottom:20px;">Choose an account to continue to <strong>StudyHub Pro</strong></p>
                 
-                <!-- ACCOUNT OPTION 1 -->
                 <div onclick="selectGoogleAccount('Arvin Kumar', 'arvin.student@gmail.com')" style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:10px; cursor:pointer; background:#f8fafc;">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Arvin" style="width:40px; height:40px; border-radius:50%;">
                     <div>
@@ -99,7 +96,6 @@ function handleGoogleLogin() {
                     </div>
                 </div>
 
-                <!-- ACCOUNT OPTION 2 -->
                 <div onclick="selectGoogleAccount('Priya Sharma', 'priya.study@gmail.com')" style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:16px; cursor:pointer; background:#f8fafc;">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Priya" style="width:40px; height:40px; border-radius:50%;">
                     <div>
@@ -108,7 +104,6 @@ function handleGoogleLogin() {
                     </div>
                 </div>
 
-                <!-- CUSTOM EMAIL ENTER OPTION -->
                 <div style="border-top:1px solid #e2e8f0; padding-top:16px; text-align:center;">
                     <button onclick="promptCustomAccount()" style="background:none; border:none; color:#4f46e5; font-weight:700; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
                         <i class="fa-solid fa-user-plus"></i> Use another email account
@@ -121,13 +116,8 @@ function handleGoogleLogin() {
 }
 
 window.selectGoogleAccount = function(name, email) {
-    const userObj = {
-        name: name,
-        email: email,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`
-    };
+    const userObj = { name: name, email: email, avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` };
     localStorage.setItem("studyhub_user", JSON.stringify(userObj));
-    
     document.getElementById("googleAccountModal")?.remove();
     alert(`🎉 Signed in successfully as ${name}!`);
     window.location.href = "index.html";
@@ -174,6 +164,159 @@ function initNotesRendering() {
     `).join("");
 }
 
+/* -------------------------------------------------------------------------
+   3. INTERACTIVE CLASS -> SUBJECT SELECTOR (NO JUMP FIX)
+   ------------------------------------------------------------------------- */
+function initCategoryFilter() {
+    document.querySelectorAll(".category-card").forEach((card) => {
+        card.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const selectedClass = card.dataset.cat || card.querySelector("h3")?.innerText || "";
+            openSubjectModal(selectedClass);
+        });
+    });
+}
+
+function openSubjectModal(className) {
+    const existingModal = document.getElementById("subjectPickerModal");
+    if (existingModal) existingModal.remove();
+
+    const subjects = CLASS_SUBJECTS_MAP[className] || ["All Subjects"];
+
+    const modalHTML = `
+        <div id="subjectPickerModal" style="display:flex; position:fixed; inset:0; background:rgba(15,23,42,0.75); backdrop-filter:blur(10px); z-index:2500; align-items:center; justify-content:center; padding:20px;">
+            <div style="background:#ffffff; width:100%; max-width:550px; border-radius:24px; padding:32px 28px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.8);">
+                <button onclick="document.getElementById('subjectPickerModal').remove()" style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:1.6rem; color:#64748b; cursor:pointer;">&times;</button>
+                
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                    <div style="width:40px; height:40px; background:rgba(79, 70, 229, 0.1); color:#4f46e5; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3 style="font-size:1.4rem; color:#0f172a; font-weight:800; margin:0;">${className} Subjects</h3>
+                </div>
+                <p style="color:#64748b; font-size:0.9rem; margin-bottom:24px;">Select a subject to view available handwritten notes:</p>
+
+                <div style="display:flex; flex-wrap:wrap; gap:10px; max-height:280px; overflow-y:auto; padding-right:6px;">
+                    <button onclick="filterNotesBySubject('${className}', 'ALL')" style="background:#4f46e5; color:#fff; border:none; padding:10px 18px; border-radius:30px; font-weight:700; font-size:0.88rem; cursor:pointer; box-shadow:0 4px 12px rgba(79,70,229,0.3);">
+                        <i class="fa-solid fa-layer-group"></i> All ${className} Notes
+                    </button>
+                    ${subjects.map(subj => `
+                        <button onclick="filterNotesBySubject('${className}', '${subj}')" style="background:#f8fafc; color:#1e293b; border:1px solid #e2e8f0; padding:10px 16px; border-radius:30px; font-weight:600; font-size:0.88rem; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#eef2ff'; this.style.borderColor='#4f46e5'; this.style.color='#4f46e5'" onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'; this.style.color='#1e293b'">
+                            <i class="fa-solid fa-book"></i> ${subj}
+                        </button>
+                    `).join("")}
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", modalHTML);
+}
+
+window.filterNotesBySubject = function(className, subject) {
+    document.getElementById("subjectPickerModal")?.remove();
+
+    const noteCards = document.querySelectorAll(".note-card");
+    let matchCount = 0;
+
+    noteCards.forEach((card) => {
+        const tag = card.querySelector(".note-tag")?.innerText.toLowerCase() || "";
+        const title = card.querySelector("h3")?.innerText.toLowerCase() || "";
+        
+        const matchesClass = tag.includes(className.toLowerCase());
+        const matchesSubj = (subject === 'ALL') || tag.includes(subject.toLowerCase()) || title.includes(subject.toLowerCase());
+
+        if (matchesClass && matchesSubj) {
+            card.style.display = "flex";
+            matchCount++;
+        } else {
+            card.style.display = "none";
+        }
+    });
+
+    let noResultsMsg = document.getElementById("noResultsMsg");
+    const notesGrid = document.querySelector(".notes-grid");
+
+    if (matchCount === 0) {
+        if (!noResultsMsg && notesGrid) {
+            noResultsMsg = document.createElement("div");
+            noResultsMsg.id = "noResultsMsg";
+            noResultsMsg.style.cssText = "grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b; font-weight: 600;";
+            noResultsMsg.innerHTML = `<i class="fa-solid fa-folder-open" style="font-size:2.5rem; margin-bottom:12px; color:#4f46e5; display:block;"></i> Currently no uploaded notes found for ${className} ${subject === 'ALL' ? '' : '• ' + subject}. <br><span style="font-size:0.85rem; font-weight:400; color:#94a3b8;">Be the first to share notes using the Share Notes form below!</span>`;
+            notesGrid.appendChild(noResultsMsg);
+        }
+    } else if (noResultsMsg) {
+        noResultsMsg.remove();
+    }
+
+    document.getElementById("notes")?.scrollIntoView({ behavior: "smooth" });
+};
+
+/* -------------------------------------------------------------------------
+   4. NO-JUMP REAL-TIME LIVE SEARCH
+   ------------------------------------------------------------------------- */
+function initLiveSearch() {
+    const searchInput = document.querySelector(".search-box input");
+    const searchBtn = document.querySelector(".search-btn");
+
+    if (!searchInput) return;
+
+    function performSearch(shouldScroll = false) {
+        const query = searchInput.value.toLowerCase().trim();
+        const noteCards = document.querySelectorAll(".note-card");
+        let matchCount = 0;
+
+        noteCards.forEach((card) => {
+            const title = card.querySelector("h3")?.innerText.toLowerCase() || "";
+            const desc = card.querySelector("p")?.innerText.toLowerCase() || "";
+            const tag = card.querySelector(".note-tag")?.innerText.toLowerCase() || "";
+
+            if (query === "" || title.includes(query) || desc.includes(query) || tag.includes(query)) {
+                card.style.display = "flex";
+                matchCount++;
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        let noResultsMsg = document.getElementById("noResultsMsg");
+        const notesGrid = document.querySelector(".notes-grid");
+
+        if (matchCount === 0 && query !== "") {
+            if (!noResultsMsg && notesGrid) {
+                noResultsMsg = document.createElement("div");
+                noResultsMsg.id = "noResultsMsg";
+                noResultsMsg.style.cssText = "grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b; font-weight: 600;";
+                noResultsMsg.innerHTML = `<i class="fa-solid fa-magnifying-glass" style="font-size:2rem; margin-bottom:10px; color:#4f46e5; display:block;"></i> No notes found matching "${query}". Try searching Physics, Class 12, or Calculus.`;
+                notesGrid.appendChild(noResultsMsg);
+            }
+        } else if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+
+        if (shouldScroll && query !== "") {
+            document.getElementById("notes")?.scrollIntoView({ behavior: "smooth" });
+        }
+    }
+
+    searchInput.addEventListener("input", () => performSearch(false));
+    searchInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            performSearch(true);
+        }
+    });
+
+    searchBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        performSearch(true);
+    });
+}
+
+/* -------------------------------------------------------------------------
+   5. STUDENT FORMS, ADMIN PANEL, MODAL & DOWNLOAD LOGS
+   ------------------------------------------------------------------------- */
 function initStudentShareForm() {
     const shareForm = document.getElementById("publicShareForm");
     if (!shareForm) return;
@@ -235,9 +378,6 @@ function initFeedbacksRendering() {
     }
 }
 
-/* -------------------------------------------------------------------------
-   3. ADMIN PANEL LOGIC
-   ------------------------------------------------------------------------- */
 window.updateAdminSubjects = function() {
     const classSelect = document.getElementById("noteClass");
     const subjectSelect = document.getElementById("noteSubject");
@@ -396,9 +536,6 @@ window.clearDownloadLogs = function() {
     }
 };
 
-/* -------------------------------------------------------------------------
-   4. DOWNLOAD LOGGING & PREVIEW MODAL
-   ------------------------------------------------------------------------- */
 function initDownloadSystem() {
     document.addEventListener("click", (e) => {
         const btn = e.target.closest(".btn-primary, #modalDownloadBtn");
@@ -435,41 +572,6 @@ function initDownloadSystem() {
 
             alert(`✅ ${cardTitle} Download Started!`);
         }
-    });
-}
-
-function initLiveSearch() {
-    const searchInput = document.querySelector(".search-box input");
-    const searchBtn = document.querySelector(".search-btn");
-
-    function performSearch() {
-        const query = searchInput.value.toLowerCase().trim();
-        document.querySelectorAll(".note-card").forEach((card) => {
-            const title = card.querySelector("h3")?.innerText.toLowerCase() || "";
-            const desc = card.querySelector("p")?.innerText.toLowerCase() || "";
-            const tag = card.querySelector(".note-tag")?.innerText.toLowerCase() || "";
-
-            card.style.display = (title.includes(query) || desc.includes(query) || tag.includes(query)) ? "flex" : "none";
-        });
-        if (query) document.getElementById("notes")?.scrollIntoView({ behavior: "smooth" });
-    }
-
-    searchInput?.addEventListener("keyup", performSearch);
-    searchBtn?.addEventListener("click", performSearch);
-}
-
-function initCategoryFilter() {
-    document.querySelectorAll(".category-card").forEach((card) => {
-        card.addEventListener("click", (e) => {
-            e.preventDefault();
-            const catName = card.dataset.cat || card.querySelector("h3")?.innerText || "";
-            
-            document.querySelectorAll(".note-card").forEach((note) => {
-                const tag = note.querySelector(".note-tag")?.innerText || "";
-                note.style.display = tag.toLowerCase().includes(catName.toLowerCase()) ? "flex" : "none";
-            });
-            document.getElementById("notes")?.scrollIntoView({ behavior: "smooth" });
-        });
     });
 }
 
