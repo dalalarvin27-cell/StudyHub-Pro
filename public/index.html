@@ -30,7 +30,7 @@
             --radius-md: 16px;
             --radius-lg: 24px;
             --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            --shadow-hover: 0 20px 40px -15px rgba(79, 70, 229, 0.2);
+            --shadow-hover: 0 20px 40px -15px rgba(79, 70, 229, 0.25);
             --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -39,16 +39,42 @@
         body { 
             background: #f8fafc; 
             background-image: 
-                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.12) 0px, transparent 50%),
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.1) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
             background-attachment: fixed;
             color: var(--text-main); 
             line-height: 1.6;
             overflow-x: hidden;
+            position: relative;
         }
 
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
+
+        /* FLOATING ANIMATION FOR BADGE */
+        @keyframes floatBadge {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-10px) scale(1.02); }
+        }
+
+        @keyframes orbGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 30px) scale(1.1); }
+        }
+
+        /* BACKGROUND GLOW ORBS */
+        .hero-orb-1 {
+            position: absolute; top: 5%; left: 10%; width: 280px; height: 250px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+            border-radius: 50%; filter: blur(50px); pointer-events: none; z-index: -1;
+            animation: orbGlow 8s infinite alternate ease-in-out;
+        }
+        .hero-orb-2 {
+            position: absolute; top: 15%; right: 10%; width: 320px; height: 300px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            border-radius: 50%; filter: blur(60px); pointer-events: none; z-index: -1;
+            animation: orbGlow 10s infinite alternate-reverse ease-in-out;
+        }
 
         /* BUTTONS */
         .btn {
@@ -98,27 +124,29 @@
         .mobile-toggle { display: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 6px; }
 
         /* HERO SECTION */
-        .hero { padding: 80px 24px 60px; text-align: center; }
+        .hero { padding: 90px 24px 60px; text-align: center; position: relative; }
         .hero-container { max-width: 850px; margin: 0 auto; }
+        
+        /* FLOATING BADGE (FIXED & ENHANCED) */
         .badge {
-            display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px;
-            background: rgba(79, 70, 229, 0.08); border: 1px solid rgba(79, 70, 229, 0.2);
-            color: var(--primary); font-size: 0.85rem; font-weight: 700; border-radius: 50px; margin-bottom: 24px;
+            display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px;
+            background: rgba(79, 70, 229, 0.08); border: 1px solid rgba(79, 70, 229, 0.25);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            color: var(--primary); font-size: 0.88rem; font-weight: 700; border-radius: 50px;
+            margin-bottom: 24px;
+            animation: floatBadge 3.5s ease-in-out infinite; /* FIXED FLOATING ANIMATION */
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.12);
         }
 
         .hero h1 { font-size: 3.4rem; font-weight: 800; line-height: 1.2; color: var(--secondary); margin-bottom: 20px; letter-spacing: -1.5px; }
-        .hero h1 span {
-            background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 40px; max-width: 650px; margin-left: auto; margin-right: auto; }
+        .hero h1 span { background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 36px; max-width: 650px; margin-left: auto; margin-right: auto; }
 
+        /* GLASSMORPHIC SEARCH BOX */
         .search-box {
-            position: relative; max-width: 680px; margin: 0 auto 48px; display: flex; align-items: center;
-            background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); padding: 8px 8px 8px 24px;
-            border-radius: 50px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06); border: 1px solid rgba(255, 255, 255, 0.8); transition: var(--transition);
+            position: relative; max-width: 680px; margin: 0 auto 20px; display: flex; align-items: center;
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 8px 8px 8px 24px;
+            border-radius: 50px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06); border: 1px solid rgba(255, 255, 255, 0.9); transition: var(--transition);
         }
         .search-icon { color: var(--text-muted); font-size: 1.2rem; margin-right: 12px; }
         .search-box input { width: 100%; border: none; outline: none; font-size: 1rem; font-family: inherit; color: var(--text-main); background: transparent; }
@@ -127,7 +155,25 @@
             border-radius: 40px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: var(--transition);
         }
 
-        .hero-stats { display: flex; justify-content: center; align-items: center; gap: 40px; padding-top: 24px; border-top: 1px dashed rgba(226, 232, 240, 0.8); }
+        /* TRENDING SEARCH PILLS (NEW DESIGN ADDITION) */
+        .search-pills {
+            display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+            gap: 10px; margin-bottom: 48px; font-size: 0.85rem; color: var(--text-muted);
+        }
+        .pill-btn {
+            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 20px;
+            font-size: 0.82rem; font-weight: 600; color: var(--primary); cursor: pointer; transition: var(--transition);
+        }
+        .pill-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-2px); }
+
+        /* GLASS STATS CARD (NEW DESIGN ENHANCEMENT) */
+        .hero-stats {
+            display: flex; justify-content: center; align-items: center; gap: 40px;
+            padding: 22px 32px; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px);
+            border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); max-width: 700px; margin: 0 auto;
+        }
         .stat-item h3 { font-size: 1.8rem; font-weight: 800; color: var(--secondary); }
         .stat-item p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
         .stat-divider { width: 1px; height: 35px; background: var(--border-color); }
@@ -264,6 +310,10 @@
 </head>
 <body>
 
+    <!-- AMBIENT GLOW ORBS IN BACKGROUND -->
+    <div class="hero-orb-1"></div>
+    <div class="hero-orb-2"></div>
+
     <!-- NAVBAR -->
     <header class="header">
         <nav class="navbar">
@@ -295,6 +345,7 @@
     <!-- HERO SECTION -->
     <section class="hero">
         <div class="hero-container">
+            <!-- FLOATING BADGE (FIXED & FLOATING) -->
             <div class="badge">
                 <i class="fa-solid fa-bolt"></i> #1 Free Study Material Platform
             </div>
@@ -304,13 +355,23 @@
 
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" placeholder="Search Physics, Class 12, Calculus, Chemistry...">
+                <input type="text" id="heroSearchInput" placeholder="Search Physics, Class 12, Calculus, Chemistry...">
                 <button class="search-btn">
                     <span>Search</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
 
+            <!-- TRENDING QUICK SEARCH PILLS (NEW DESIGN ADDITION) -->
+            <div class="search-pills">
+                <span>🔥 Trending Searches:</span>
+                <button type="button" class="pill-btn" onclick="quickSearch('Class 12 Physics')">Class 12 Physics</button>
+                <button type="button" class="pill-btn" onclick="quickSearch('JEE Calculus')">JEE Calculus</button>
+                <button type="button" class="pill-btn" onclick="quickSearch('DBMS')">DBMS Engineering</button>
+                <button type="button" class="pill-btn" onclick="quickSearch('NEET Biology')">NEET Bio</button>
+            </div>
+
+            <!-- GLASS STATS CARD -->
             <div class="hero-stats">
                 <div class="stat-item">
                     <h3>50K+</h3>

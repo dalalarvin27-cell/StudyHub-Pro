@@ -1,5 +1,5 @@
 // ==========================================================================
-// STUDYHUB PRO - FULL ENGINE (NO-JUMP CLASS SUBJECT SELECTOR + ALL FEATURES)
+// STUDYHUB PRO - FULL ENGINE (ALL FEATURES INTACT + NEW DESIGN HANDLERS)
 // ==========================================================================
 
 const CLASS_SUBJECTS_MAP = {
@@ -35,6 +35,23 @@ document.addEventListener("DOMContentLoaded", () => {
     initDownloadSystem();
     initAdminPanel();
 });
+
+/* QUICK SEARCH PILL HANDLER (NEW DESIGN FEATURE) */
+window.quickSearch = function(term) {
+    const input = document.getElementById("heroSearchInput") || document.querySelector(".search-box input");
+    if (input) {
+        input.value = term;
+        const noteCards = document.querySelectorAll(".note-card");
+        noteCards.forEach((card) => {
+            const title = card.querySelector("h3")?.innerText.toLowerCase() || "";
+            const desc = card.querySelector("p")?.innerText.toLowerCase() || "";
+            const tag = card.querySelector(".note-tag")?.innerText.toLowerCase() || "";
+
+            card.style.display = (title.includes(term.toLowerCase()) || desc.includes(term.toLowerCase()) || tag.includes(term.toLowerCase())) ? "flex" : "none";
+        });
+        document.getElementById("notes")?.scrollIntoView({ behavior: "smooth" });
+    }
+};
 
 /* -------------------------------------------------------------------------
    1. AUTHENTICATION & MOBILE GOOGLE LOGIN
