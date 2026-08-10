@@ -1,14 +1,17 @@
-const express = require("express");
+﻿const express = require("express");
 const router = express.Router();
-const TestAttempt = require("../models/TestAttempt");
-const MockTest = require("../models/MockTest");
-const Question = require("../models/Question");
 const { verifyToken } = require("../middleware/authMiddleware");
+
+// Safe Case-Insensitive Model Imports for Render Linux
+let TestAttempt, MockTest, Question;
+try { TestAttempt = require("../models/TestAttempt"); } catch(e) { try { TestAttempt = require("../models/testattempt"); } catch(err) { TestAttempt = require("../models/TestAttempt.js"); } }
+try { MockTest = require("../models/MockTest"); } catch(e) { try { MockTest = require("../models/mocktest"); } catch(err) { MockTest = require("../models/MockTest.js"); } }
+try { Question = require("../models/Question"); } catch(e) { try { Question = require("../models/question"); } catch(err) { Question = require("../models/Question.js"); } }
 
 // Submit test attempt & calculate analytics
 router.post("/:testId/submit", verifyToken, async (req, res) => {
   try {
-    const { answers, timeTakenSeconds } = req.body; // answers = [{ questionId, userAnswer, timeSpentSeconds }]
+    const { answers, timeTakenSeconds } = req.body;
     const test = await MockTest.findById(req.params.testId);
     if (!test) return res.status(404).json({ success: false, message: "Mock test not found." });
 
@@ -20,7 +23,7 @@ router.post("/:testId/submit", verifyToken, async (req, res) => {
     let score = 0;
 
     const evaluatedAnswers = dbQuestions.map(q => {
-      const userAns = answers.find(a => a.questionId === q._id.toString());
+      const userAns = answers ? answers.find(a => a.questionId === q._id.toString()) : null;
       const userVal = userAns ? userAns.userAnswer : null;
       const timeSpent = userAns ? userAns.timeSpentSeconds || 0 : 0;
 
