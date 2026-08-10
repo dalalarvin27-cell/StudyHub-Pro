@@ -1,13 +1,15 @@
-const express = require("express");
+﻿const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/uploadMiddleware");
 const { verifyToken } = require("../middleware/authMiddleware");
 const { aiRateLimiter } = require("../middleware/rateLimiter");
 
-const ScanDocument = require("../models/ScanDocument");
-const GeneratedQuiz = require("../models/GeneratedQuiz");
-const MockTest = require("../models/MockTest");
-const Question = require("../models/Question");
+// Safe Case-Insensitive Model Imports (Prevents Render Linux MODULE_NOT_FOUND)
+let ScanDocument, GeneratedQuiz, MockTest, Question;
+try { ScanDocument = require("../models/ScanDocument"); } catch(e) { try { ScanDocument = require("../models/scandocument"); } catch(err) { ScanDocument = require("../models/ScanDocument.js"); } }
+try { GeneratedQuiz = require("../models/GeneratedQuiz"); } catch(e) { try { GeneratedQuiz = require("../models/generatedquiz"); } catch(err) { GeneratedQuiz = require("../models/GeneratedQuiz.js"); } }
+try { MockTest = require("../models/MockTest"); } catch(e) { try { MockTest = require("../models/mocktest"); } catch(err) { MockTest = require("../models/MockTest.js"); } }
+try { Question = require("../models/Question"); } catch(e) { try { Question = require("../models/question"); } catch(err) { Question = require("../models/Question.js"); } }
 
 const { extractTextFromImage } = require("../services/ocrService");
 const { generateQuizFromNotes } = require("../services/quizGenerator");
@@ -32,7 +34,6 @@ router.post("/upload", verifyToken, upload.array("images", 10), async (req, res)
 
     await scanDoc.save();
 
-    // Perform OCR extraction in background or immediate promise
     let combinedText = "";
     for (const file of req.files) {
       const text = await extractTextFromImage(file.path);
@@ -50,11 +51,11 @@ router.post("/upload", verifyToken, upload.array("images", 10), async (req, res)
   }
 });
 
-// Generate Quiz from Scanned Document
+// Generate Quiz
 router.post("/:id/generate-quiz", verifyToken, aiRateLimiter, async (req, res) => {
   try {
     const scanDoc = await ScanDocument.findOne({ _id: req.params.id, userId: req.user.id });
-    if (!scanDoc) return res.status(404).json({ success: false, message: "Scanned document not found or access denied." });
+    if (!scanDoc) return res.status(404).json({ success: false, message: "Scanned document not found." });
 
     const questionsCount = Number(req.body.questionsCount) || 10;
     const questions = await generateQuizFromNotes(scanDoc.cleanText, { questionsCount });
@@ -74,7 +75,7 @@ router.post("/:id/generate-quiz", verifyToken, aiRateLimiter, async (req, res) =
   }
 });
 
-// Generate Mock Test from Scanned Document
+// Generate Mock Test
 router.post("/:id/generate-test", verifyToken, aiRateLimiter, async (req, res) => {
   try {
     const scanDoc = await ScanDocument.findOne({ _id: req.params.id, userId: req.user.id });
@@ -121,7 +122,7 @@ router.post("/:id/generate-test", verifyToken, aiRateLimiter, async (req, res) =
   }
 });
 
-// Generate One-Pager from Scanned Document
+// Generate One-Pager
 router.post("/:id/generate-one-pager", verifyToken, aiRateLimiter, async (req, res) => {
   try {
     const scanDoc = await ScanDocument.findOne({ _id: req.params.id, userId: req.user.id });
