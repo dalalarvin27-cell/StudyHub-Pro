@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+﻿const mongoose = require("mongoose");
 
 const scanDocumentSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -10,4 +10,4 @@ const scanDocumentSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("ScanDocument", scanDocumentSchema);
+module.exports = mongoose.models.ScanDocument || mongoose.model("ScanDocument", scanDocumentSchema);

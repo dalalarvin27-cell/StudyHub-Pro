@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+﻿const mongoose = require("mongoose");
 
 const generatedQuizSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -16,4 +16,4 @@ const generatedQuizSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("GeneratedQuiz", generatedQuizSchema);
+module.exports = mongoose.models.GeneratedQuiz || mongoose.model("GeneratedQuiz", generatedQuizSchema);
