@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Test Engine & NDA Exam Hub | EduVault</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <nav class="navbar">
+            <a href="index.html" class="logo"><i class="fa-solid fa-vault"></i> EduVault</a>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="mock-tests.html" class="active"><i class="fa-solid fa-vial-circle-check"></i> Mock Tests</a></li>
+                <li><a href="pyq.html"><i class="fa-solid fa-file-signature"></i> PYQs</a></li>
+                <li><a href="one-pagers.html"><i class="fa-solid fa-layer-group"></i> One-Pagers</a></li>
+                <li><a href="scan.html"><i class="fa-solid fa-camera"></i> Scan Notes</a></li>
+                <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            </ul>
+            <div id="authContainer"></div>
+        </nav>
+    </header>
+
+    <main style="max-width:1200px; margin:40px auto; padding:0 24px;">
+        <!-- NDA EXAM DEDICATED PREPARATION HUB -->
+        <section class="glass-panel" style="padding:32px; margin-bottom:40px; background:linear-gradient(135deg, rgba(79,70,229,0.1), transparent);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+                <div>
+                    <span style="background:var(--primary); color:#fff; padding:4px 12px; border-radius:20px; font-weight:700; font-size:0.8rem;">OFFICIAL PREP MODULE</span>
+                    <h1 style="font-size:2.2rem; margin-top:8px;">NDA Exam Preparation Hub 🎖️</h1>
+                    <p style="color:var(--text-muted);">Mathematics, GAT, Physics, Chemistry, Geography, History & Current Affairs Practice Tests</p>
+                </div>
+                <button onclick="startFullNDAMock()" class="btn btn-primary"><i class="fa-solid fa-play"></i> Start Full NDA Mock Test</button>
+            </div>
+
+            <!-- NDA Subject Specific Shortcuts -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-top:28px;">
+                <div onclick="filterNDAMocks('Mathematics')" class="glass-card" style="cursor:pointer; text-align:center;">
+                    <i class="fa-solid fa-calculator" style="font-size:1.8rem; color:var(--primary);"></i>
+                    <h4 style="margin-top:10px;">NDA Mathematics</h4>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">30 Qs • 100 Marks</span>
+                </div>
+                <div onclick="filterNDAMocks('GAT')" class="glass-card" style="cursor:pointer; text-align:center;">
+                    <i class="fa-solid fa-earth-americas" style="font-size:1.8rem; color:var(--accent);"></i>
+                    <h4 style="margin-top:10px;">GAT & English</h4>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">50 Qs • 200 Marks</span>
+                </div>
+                <div onclick="filterNDAMocks('Physics')" class="glass-card" style="cursor:pointer; text-align:center;">
+                    <i class="fa-solid fa-atom" style="font-size:1.8rem; color:var(--success);"></i>
+                    <h4 style="margin-top:10px;">General Science</h4>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">Physics & Chemistry</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- MOCK TESTS EXPLORER -->
+        <section>
+            <h2 style="margin-bottom:20px;">Explore All Mock Tests</h2>
+            <div style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap;">
+                <button onclick="loadMockTests('ALL')" class="btn btn-primary">All Categories</button>
+                <button onclick="loadMockTests('NDA')" class="btn btn-outline">NDA</button>
+                <button onclick="loadMockTests('JEE')" class="btn btn-outline">JEE</button>
+                <button onclick="loadMockTests('NEET')" class="btn btn-outline">NEET</button>
+                <button onclick="loadMockTests('SSC')" class="btn btn-outline">SSC</button>
+                <button onclick="loadMockTests('UPSC')" class="btn btn-outline">UPSC</button>
+                <button onclick="loadMockTests('Custom Tests')" class="btn btn-outline">AI Generated</button>
+            </div>
+
+            <div id="mockTestsGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:24px;"></div>
+        </section>
+    </main>
+
+    <!-- FULL SCREEN MOCK TEST INTERFACE OVERLAY (HIDDEN UNTIL STARTED) -->
+    <div id="testOverlay" class="test-overlay" style="display:none;">
+        <div class="test-header">
+            <div>
+                <h3 id="testTitle">NDA Full Mathematics Mock Test</h3>
+                <span id="testProgress" style="font-size:0.85rem; color:var(--text-muted);">Question 1 of 30</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:20px;">
+                <div style="font-size:1.2rem; font-weight:800; color:var(--primary);">
+                    <i class="fa-regular fa-clock"></i> <span id="timerDisplay">30:00</span>
+                </div>
+                <button onclick="confirmSubmitTest()" class="btn btn-primary">Submit Test</button>
+            </div>
+        </div>
+
+        <div class="test-body">
+            <!-- Question Content Area -->
+            <div style="padding:32px; overflow-y:auto;">
+                <div id="questionContainer" class="glass-panel" style="padding:28px;">
+                    <h3 id="qText" style="margin-bottom:20px;">Question loading...</h3>
+                    <div id="qOptions" style="display:flex; flex-direction:column; gap:12px;"></div>
+                </div>
+
+                <!-- Action Controls -->
+                <div style="display:flex; justify-content:space-between; margin-top:24px; flex-wrap:wrap; gap:12px;">
+                    <div>
+                        <button onclick="markForReview()" class="btn btn-outline"><i class="fa-solid fa-bookmark"></i> Mark for Review</button>
+                        <button onclick="clearAnswer()" class="btn btn-outline">Clear Answer</button>
+                    </div>
+                    <div>
+                        <button onclick="prevQuestion()" class="btn btn-outline">Previous</button>
+                        <button onclick="saveAndNext()" class="btn btn-primary">Save & Next <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Palette Sidebar -->
+            <div class="question-palette">
+                <h4>Question Palette</h4>
+                <div class="palette-grid" id="paletteGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/mockTestEngine.js"></script>
+</body>
+</html>

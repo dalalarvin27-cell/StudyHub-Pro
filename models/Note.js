@@ -1,60 +1,17 @@
-const express = require("express");
-const router = express.Router();
-const multer = require("multer");
+const mongoose = require("mongoose");
 
-const Note =
-require("./Note");
-
-const storage =
-multer.diskStorage({
-
-destination:(req,file,cb)=>{
-cb(null,"uploads");
-},
-
-filename:(req,file,cb)=>{
-cb(
-null,
-Date.now()+"-"+file.originalname
-);
-}
-
+const noteSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  category: { type: String, required: true }, // e.g. "Class 12 • Physics", "NDA • GAT"
+  subject: { type: String, required: true },
+  description: { type: String },
+  fileUrl: { type: String, required: true },
+  uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  studentName: { type: String, default: "EduVault Admin" },
+  status: { type: String, enum: ["pending", "approved"], default: "approved" },
+  downloadsCount: { type: Number, default: 0 },
+  rating: { type: Number, default: 4.9 },
+  createdAt: { type: Date, default: Date.now }
 });
 
-const upload =
-multer({storage});
-
-router.post(
-"/upload",
-upload.single("pdf"),
-async(req,res)=>{
-
-const note =
-new Note({
-
-title:req.body.title,
-subject:req.body.subject,
-pdf:req.file.filename
-
-});
-
-await note.save();
-
-res.json({
-success:true
-});
-
-});
-
-router.get(
-"/all",
-async(req,res)=>{
-
-const notes =
-await Note.find();
-
-res.json(notes);
-
-});
-
-module.exports = router;
+module.exports = mongoose.model("Note", noteSchema);

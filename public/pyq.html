@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previous Year Questions (PYQ) | EduVault</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <nav class="navbar">
+            <a href="index.html" class="logo"><i class="fa-solid fa-vault"></i> EduVault</a>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="mock-tests.html"><i class="fa-solid fa-vial-circle-check"></i> Mock Tests</a></li>
+                <li><a href="pyq.html" class="active"><i class="fa-solid fa-file-signature"></i> PYQs</a></li>
+                <li><a href="one-pagers.html"><i class="fa-solid fa-layer-group"></i> One-Pagers</a></li>
+                <li><a href="scan.html"><i class="fa-solid fa-camera"></i> Scan Notes</a></li>
+                <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            </ul>
+            <div id="authContainer"></div>
+        </nav>
+    </header>
+
+    <main style="max-width:1100px; margin:40px auto; padding:0 24px;">
+        <h2 style="margin-bottom:8px;">Previous Year Questions (PYQ) Practice 📝</h2>
+        <p style="color:var(--text-muted); margin-bottom:28px;">Official and public-domain practice questions with step-by-step explanations and bookmarking.</p>
+
+        <!-- FILTERS BAR -->
+        <div class="glass-panel" style="padding:20px; display:flex; flex-wrap:wrap; gap:16px; margin-bottom:32px;">
+            <select id="filterExam" class="btn btn-outline" onchange="filterPYQs()">
+                <option value="ALL">All Exams</option>
+                <option value="NDA">NDA</option>
+                <option value="JEE">JEE</option>
+                <option value="NEET">NEET</option>
+                <option value="UPSC">UPSC</option>
+                <option value="SSC">SSC</option>
+            </select>
+
+            <select id="filterYear" class="btn btn-outline" onchange="filterPYQs()">
+                <option value="ALL">All Years</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+            </select>
+
+            <select id="filterSubject" class="btn btn-outline" onchange="filterPYQs()">
+                <option value="ALL">All Subjects</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Physics">Physics</option>
+                <option value="General Ability Test">GAT / General Knowledge</option>
+            </select>
+        </div>
+
+        <!-- PYQ QUESTIONS LIST CONTAINER -->
+        <div id="pyqListContainer" style="display:flex; flex-direction:column; gap:20px;"></div>
+    </main>
+
+    <script src="js/app.js"></script>
+    <script src="js/pyqEngine.js"></script>
+</body>
+</html>

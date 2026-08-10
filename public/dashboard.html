@@ -3,94 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyHub Dashboard</title>
-
-    <link rel="stylesheet" href="style.css">
+    <title>Student Dashboard | EduVault</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
-    <!-- Navbar -->
+    <header class="header">
+        <nav class="navbar">
+            <a href="index.html" class="logo"><i class="fa-solid fa-vault"></i> EduVault</a>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="mock-tests.html"><i class="fa-solid fa-vial-circle-check"></i> Mock Tests</a></li>
+                <li><a href="pyq.html"><i class="fa-solid fa-file-signature"></i> PYQs</a></li>
+                <li><a href="one-pagers.html"><i class="fa-solid fa-layer-group"></i> One-Pagers</a></li>
+                <li><a href="scan.html"><i class="fa-solid fa-camera"></i> Scan Notes</a></li>
+                <li><a href="dashboard.html" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            </ul>
+            <div id="authContainer"></div>
+        </nav>
+    </header>
 
-    <nav class="navbar">
-
-        <div class="logo">
-            📚 StudyHub Pro
+    <main style="max-width:1200px; margin:40px auto; padding:0 24px;">
+        <h2>Student Learning & Test Analytics 📊</h2>
+        
+        <!-- GLASSMORPHISM STATS CARDS -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin:28px 0 40px;">
+            <div class="glass-card" style="text-align:center;">
+                <i class="fa-solid fa-vial" style="font-size:2rem; color:var(--primary);"></i>
+                <h3 id="statAttempted" style="font-size:1.8rem; margin-top:8px;">12</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">Tests Attempted</p>
+            </div>
+            <div class="glass-card" style="text-align:center;">
+                <i class="fa-solid fa-trophy" style="font-size:2rem; color:var(--accent);"></i>
+                <h3 id="statAvgScore" style="font-size:1.8rem; margin-top:8px;">84%</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">Average Score</p>
+            </div>
+            <div class="glass-card" style="text-align:center;">
+                <i class="fa-solid fa-bullseye" style="font-size:2rem; color:var(--success);"></i>
+                <h3 id="statAccuracy" style="font-size:1.8rem; margin-top:8px;">91%</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">Accuracy</p>
+            </div>
+            <div class="glass-card" style="text-align:center;">
+                <i class="fa-solid fa-bookmark" style="font-size:2rem; color:#818cf8;"></i>
+                <h3 id="statBookmarks" style="font-size:1.8rem; margin-top:8px;">24</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">Bookmarked Qs</p>
+            </div>
         </div>
 
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="#">Notes</a></li>
-            <li><a href="#">Bookmarks</a></li>
-            <li><a href="#">Profile</a></li>
-        </ul>
+        <!-- RECENT TEST ATTEMPTS -->
+        <section class="glass-panel" style="padding:28px;">
+            <h3>Recent Mock Test Attempts</h3>
+            <div id="recentAttemptsList" style="margin-top:20px; display:flex; flex-direction:column; gap:12px;"></div>
+        </section>
+    </main>
 
-    </nav>
+    <script src="js/app.js"></script>
+    <script>
+        async function loadUserAnalytics() {
+          const token = localStorage.getItem("eduvault_token");
+          if (!token) return;
 
-    <!-- Welcome Section -->
-
-    <section class="hero">
-
-        <h1>Welcome To StudyHub 🚀</h1>
-
-        <p>
-            Find, Read and Download Study Notes
-        </p>
-
-    </section>
-
-    <!-- Search -->
-
-    <section class="search-section">
-
-        <input
-        type="text"
-        id="searchInput"
-        placeholder="Search Notes..."
-        onkeyup="searchNotes()">
-
-    </section>
-
-    <!-- Categories -->
-
-    <section class="categories">
-
-        <h2>Browse Categories</h2>
-
-        <div class="cards">
-
-            <div class="card">Class 9</div>
-            <div class="card">Class 10</div>
-            <div class="card">Class 11</div>
-            <div class="card">Class 12</div>
-            <div class="card">JEE</div>
-            <div class="card">NEET</div>
-            <div class="card">B.Tech</div>
-
-        </div>
-
-    </section>
-
-    <!-- Notes -->
-
-    <section class="notes">
-
-        <h2>📚 Available Notes</h2>
-
-        <div id="notesList">
-
-        </div>
-
-    </section>
-
-    <footer>
-
-        <p>
-            Made By ARVIN ❤️
-        </p>
-
-    </footer>
-
-    <script src="dashboard.js"></script>
-
+          try {
+            const res = await fetch("/api/attempts/user", {
+              headers: { "Authorization": `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.attempts) {
+              document.getElementById("statAttempted").innerText = data.attempts.length;
+              document.getElementById("recentAttemptsList").innerHTML = data.attempts.map(att => `
+                <div style="display:flex; justify-content:space-between; padding:16px; background:var(--bg-glass); border-radius:10px; border:1px solid var(--border-color);">
+                  <div>
+                    <h4>${att.testTitle}</h4>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">${new Date(att.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div style="text-align:right;">
+                    <span style="font-weight:800; color:var(--primary);">${att.score}/${att.totalMarks} (${att.percentage}%)</span>
+                    <br><small style="color:var(--success); font-weight:700;">${att.accuracy}% Accuracy</small>
+                  </div>
+                </div>
+              `).join("");
+            }
+          } catch(e) {}
+        }
+        document.addEventListener("DOMContentLoaded", loadUserAnalytics);
+    </script>
 </body>
 </html>

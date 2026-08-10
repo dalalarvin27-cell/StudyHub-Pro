@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Scan Notes -> AI Generator | EduVault</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <nav class="navbar">
+            <a href="index.html" class="logo"><i class="fa-solid fa-vault"></i> EduVault</a>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="mock-tests.html"><i class="fa-solid fa-vial-circle-check"></i> Mock Tests</a></li>
+                <li><a href="pyq.html"><i class="fa-solid fa-file-signature"></i> PYQs</a></li>
+                <li><a href="one-pagers.html"><i class="fa-solid fa-layer-group"></i> One-Pagers</a></li>
+                <li><a href="scan.html" class="active"><i class="fa-solid fa-camera"></i> Scan Notes</a></li>
+                <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            </ul>
+            <div id="authContainer"></div>
+        </nav>
+    </header>
+
+    <main style="max-width:900px; margin:40px auto; padding:0 24px;">
+        <div class="glass-panel" style="padding:36px; text-align:center;">
+            <i class="fa-solid fa-camera-retro" style="font-size:3rem; color:var(--primary); margin-bottom:16px;"></i>
+            <h2>Scan Notes → AI Content Generator 📸</h2>
+            <p style="color:var(--text-muted); margin-bottom:28px;">Capture handwritten pages using phone camera or upload images from gallery to extract OCR text and generate instant Mock Tests & One-Pagers.</p>
+
+            <form id="scanUploadForm" style="display:flex; flex-direction:column; gap:20px; align-items:center;">
+                <input type="file" id="cameraInput" accept="image/*,application/pdf" multiple style="display:none;" onchange="handleFileSelect(event)">
+                
+                <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
+                    <button type="button" onclick="document.getElementById('cameraInput').click()" class="btn btn-primary"><i class="fa-solid fa-camera"></i> Open Camera / Gallery</button>
+                </div>
+
+                <div id="imagePreviewGrid" style="display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;"></div>
+
+                <button type="submit" id="btnRunOCR" class="btn btn-primary" style="display:none;"><i class="fa-solid fa-wand-magic-sparkles"></i> Process OCR & Extract Notes</button>
+            </form>
+        </div>
+
+        <!-- OCR Extracted Text Display & AI Choice Section -->
+        <section id="ocrResultSection" style="display:none; margin-top:40px;">
+            <div class="glass-card">
+                <h3>Extracted Text Verification</h3>
+                <textarea id="extractedTextDisplay" rows="6" style="width:100%; margin-top:12px; padding:12px; border-radius:8px; border:1px solid var(--border-color);"></textarea>
+
+                <h4 style="margin:24px 0 16px;">Choose AI Generator Action:</h4>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+                    <button onclick="generateFromScan('test')" class="btn btn-primary"><i class="fa-solid fa-vial"></i> Generate Mock Test</button>
+                    <button onclick="generateFromScan('quiz')" class="btn btn-secondary"><i class="fa-solid fa-circle-question"></i> Generate Quick Quiz</button>
+                    <button onclick="generateFromScan('onepager')" class="btn btn-outline"><i class="fa-solid fa-file-invoice"></i> Generate One-Pager</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/app.js"></script>
+    <script>
+        let selectedFiles = [];
+        let currentScanDoc = null;
+
+        function handleFileSelect(e) {
+          selectedFiles = Array.from(e.target.files);
+          const grid = document.getElementById("imagePreviewGrid");
+          grid.innerHTML = selectedFiles.map(f => `
+            <img src="${URL.createObjectURL(f)}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--primary);">
+          `).join("");
+
+          if (selectedFiles.length > 0) {
+            document.getElementById("btnRunOCR").style.display = "inline-flex";
+          }
+        }
+
+        document.getElementById("scanUploadForm").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const token = localStorage.getItem("eduvault_token");
+          if (!token) return alert("Please log in to upload notes.");
+
+          const formData = new FormData();
+          selectedFiles.forEach(f => formData.append("images", f));
+
+          document.getElementById("btnRunOCR").innerText = "Processing OCR...";
+
+          try {
+            const res = await fetch("/api/scan/upload", {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${token}` },
+              body: formData
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message);
+
+            currentScanDoc = data.scanDoc;
+            document.getElementById("ocrResultSection").style.display = "block";
+            document.getElementById("extractedTextDisplay").value = data.scanDoc.cleanText;
+            document.getElementById("btnRunOCR").innerText = "OCR Completed!";
+          } catch(err) {
+            alert(err.message || "OCR failed.");
+          }
+        });
+
+        async function generateFromScan(type) {
+          const token = localStorage.getItem("eduvault_token");
+          if (!currentScanDoc) return alert("Please run OCR scan first.");
+
+          if (type === 'test') {
+            const res = await fetch(`/api/scan/${currentScanDoc._id}/generate-test`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+              body: JSON.stringify({ questionsCount: 10, difficulty: "Medium" })
+            });
+            const data = await res.json();
+            alert("Mock test generated from your scanned notes!");
+            window.location.href = "mock-tests.html";
+          } else if (type === 'onepager') {
+            const res = await fetch(`/api/scan/${currentScanDoc._id}/generate-one-pager`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+            });
+            const data = await res.json();
+            alert("One-Pager Revision Sheet created!");
+            window.location.href = "one-pagers.html";
+          }
+        }
+    </script>
+</body>
+</html>

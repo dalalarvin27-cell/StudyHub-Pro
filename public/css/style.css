@@ -1,0 +1,114 @@
+:root {
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: rgba(79, 70, 229, 0.08);
+  --secondary: #0f172a;
+  --accent: #f59e0b;
+  --success: #10b981;
+  --danger: #ef4444;
+  --bg-main: #f8fafc;
+  --bg-glass: rgba(255, 255, 255, 0.75);
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: rgba(226, 232, 240, 0.8);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --shadow-hover: 0 20px 40px -15px rgba(79, 70, 229, 0.25);
+  --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.dark-mode {
+  --bg-main: #090d16;
+  --bg-glass: rgba(15, 23, 42, 0.8);
+  --bg-card: rgba(30, 41, 59, 0.85);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: rgba(51, 65, 85, 0.8);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-glass);
+}
+
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  transition: var(--transition);
+}
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--primary);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 20px; font-weight: 600; border-radius: var(--radius-sm);
+  cursor: pointer; transition: var(--transition); border: none; font-size: 0.95rem;
+}
+.btn-primary { background: linear-gradient(135deg, var(--primary), #6366f1); color: #fff; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4); }
+.btn-secondary { background: var(--primary-light); color: var(--primary); }
+.btn-outline { border: 1px solid var(--border-color); background: transparent; color: var(--text-main); }
+
+/* Navigation */
+.header { position: sticky; top: 0; z-index: 1000; background: var(--bg-glass); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-color); }
+.navbar { max-width: 1200px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.3rem; color: var(--text-main); }
+.nav-links { display: flex; gap: 24px; }
+.nav-links a { font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+.nav-links a:hover, .nav-links a.active { color: var(--primary); }
+
+/* Bottom Mobile Nav */
+.mobile-bottom-nav {
+  display: none; position: fixed; bottom: 0; left: 0; width: 100%;
+  background: var(--bg-glass); backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-color); z-index: 1000; padding: 8px 0;
+}
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .mobile-bottom-nav { display: flex; justify-content: space-around; }
+  .mobile-nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; color: var(--text-muted); }
+  .mobile-nav-item i { font-size: 1.2rem; }
+}
+
+/* Full Screen Mock Test Overlay */
+.test-overlay {
+  position: fixed; inset: 0; z-index: 3000; background: var(--bg-main);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.test-header { padding: 16px 24px; background: var(--bg-glass); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+.test-body { flex: 1; display: grid; grid-template-columns: 1fr 320px; overflow: hidden; }
+.question-palette { background: var(--bg-card); padding: 20px; border-left: 1px solid var(--border-color); overflow-y: auto; }
+.palette-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 16px; }
+.palette-btn { width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--border-color); font-weight: 700; cursor: pointer; }
+.palette-btn.answered { background: var(--success); color: #fff; }
+.palette-btn.marked { background: var(--accent); color: #fff; }
+.palette-btn.not-answered { background: var(--danger); color: #fff; }
+
+@media (max-width: 900px) {
+  .test-body { grid-template-columns: 1fr; }
+  .question-palette { display: none; }
+}

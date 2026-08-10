@@ -1,124 +1,49 @@
+<!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In | StudyHub Pro</title>
-    
+    <title>Log In | EduVault</title>
+    <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --secondary: #0f172a;
-            --bg-main: #f8fafc;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --radius-lg: 20px;
-            --radius-sm: 8px;
-            --shadow-lg: 0 20px 35px -10px rgba(79, 70, 229, 0.15);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        
-        .auth-container {
-            background: #ffffff;
-            width: 100%;
-            max-width: 900px;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-        .auth-banner {
-            background: linear-gradient(135deg, var(--secondary) 0%, #1e293b 100%);
-            color: #ffffff;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .back-home { color: #94a3b8; font-size: 0.9rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-        .back-home:hover { color: #ffffff; }
-        .banner-content h2 { font-size: 2rem; margin-bottom: 12px; }
-        .banner-content p { color: #94a3b8; font-size: 0.95rem; }
-        
-        .auth-form-box { padding: 40px; }
-        .form-header { margin-bottom: 24px; }
-        .form-header h2 { font-size: 1.8rem; color: var(--secondary); margin-bottom: 6px; }
-        .form-header p { color: var(--text-muted); font-size: 0.9rem; }
-        .form-header a { color: var(--primary); font-weight: 600; text-decoration: none; }
-        
-        .auth-form { display: flex; flex-direction: column; gap: 16px; }
-        .input-group { display: flex; flex-direction: column; gap: 6px; }
-        .input-group label { font-size: 0.85rem; font-weight: 600; }
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper i { position: absolute; left: 14px; color: var(--text-muted); }
-        .input-wrapper input { width: 100%; padding: 12px 14px 12px 42px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.95rem; outline: none; }
-        .input-wrapper input:focus { border-color: var(--primary); }
-        
-        .btn { padding: 12px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; border: none; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { background: var(--primary); color: #fff; width: 100%; }
-        .btn-social { background: #fff; border: 1px solid var(--border-color); color: var(--text-main); width: 100%; }
-        .social-auth { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        
-        .divider { text-align: center; border-bottom: 1px solid var(--border-color); line-height: 0.1em; margin: 10px 0; }
-        .divider span { background: #fff; padding: 0 10px; color: var(--text-muted); font-size: 0.75rem; font-weight: 700; }
-        
-        @media (max-width: 768px) { .auth-container { grid-template-columns: 1fr; } .auth-banner { display: none; } }
-    </style>
 </head>
-<body>
+<body style="min-height:100vh; display:flex; align-items:center; justify-content:center;">
+    <div class="glass-panel" style="padding:40px; width:100%; max-width:420px;">
+        <h2 style="text-align:center; margin-bottom:8px;"><i class="fa-solid fa-vault" style="color:var(--primary);"></i> EduVault Login</h2>
+        <p style="text-align:center; color:var(--text-muted); margin-bottom:28px;">Enter credentials to access tests & dashboard</p>
 
-    <div class="auth-container">
-        <div class="auth-banner">
-            <a href="index.html" class="back-home"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
-            <div class="banner-content">
-                <h2>Welcome Back! 🚀</h2>
-                <p>Log in to access your saved notes, personal library, and community uploads.</p>
-            </div>
-        </div>
+        <form id="loginForm" style="display:flex; flex-direction:column; gap:16px;">
+            <input type="email" id="loginEmail" placeholder="student@gmail.com" required class="btn btn-outline" style="text-align:left;">
+            <input type="password" id="loginPassword" placeholder="••••••••" required class="btn btn-outline" style="text-align:left;">
+            <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
 
-        <div class="auth-form-box">
-            <div class="form-header">
-                <h2>Sign In</h2>
-                <p>New to StudyHub Pro? <a href="signup.html">Create an account</a></p>
-            </div>
-
-            <form class="auth-form" action="#" method="POST" onsubmit="event.preventDefault(); handleGoogleLogin();">
-                <div class="input-group">
-                    <label for="email">Email Address</label>
-                    <div class="input-wrapper">
-                        <i class="fa-solid fa-envelope"></i>
-                        <input type="email" id="email" placeholder="name@example.com" required>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <div class="input-wrapper">
-                        <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="password" placeholder="••••••••" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Sign In</button>
-
-                <div class="divider"><span>OR CONTINUE WITH</span></div>
-
-                <div class="social-auth">
-                    <button type="button" class="btn btn-social" onclick="handleGoogleLogin()"><i class="fa-brands fa-google"></i> Google</button>
-                    <button type="button" class="btn btn-social" onclick="handleGoogleLogin()"><i class="fa-brands fa-github"></i> GitHub</button>
-                </div>
-            </form>
-        </div>
+        <p style="text-align:center; margin-top:20px; font-size:0.9rem;">Don't have an account? <a href="signup.html" style="color:var(--primary); font-weight:700;">Sign up free</a></p>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("loginEmail").value;
+          const password = document.getElementById("loginPassword").value;
+
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+          if (data.success) {
+            localStorage.setItem("eduvault_token", data.token);
+            localStorage.setItem("eduvault_user", JSON.stringify(data.user));
+            alert("Login successful!");
+            window.location.href = "index.html";
+          } else {
+            alert(data.message || "Login failed.");
+          }
+        });
+    </script>
 </body>
 </html>

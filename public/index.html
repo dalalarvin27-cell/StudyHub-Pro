@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyHub Pro | Smart Notes & PYQs Platform</title>
+    <title>EduVault | AI Study Platform & Smart Notes</title>
 
     <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,7 +51,6 @@
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
 
-        /* FLOATING ANIMATION FOR BADGE */
         @keyframes floatBadge {
             0%, 100% { transform: translateY(0px) scale(1); }
             50% { transform: translateY(-10px) scale(1.02); }
@@ -62,7 +61,6 @@
             100% { transform: translate(40px, 30px) scale(1.1); }
         }
 
-        /* BACKGROUND GLOW ORBS */
         .hero-orb-1 {
             position: absolute; top: 5%; left: 10%; width: 280px; height: 250px;
             background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
@@ -76,7 +74,6 @@
             animation: orbGlow 10s infinite alternate-reverse ease-in-out;
         }
 
-        /* BUTTONS */
         .btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             padding: 12px 22px; font-size: 0.95rem; font-weight: 600;
@@ -88,14 +85,9 @@
             color: #ffffff; box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45); }
-
         .btn-secondary { background: rgba(79, 70, 229, 0.08); color: var(--primary); }
-        .btn-secondary:hover { background: rgba(79, 70, 229, 0.15); transform: translateY(-2px); }
-
         .btn-outline { border: 1px solid rgba(15, 23, 42, 0.15); background: rgba(255, 255, 255, 0.6); color: var(--text-main); }
-        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: #ffffff; }
 
-        /* HEADER / NAVBAR */
         .header {
             position: sticky; top: 0; z-index: 1000;
             background: rgba(255, 255, 255, 0.75);
@@ -114,35 +106,28 @@
             width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), #818cf8); 
             color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; 
         }
-        .logo strong { color: var(--primary); }
 
-        .nav-links { display: flex; gap: 32px; }
+        .nav-links { display: flex; gap: 24px; }
         .nav-links a { font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 6px; transition: var(--transition); }
         .nav-links a:hover, .nav-links a.active { color: var(--primary); }
 
         .auth-buttons { display: flex; gap: 10px; align-items: center; }
         .mobile-toggle { display: none; font-size: 1.4rem; color: var(--secondary); cursor: pointer; padding: 6px; }
 
-        /* HERO SECTION */
-        .hero { padding: 90px 24px 60px; text-align: center; position: relative; }
+        .hero { padding: 80px 24px 50px; text-align: center; position: relative; }
         .hero-container { max-width: 850px; margin: 0 auto; }
         
-        /* FLOATING BADGE (FIXED & ENHANCED) */
         .badge {
             display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px;
             background: rgba(79, 70, 229, 0.08); border: 1px solid rgba(79, 70, 229, 0.25);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            color: var(--primary); font-size: 0.88rem; font-weight: 700; border-radius: 50px;
-            margin-bottom: 24px;
-            animation: floatBadge 3.5s ease-in-out infinite; /* FIXED FLOATING ANIMATION */
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.12);
+            backdrop-filter: blur(12px); color: var(--primary); font-size: 0.88rem; font-weight: 700; border-radius: 50px;
+            margin-bottom: 24px; animation: floatBadge 3.5s ease-in-out infinite;
         }
 
         .hero h1 { font-size: 3.4rem; font-weight: 800; line-height: 1.2; color: var(--secondary); margin-bottom: 20px; letter-spacing: -1.5px; }
         .hero h1 span { background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero p { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 36px; max-width: 650px; margin-left: auto; margin-right: auto; }
 
-        /* GLASSMORPHIC SEARCH BOX */
         .search-box {
             position: relative; max-width: 680px; margin: 0 auto 20px; display: flex; align-items: center;
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); padding: 8px 8px 8px 24px;
@@ -155,7 +140,6 @@
             border-radius: 40px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: var(--transition);
         }
 
-        /* TRENDING SEARCH PILLS (NEW DESIGN ADDITION) */
         .search-pills {
             display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
             gap: 10px; margin-bottom: 48px; font-size: 0.85rem; color: var(--text-muted);
@@ -165,177 +149,104 @@
             border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 20px;
             font-size: 0.82rem; font-weight: 600; color: var(--primary); cursor: pointer; transition: var(--transition);
         }
-        .pill-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-2px); }
 
-        /* GLASS STATS CARD (NEW DESIGN ENHANCEMENT) */
-        .hero-stats {
-            display: flex; justify-content: center; align-items: center; gap: 40px;
-            padding: 22px 32px; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px);
-            border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); max-width: 700px; margin: 0 auto;
-        }
-        .stat-item h3 { font-size: 1.8rem; font-weight: 800; color: var(--secondary); }
-        .stat-item p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
-        .stat-divider { width: 1px; height: 35px; background: var(--border-color); }
-
-        /* SECTIONS & CARDS */
-        section { padding: 75px 24px; max-width: 1200px; margin: 0 auto; }
-        .section-header { text-align: center; margin-bottom: 50px; }
+        section { padding: 60px 24px; max-width: 1200px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 40px; }
         .section-header h2 { font-size: 2.2rem; font-weight: 800; color: var(--secondary); margin-bottom: 8px; }
         .section-header p { color: var(--text-muted); font-size: 1.05rem; }
 
-        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 24px; }
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
         
         .category-card {
-            background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); padding: 28px;
+            background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); padding: 24px;
             border-radius: var(--radius-md); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: var(--shadow-glass);
             display: flex; flex-direction: column; align-items: flex-start; transition: var(--transition); cursor: pointer;
         }
-        .category-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: var(--shadow-hover); background: rgba(255, 255, 255, 0.95); border-color: var(--primary); }
+        .category-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); background: rgba(255, 255, 255, 0.95); border-color: var(--primary); }
 
         .cat-icon {
-            width: 52px; height: 52px; background: rgba(79, 70, 229, 0.08); color: var(--primary);
-            border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 18px; transition: var(--transition);
+            width: 48px; height: 48px; background: rgba(79, 70, 229, 0.08); color: var(--primary);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 16px;
         }
-        .category-card:hover .cat-icon { background: var(--primary); color: #fff; transform: rotate(5deg) scale(1.1); }
-        .category-card h3 { font-size: 1.15rem; color: var(--secondary); margin-bottom: 4px; font-weight: 700; }
+        .category-card h3 { font-size: 1.1rem; color: var(--secondary); margin-bottom: 4px; font-weight: 700; }
         .category-card span { font-size: 0.85rem; color: var(--text-muted); }
 
         .category-card.highlight { background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%); color: #ffffff; border: none; }
         .category-card.highlight .cat-icon { background: rgba(255, 255, 255, 0.2); color: #ffffff; }
         .category-card.highlight h3, .category-card.highlight span { color: #ffffff; }
 
-        /* NOTES GRID */
-        .notes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 28px; }
-        
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
         .note-card {
-            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); padding: 30px;
+            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); padding: 26px;
             border-radius: var(--radius-md); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: var(--shadow-glass);
             position: relative; display: flex; flex-direction: column; justify-content: space-between; transition: var(--transition);
         }
-        .note-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-hover); background: rgba(255, 255, 255, 0.95); }
-        .note-card.featured { border: 2px solid var(--primary); }
-        .featured-badge {
-            position: absolute; top: -14px; right: 24px; background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff; font-size: 0.75rem; font-weight: 800; padding: 5px 14px; border-radius: 20px;
-        }
 
-        .note-tag {
-            display: inline-block; font-size: 0.8rem; font-weight: 700; color: var(--primary);
-            background: rgba(79, 70, 229, 0.08); padding: 5px 12px; border-radius: 8px; margin-bottom: 14px; width: fit-content;
-        }
-        .note-card h3 { font-size: 1.3rem; color: var(--secondary); margin-bottom: 8px; font-weight: 700; }
-        .note-card p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 22px; }
-        .note-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); padding-top: 16px; border-top: 1px solid var(--border-color); margin-bottom: 20px; }
-        .note-meta .rating { color: var(--accent); font-weight: 700; }
-        .note-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-        /* STUDENT SHARE NOTES SECTION */
         .share-section {
             background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%); border-radius: var(--radius-lg);
-            color: #fff; padding: 48px; box-shadow: 0 20px 40px rgba(79, 70, 229, 0.25); margin-bottom: 50px;
+            color: #fff; padding: 40px; box-shadow: 0 20px 40px rgba(79, 70, 229, 0.25); margin-bottom: 40px;
         }
-        .share-box h3 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 800; }
-        .share-box p { font-size: 1rem; opacity: 0.9; margin-bottom: 28px; }
-        .share-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .share-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .share-form input, .share-form select, .share-form textarea {
-            padding: 14px 18px; border-radius: var(--radius-sm); border: none; font-size: 0.95rem; font-family: inherit; outline: none; width: 100%; background: rgba(255, 255, 255, 0.9); transition: var(--transition);
+            padding: 12px 16px; border-radius: var(--radius-sm); border: none; font-size: 0.9rem; outline: none; width: 100%; background: rgba(255, 255, 255, 0.95);
         }
         .share-form textarea { grid-column: span 2; }
         .share-btn-submit {
-            grid-column: span 2; background: var(--secondary); color: #fff; padding: 14px; font-weight: 700; cursor: pointer; border: none; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition);
+            grid-column: span 2; background: var(--secondary); color: #fff; padding: 12px; font-weight: 700; cursor: pointer; border: none; border-radius: var(--radius-sm);
         }
 
-        /* REVIEWS SECTION */
         .feedback-section {
             background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(16px); border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.8); padding: 50px 36px; box-shadow: var(--shadow-glass);
+            border: 1px solid rgba(255, 255, 255, 0.8); padding: 40px 30px; box-shadow: var(--shadow-glass);
         }
-        .feedback-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 40px; }
-        .feedback-card { background: rgba(255, 255, 255, 0.8); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
-        .feedback-card h4 { color: var(--secondary); font-size: 1.05rem; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
-        .feedback-card .fb-role { font-size: 0.75rem; color: var(--primary); font-weight: 700; background: rgba(79, 70, 229, 0.08); padding: 3px 10px; border-radius: 6px; }
-        .feedback-card .fb-stars { color: var(--accent); margin-bottom: 10px; font-size: 0.85rem; }
-        .feedback-card p { font-size: 0.92rem; color: var(--text-muted); }
+        .feedback-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .feedback-card { background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
 
-        .feedback-form-box { background: rgba(79, 70, 229, 0.05); padding: 32px; border-radius: var(--radius-md); border: 1px solid rgba(79, 70, 229, 0.15); }
-        .feedback-form-box h3 { color: var(--secondary); margin-bottom: 18px; font-size: 1.25rem; font-weight: 700; }
-        .fb-form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-        .fb-form-grid input, .fb-form-grid select, .feedback-form-box textarea { width: 100%; padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-family: inherit; font-size: 0.92rem; outline: none; background: #fff; }
-        .feedback-form-box textarea { margin-bottom: 14px; }
+        .footer { background: var(--secondary); color: #94a3b8; padding: 60px 24px 24px; margin-top: 80px; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; margin-bottom: 40px; }
+        .footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; font-size: 0.85rem; }
 
-        /* FOOTER */
-        .footer { background: var(--secondary); color: #94a3b8; padding: 75px 24px 28px; margin-top: 90px; }
-        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 60px; }
-        .footer-brand .logo { color: #ffffff; margin-bottom: 18px; }
-        .footer-brand p { font-size: 0.92rem; margin-bottom: 24px; max-width: 320px; }
-        .social-links { display: flex; gap: 12px; }
-        .social-links a { width: 40px; height: 40px; background: rgba(255, 255, 255, 0.08); color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
-        .social-links a:hover { background: var(--primary); transform: translateY(-3px); }
-
-        .footer-links h4 { color: #ffffff; font-size: 1.05rem; margin-bottom: 22px; font-weight: 700; }
-        .footer-links ul { display: flex; flex-direction: column; gap: 14px; }
-        .footer-links a { font-size: 0.92rem; transition: var(--transition); }
-        .footer-links a:hover { color: #ffffff; }
-
-        .footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 28px; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; font-size: 0.88rem; }
-        .creator-tag span { color: #ffffff; font-weight: 700; }
-
-        /* MOBILE RESPONSIVE */
         @media (max-width: 768px) {
             .mobile-toggle { display: block; }
-            .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); padding: 24px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); border-bottom: 1px solid var(--border-color); gap: 18px; }
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); padding: 20px; border-bottom: 1px solid var(--border-color); gap: 14px; }
             .nav-links.active { display: flex !important; }
-            .auth-buttons { display: flex !important; gap: 8px; }
-            .auth-buttons .btn { padding: 8px 14px; font-size: 0.85rem; }
-            .hero h1 { font-size: 2.3rem; }
+            .hero h1 { font-size: 2.2rem; }
             .footer-container { grid-template-columns: 1fr 1fr; }
             .share-form { grid-template-columns: 1fr; }
             .share-form textarea, .share-btn-submit { grid-column: span 1; }
-            .fb-form-grid { grid-template-columns: 1fr; }
-            .share-section, .feedback-section { padding: 30px 20px; }
-        }
-
-        @media (max-width: 480px) {
-            .hero h1 { font-size: 1.85rem; }
-            .search-box { flex-direction: column; background: transparent; box-shadow: none; border: none; padding: 0; }
-            .search-box input { background: #fff; padding: 14px 20px; border-radius: 30px; margin-bottom: 12px; border: 1px solid var(--border-color); }
-            .search-btn { width: 100%; justify-content: center; border-radius: 30px; padding: 14px; }
-            .hero-stats { flex-direction: column; gap: 14px; }
-            .stat-divider { display: none; }
-            .footer-container { grid-template-columns: 1fr; }
-            .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- AMBIENT GLOW ORBS IN BACKGROUND -->
     <div class="hero-orb-1"></div>
     <div class="hero-orb-2"></div>
 
-    <!-- NAVBAR -->
+    <!-- NAVBAR WITH ALL NEW EDUVAULT LINKS -->
     <header class="header">
         <nav class="navbar">
-            <a href="#" class="logo">
+            <a href="index.html" class="logo">
                 <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
                 <span>StudyHub <strong>Pro</strong></span>
             </a>
 
-            <!-- Mobile Hamburger Icon -->
             <div class="mobile-toggle" id="mobileToggle">
                 <i class="fa-solid fa-bars"></i>
             </div>
 
+            <!-- UPDATED NAVBAR WITH ALL NEW PAGES -->
             <ul class="nav-links" id="navLinks">
-                <li><a href="#" class="active"><i class="fa-solid fa-house"></i> Home</a></li>
-                <li><a href="#notes"><i class="fa-solid fa-book-open"></i> Notes</a></li>
-                <li><a href="#categories"><i class="fa-solid fa-layer-group"></i> Classes</a></li>
-                <li><a href="#share"><i class="fa-solid fa-cloud-arrow-up"></i> Share Notes</a></li>
+                <li><a href="index.html" class="active"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="mock-tests.html"><i class="fa-solid fa-vial-circle-check"></i> Mock Tests</a></li>
+                <li><a href="pyq.html"><i class="fa-solid fa-file-signature"></i> PYQs</a></li>
+                <li><a href="one-pagers.html"><i class="fa-solid fa-layer-group"></i> One-Pagers</a></li>
+                <li><a href="scan.html"><i class="fa-solid fa-camera"></i> Scan Notes</a></li>
+                <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="#share"><i class="fa-solid fa-cloud-arrow-up"></i> Share</a></li>
                 <li><a href="#feedback"><i class="fa-solid fa-comments"></i> Reviews</a></li>
             </ul>
 
-            <div class="auth-buttons">
+            <div class="auth-buttons" id="authContainer">
                 <a href="login.html" class="btn btn-outline">Log In</a>
                 <a href="signup.html" class="btn btn-primary">Sign Up</a>
             </div>
@@ -345,53 +256,73 @@
     <!-- HERO SECTION -->
     <section class="hero">
         <div class="hero-container">
-            <!-- FLOATING BADGE (FIXED & FLOATING) -->
             <div class="badge">
-                <i class="fa-solid fa-bolt"></i> #1 Free Study Material Platform
+                <i class="fa-solid fa-bolt"></i> #1 Free AI Study & Mock Test Platform
             </div>
 
-            <h1>Learn <span>Smarter</span>, Score <span>Better</span> 🚀</h1>
-            <p>Access high-quality hand-written notes, chapter-wise PYQs, engineering resources, and solved sample papers — all 100% Free.</p>
+            <h1>Scan Notes, Practice <span style="color:var(--primary);">Mock Tests</span> & Crack Exams 🚀</h1>
+            <p>Access high-quality hand-written notes, AI-generated Mock Tests, NDA Exam prep, PYQs, and One-Pager revision sheets — 100% Free.</p>
 
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" id="heroSearchInput" placeholder="Search Physics, Class 12, Calculus, Chemistry...">
+                <input type="text" id="heroSearchInput" placeholder="Search Physics, Class 12, NDA, Calculus, Mock Tests...">
                 <button class="search-btn">
                     <span>Search</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
 
-            <!-- TRENDING QUICK SEARCH PILLS (NEW DESIGN ADDITION) -->
             <div class="search-pills">
-                <span>🔥 Trending Searches:</span>
+                <span>🔥 Trending:</span>
                 <button type="button" class="pill-btn" onclick="quickSearch('Class 12 Physics')">Class 12 Physics</button>
-                <button type="button" class="pill-btn" onclick="quickSearch('JEE Calculus')">JEE Calculus</button>
-                <button type="button" class="pill-btn" onclick="quickSearch('DBMS')">DBMS Engineering</button>
-                <button type="button" class="pill-btn" onclick="quickSearch('NEET Biology')">NEET Bio</button>
-            </div>
-
-            <!-- GLASS STATS CARD -->
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <h3>50K+</h3>
-                    <p>Active Students</p>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <h3>12,000+</h3>
-                    <p>Verified Notes</p>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <h3>4.9 ★</h3>
-                    <p>Student Rating</p>
-                </div>
+                <button type="button" class="pill-btn" onclick="quickSearch('NDA')">NDA 2025</button>
+                <button type="button" class="pill-btn" onclick="quickSearch('Calculus')">JEE Calculus</button>
+                <button type="button" class="pill-btn" onclick="quickSearch('DBMS')">DBMS B.Tech</button>
             </div>
         </div>
     </section>
 
-    <!-- CATEGORIES SECTION (WITH NO-JUMP INTERACTIVE CLASS SELECTOR) -->
+    <!-- NEW FEATURE HUB CARDS (ALL 5 NEW MODULES VISIBLE HERE) -->
+    <section style="padding:0 24px 50px;">
+        <div class="section-header">
+            <h2>AI-Powered Learning Modules 🚀</h2>
+            <p>Select any tool below to practice mock tests, solve PYQs, or scan handwritten notes</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px;">
+            <a href="scan.html" class="category-card highlight" style="background:linear-gradient(135deg, #4f46e5, #6366f1); color:#fff;">
+                <div class="cat-icon" style="background:rgba(255,255,255,0.2); color:#fff;"><i class="fa-solid fa-camera"></i></div>
+                <h3>1. Scan Notes → AI</h3>
+                <span style="color:rgba(255,255,255,0.85);">Scan notes with camera to generate tests</span>
+            </a>
+
+            <a href="mock-tests.html" class="category-card">
+                <div class="cat-icon"><i class="fa-solid fa-vial-circle-check"></i></div>
+                <h3>2. Mock Test & NDA</h3>
+                <span>Full-screen timed tests & NDA prep</span>
+            </a>
+
+            <a href="pyq.html" class="category-card">
+                <div class="cat-icon"><i class="fa-solid fa-file-signature"></i></div>
+                <h3>3. PYQ Quiz System</h3>
+                <span>Filter PYQs by exam, year & topic</span>
+            </a>
+
+            <a href="one-pagers.html" class="category-card">
+                <div class="cat-icon"><i class="fa-solid fa-layer-group"></i></div>
+                <h3>4. One-Pagers</h3>
+                <span>High-yield formulas & short tricks</span>
+            </a>
+
+            <a href="dashboard.html" class="category-card">
+                <div class="cat-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <h3>5. Student Dashboard</h3>
+                <span>Track test scores & accuracy</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- CATEGORIES SECTION -->
     <section class="categories" id="categories">
         <div class="section-header">
             <h2>Browse By Class & Exam</h2>
@@ -450,15 +381,15 @@
         </div>
 
         <div class="notes-grid">
-            <!-- Dynamically populated and filtered notes -->
+            <!-- Dynamically populated notes -->
         </div>
     </section>
 
-    <!-- DEDICATED STUDENT SHARE NOTES SECTION -->
+    <!-- STUDENT SHARE NOTES SECTION -->
     <section class="share-section" id="share">
         <div class="share-box">
             <h3><i class="fa-solid fa-hand-holding-heart"></i> Share Your Handwritten Notes</h3>
-            <p>Have great notes? Help thousands of students! Submit your PDF link below. Our admin team will review and publish it live on StudyHub Pro.</p>
+            <p>Have great notes? Help thousands of students! Submit your PDF link below.</p>
 
             <form id="publicShareForm" class="share-form">
                 <input type="text" id="studentName" placeholder="Your Full Name" required>
@@ -473,9 +404,9 @@
                     <option value="B.Tech">B.Tech / CS</option>
                     <option value="UPSC">UPSC / Exams</option>
                 </select>
-                <input type="text" id="shareTitle" placeholder="Chapter / Note Title (e.g. Organic Chemistry)" required style="grid-column: span 2;">
+                <input type="text" id="shareTitle" placeholder="Chapter / Note Title" required style="grid-column: span 2;">
                 <input type="text" id="shareLink" placeholder="Google Drive Link / PDF URL" required style="grid-column: span 2;">
-                <textarea id="shareDesc" rows="3" placeholder="Short description of what is included in these notes..." required></textarea>
+                <textarea id="shareDesc" rows="3" placeholder="Short description..." required></textarea>
                 <button type="submit" class="share-btn-submit"><i class="fa-solid fa-paper-plane"></i> Submit Notes for Verification</button>
             </form>
         </div>
@@ -485,12 +416,10 @@
     <section class="feedback-section" id="feedback">
         <div class="section-header">
             <h2>Student Reviews & Feedback</h2>
-            <p>Read what toppers say about StudyHub Pro or leave your own review</p>
+            <p>Read what toppers say about StudyHub Pro or leave your review</p>
         </div>
 
-        <div class="feedback-grid" id="feedbackGrid">
-            <!-- Dynamically rendered feedback cards -->
-        </div>
+        <div class="feedback-grid" id="feedbackGrid"></div>
 
         <div class="feedback-form-box">
             <h3><i class="fa-solid fa-star" style="color:var(--accent);"></i> Leave Your Review & Rating</h3>
@@ -505,18 +434,14 @@
                         <option value="Class 12 Student">Class 12 Student</option>
                         <option value="JEE Aspirant">JEE Aspirant</option>
                         <option value="NEET Aspirant">NEET Aspirant</option>
-                        <option value="B.Tech Student">B.Tech Student</option>
-                        <option value="UPSC Aspirant">UPSC Aspirant</option>
                     </select>
                     <select id="fbRating" required>
                         <option value="5">⭐⭐⭐⭐⭐ (5/5 Excellent)</option>
                         <option value="4">⭐⭐⭐⭐ (4/5 Very Good)</option>
                         <option value="3">⭐⭐⭐ (3/5 Good)</option>
-                        <option value="2">⭐⭐ (2/5 Average)</option>
-                        <option value="1">⭐ (1/5 Poor)</option>
                     </select>
                 </div>
-                <textarea id="fbMessage" rows="3" placeholder="Write your experience or review..." required></textarea>
+                <textarea id="fbMessage" rows="3" placeholder="Write your review..." required></textarea>
                 <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Review Live</button>
             </form>
         </div>
@@ -534,41 +459,40 @@
             </div>
 
             <div class="footer-links">
-                <h4>Quick Links</h4>
+                <h4>Platform Modules</h4>
                 <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#notes">Browse Notes</a></li>
-                    <li><a href="#share">Share Notes</a></li>
-                    <li><a href="#feedback">Student Reviews</a></li>
+                    <li><a href="mock-tests.html">Mock Tests</a></li>
+                    <li><a href="pyq.html">PYQs Practice</a></li>
+                    <li><a href="one-pagers.html">One-Pager Formulas</a></li>
+                    <li><a href="scan.html">Scan Notes → AI</a></li>
                 </ul>
             </div>
 
             <div class="footer-links">
-                <h4>Top Categories</h4>
+                <h4>Top Exams</h4>
                 <ul>
-                    <li><a href="#">JEE Main Notes</a></li>
-                    <li><a href="#">NEET Physics & Bio</a></li>
-                    <li><a href="#">Class 12 Boards</a></li>
-                    <li><a href="#">B.Tech Engineering</a></li>
+                    <li><a href="mock-tests.html">NDA Examination</a></li>
+                    <li><a href="mock-tests.html">JEE Main / Adv</a></li>
+                    <li><a href="mock-tests.html">NEET Prep</a></li>
+                    <li><a href="mock-tests.html">UPSC / SSC</a></li>
                 </ul>
             </div>
 
             <div class="footer-links">
                 <h4>Admin Access</h4>
                 <ul>
-                    <li><a href="admin.html"><i class="fa-solid fa-lock"></i> Admin Portal Login</a></li>
-                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="admin.html"><i class="fa-solid fa-lock"></i> Admin Portal</a></li>
                 </ul>
             </div>
         </div>
 
         <div class="footer-bottom">
-            <p>© 2026 StudyHub Pro. All Rights Reserved.</p>
+            <p>© 2026 StudyHub Pro / EduVault. All Rights Reserved.</p>
             <p class="creator-tag">Crafted with ❤️ by <span>ARVIN</span></p>
         </div>
     </footer>
 
-    <!-- MOBILE MENU TOGGLE SCRIPT -->
+    <!-- MOBILE MENU SCRIPT -->
     <script>
         document.getElementById("mobileToggle")?.addEventListener("click", () => {
             const navLinks = document.getElementById("navLinks");
@@ -581,7 +505,7 @@
         });
     </script>
 
-    <!-- JavaScript Integration -->
     <script src="script.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
