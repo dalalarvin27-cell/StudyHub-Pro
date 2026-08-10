@@ -2,13 +2,11 @@
 const router = express.Router();
 const { verifyToken } = require("../middleware/authMiddleware");
 
-// Safe Case-Insensitive Model Imports for Render Linux
-let TestAttempt, MockTest, Question;
-try { TestAttempt = require("../models/TestAttempt"); } catch(e) { try { TestAttempt = require("../models/testattempt"); } catch(err) { TestAttempt = require("../models/TestAttempt.js"); } }
-try { MockTest = require("../models/MockTest"); } catch(e) { try { MockTest = require("../models/mocktest"); } catch(err) { MockTest = require("../models/MockTest.js"); } }
-try { Question = require("../models/Question"); } catch(e) { try { Question = require("../models/question"); } catch(err) { Question = require("../models/Question.js"); } }
+// Central Safe Models Require
+let models;
+try { models = require("../models"); } catch(e) { models = require("../models/index.js"); }
+const { TestAttempt, MockTest, Question } = models;
 
-// Submit test attempt & calculate analytics
 router.post("/:testId/submit", verifyToken, async (req, res) => {
   try {
     const { answers, timeTakenSeconds } = req.body;
@@ -89,7 +87,6 @@ router.post("/:testId/submit", verifyToken, async (req, res) => {
   }
 });
 
-// Get user attempt analytics
 router.get("/user", verifyToken, async (req, res) => {
   try {
     const attempts = await TestAttempt.find({ userId: req.user.id }).sort({ createdAt: -1 });
@@ -99,7 +96,6 @@ router.get("/user", verifyToken, async (req, res) => {
   }
 });
 
-// Get detailed attempt review
 router.get("/:attemptId/review", verifyToken, async (req, res) => {
   try {
     const attempt = await TestAttempt.findOne({ _id: req.params.attemptId, userId: req.user.id });
