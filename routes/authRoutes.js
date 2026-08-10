@@ -1,8 +1,10 @@
-const express = require("express");
+﻿const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+
+let User;
+try { User = require("../models/User"); } catch(e) { try { User = require("../models/user"); } catch(err) { User = require("../models").User; } }
 
 // Register
 router.post("/signup", async (req, res) => {

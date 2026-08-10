@@ -1,13 +1,15 @@
-const express = require("express");
+﻿const express = require("express");
 const router = express.Router();
 const { verifyAdmin } = require("../middleware/authMiddleware");
 
-const User = require("../models/User");
-const Note = require("../models/Note");
-const MockTest = require("../models/MockTest");
-const Question = require("../models/Question");
-const PYQ = require("../models/PYQ");
-const TestAttempt = require("../models/TestAttempt");
+// Safe Case-Insensitive Model Requirements
+let User, Note, MockTest, Question, PYQ, TestAttempt;
+try { User = require("../models/User"); } catch(e) { try { User = require("../models/user"); } catch(err) { User = require("../models").User; } }
+try { Note = require("../models/Note"); } catch(e) { try { Note = require("../models/note"); } catch(err) { Note = require("../models").Note; } }
+try { MockTest = require("../models/MockTest"); } catch(e) { try { MockTest = require("../models/mocktest"); } catch(err) { MockTest = require("../models").MockTest; } }
+try { Question = require("../models/Question"); } catch(e) { try { Question = require("../models/question"); } catch(err) { Question = require("../models").Question; } }
+try { PYQ = require("../models/PYQ"); } catch(e) { try { PYQ = require("../models/pyq"); } catch(err) { PYQ = require("../models").PYQ; } }
+try { TestAttempt = require("../models/TestAttempt"); } catch(e) { try { TestAttempt = require("../models/testattempt"); } catch(err) { TestAttempt = require("../models").TestAttempt; } }
 
 // Admin Overview Analytics
 router.get("/analytics", verifyAdmin, async (req, res) => {
