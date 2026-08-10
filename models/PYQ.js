@@ -1,28 +1,16 @@
-const mongoose = require("mongoose");
-
-const testAttemptSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  testId: { type: mongoose.Schema.Types.ObjectId, ref: "MockTest", required: true },
-  testTitle: { type: String, required: true },
-  category: { type: String, required: true },
-  score: { type: Number, required: true },
-  totalMarks: { type: Number, required: true },
-  percentage: { type: Number, required: true },
-  correctCount: { type: Number, required: true },
-  incorrectCount: { type: Number, required: true },
-  unansweredCount: { type: Number, required: true },
-  accuracy: { type: Number, required: true },
-  timeTakenSeconds: { type: Number, required: true },
-  answers: [{
-    questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
-    userAnswer: Number,
-    correctAnswer: Number,
-    isCorrect: Boolean,
-    timeSpentSeconds: Number
-  }],
-  subjectPerformance: mongoose.Schema.Types.Mixed,
-  difficultyPerformance: mongoose.Schema.Types.Mixed,
+﻿const mongoose = require("mongoose");
+const pyqSchema = new mongoose.Schema({
+  exam: { type: String, required: true },
+  year: { type: Number, required: true },
+  subject: { type: String, required: true },
+  topic: { type: String, required: true },
+  questionText: { type: String, required: true },
+  options: [{ type: String, required: true }],
+  correctAnswer: { type: Number, required: true },
+  explanation: { type: String, default: "" },
+  difficulty: { type: String, enum: ["Easy", "Medium", "Hard"], default: "Medium" },
+  source: { type: String, default: "Public Domain Official Papers" },
+  reportedCount: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
-
-module.exports = mongoose.model("TestAttempt", testAttemptSchema);
+module.exports = mongoose.models.PYQ || mongoose.model("PYQ", pyqSchema);

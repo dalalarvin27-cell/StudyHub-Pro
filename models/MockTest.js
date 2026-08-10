@@ -1,8 +1,7 @@
-const mongoose = require("mongoose");
-
+﻿const mongoose = require("mongoose");
 const mockTestSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  category: { type: String, required: true }, // NDA, JEE, NEET, SSC, UPSC, CUET, B.Tech, GK, Custom
+  category: { type: String, required: true },
   subject: { type: String, default: "Full Test" },
   description: { type: String },
   totalQuestions: { type: Number, required: true, default: 10 },
@@ -16,5 +15,4 @@ const mockTestSchema = new mongoose.Schema({
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   createdAt: { type: Date, default: Date.now }
 });
-
-module.exports = mongoose.model("MockTest", mockTestSchema);
+module.exports = mongoose.models.MockTest || mongoose.model("MockTest", mockTestSchema);

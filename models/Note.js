@@ -1,8 +1,7 @@
-const mongoose = require("mongoose");
-
+﻿const mongoose = require("mongoose");
 const noteSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  category: { type: String, required: true }, // e.g. "Class 12 • Physics", "NDA • GAT"
+  category: { type: String, required: true },
   subject: { type: String, required: true },
   description: { type: String },
   fileUrl: { type: String, required: true },
@@ -13,5 +12,4 @@ const noteSchema = new mongoose.Schema({
   rating: { type: Number, default: 4.9 },
   createdAt: { type: Date, default: Date.now }
 });
-
-module.exports = mongoose.model("Note", noteSchema);
+module.exports = mongoose.models.Note || mongoose.model("Note", noteSchema);
