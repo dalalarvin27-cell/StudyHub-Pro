@@ -13,7 +13,7 @@
 </head>
 <body>
 
-    <!-- NAVBAR WITH AUTH PROFILE AVATAR CONTAINER -->
+    <!-- NAVBAR -->
     <header class="header">
         <nav class="navbar">
             <a href="index.html" class="logo">
@@ -42,11 +42,18 @@
     </header>
 
     <main style="max-width:950px; margin:40px auto; padding:0 24px;">
-        <!-- MAIN SCAN / UPLOAD CARD -->
+        <!-- MAIN SCAN / UPLOAD CARD WITH SIZE WARNING BADGE -->
         <div class="glass-panel" style="padding:36px; text-align:center;">
             <i class="fa-solid fa-camera-retro" style="font-size:3rem; color:var(--primary); margin-bottom:16px;"></i>
             <h2>Scan Photos or Upload PDF Notes ➔ Custom Test Series 📸📄</h2>
-            <p style="color:var(--text-muted); margin-bottom:28px;">Capture handwritten pages using phone camera or upload PDF files to generate a custom timed Test Series.</p>
+            <p style="color:var(--text-muted); margin-bottom:16px;">Capture handwritten pages using phone camera or upload PDF files to generate a custom timed Test Series.</p>
+
+            <!-- FILE SIZE WARNING BADGE -->
+            <div style="margin-bottom:24px;">
+                <span style="background:rgba(245, 158, 11, 0.1); color:#d97706; padding:6px 16px; border-radius:20px; font-size:0.82rem; font-weight:700; border:1px solid rgba(245, 158, 11, 0.3);">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Max Allowed File Size: 4.5 MB per file
+                </span>
+            </div>
 
             <form id="scanUploadForm" style="display:flex; flex-direction:column; gap:20px; align-items:center;">
                 <!-- Accept both Camera Photos and PDF Documents -->
@@ -187,19 +194,44 @@
     <script>
         let selectedFiles = [];
         let currentScanDoc = null;
+        const MAX_FILE_SIZE_BYTES = 4.5 * 1024 * 1024; // 4.5 MB Limit
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' Bytes';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+            else return (bytes / 1048576).toFixed(2) + ' MB';
+        }
 
         function handleFileSelect(e) {
-            selectedFiles = Array.from(e.target.files);
-            const grid = document.getElementById("imagePreviewGrid");
+            const files = Array.from(e.target.files);
             const status = document.getElementById("fileSelectionStatus");
+            const grid = document.getElementById("imagePreviewGrid");
+
+            // 1. CLIENT-SIDE 4.5 MB FILE SIZE VALIDATION
+            for (let f of files) {
+                if (f.size > MAX_FILE_SIZE_BYTES) {
+                    alert(`⚠️ File "${f.name}" (${formatFileSize(f.size)}) exceeds the 4.5 MB limit!\n\nPlease upload a file smaller than 4.5 MB for fast OCR processing.`);
+                    e.target.value = ""; // Clear file input
+                    selectedFiles = [];
+                    status.innerText = "❌ Upload cancelled: File size exceeds 4.5 MB limit.";
+                    grid.innerHTML = "";
+                    document.getElementById("btnRunOCR").style.display = "none";
+                    return;
+                }
+            }
+
+            selectedFiles = files;
             
             if (selectedFiles.length > 0) {
-                status.innerText = `Selected ${selectedFiles.length} file(s) for scanning.`;
+                const totalSizeFormatted = formatFileSize(selectedFiles.reduce((acc, f) => acc + f.size, 0));
+                status.innerText = `Selected ${selectedFiles.length} file(s) (${totalSizeFormatted}) — Ready for OCR`;
+                
                 grid.innerHTML = selectedFiles.map(f => {
+                    const sizeStr = formatFileSize(f.size);
                     if (f.type.includes("pdf")) {
-                        return `<div style="padding:14px; background:#eef2ff; border-radius:10px; font-weight:700; color:#4f46e5; border:1px solid #c7d2fe;"><i class="fa-solid fa-file-pdf" style="font-size:1.8rem; margin-bottom:4px;"></i><br>${f.name}</div>`;
+                        return `<div style="padding:14px 18px; background:#eef2ff; border-radius:12px; font-weight:700; color:#4f46e5; border:1px solid #c7d2fe; text-align:center;"><i class="fa-solid fa-file-pdf" style="font-size:2rem; margin-bottom:4px;"></i><br>${f.name}<br><small style="color:#64748b; font-size:0.75rem;">${sizeStr}</small></div>`;
                     } else {
-                        return `<img src="${URL.createObjectURL(f)}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--primary);">`;
+                        return `<div style="text-align:center;"><img src="${URL.createObjectURL(f)}" style="width:85px; height:85px; object-fit:cover; border-radius:10px; border:2px solid var(--primary); display:block; margin-bottom:4px;"><small style="color:#64748b; font-size:0.75rem; font-weight:700;">${sizeStr}</small></div>`;
                     }
                 }).join("");
 
@@ -212,17 +244,6 @@
             
             let user = JSON.parse(localStorage.getItem("eduvault_user")) || JSON.parse(localStorage.getItem("studyhub_user"));
             let token = localStorage.getItem("eduvault_token");
-
-            // Prompt Google Login if not logged in
-            if (!user) {
-                if (typeof handleGoogleLogin === "function") {
-                    handleGoogleLogin();
-                } else {
-                    alert("Test generate karne ke liye Login zaroori hai.");
-                    window.location.href = "login.html";
-                }
-                return;
-            }
 
             if (selectedFiles.length === 0) return alert("Pehle camera se photo khinchein ya PDF select karein.");
 
@@ -255,15 +276,6 @@
         async function launchCustomScannedTestSeries() {
             let user = JSON.parse(localStorage.getItem("eduvault_user")) || JSON.parse(localStorage.getItem("studyhub_user"));
             let token = localStorage.getItem("eduvault_token");
-
-            if (!user) {
-                if (typeof handleGoogleLogin === "function") {
-                    handleGoogleLogin();
-                } else {
-                    window.location.href = "login.html";
-                }
-                return;
-            }
 
             if (!currentScanDoc) return alert("Pehle photos ya PDF upload karke OCR scan karein.");
 
