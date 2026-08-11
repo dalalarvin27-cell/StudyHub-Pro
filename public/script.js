@@ -668,3 +668,138 @@ window.openHomepageScanModal = function() {
     `;
     document.body.insertAdjacentHTML("beforeend", modalHTML);
 };
+function initAdminPanel() {
+    const uploadForm = document.getElementById("adminUploadForm");
+    const testForm = document.getElementById("adminCreateTestForm");
+    const adminNotesList = document.getElementById("adminNotesList");
+    const adminPendingList = document.getElementById("adminPendingList");
+    const adminFeedbackList = document.getElementById("adminFeedbackList");
+    const adminDownloadLogsList = document.getElementById("adminDownloadLogsList");
+
+    if (!uploadForm && !testForm) return;
+    if (typeof updateAdminSubjects === "function") updateAdminSubjects();
+
+    function renderAdminLists() {
+        const customNotes = getCustomNotes();
+        const pendingNotes = getPendingNotes();
+        const feedbacks = getFeedbacks();
+        const downloadLogs = getDownloadLogs();
+
+        // 1. Download Logs ("Kisne Kya Download Kiya")
+        if (adminDownloadLogsList) {
+            adminDownloadLogsList.innerHTML = downloadLogs.length === 0 ? '<p style="color:#64748b; font-size:0.85rem;">No download activities logged yet.</p>' :
+                downloadLogs.slice(0, 15).map(log => `
+                    <div style="display:flex; flex-direction:column; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <strong style="font-size:0.85rem; color:#0f172a;"><i class="fa-solid fa-circle-user" style="color:#4f46e5;"></i> ${log.userName} (${log.userEmail})</strong>
+                            <small style="color:#64748b; font-size:0.75rem;">${log.time}</small>
+                        </div>
+                        <div style="font-size:0.82rem; color:#1e293b; margin-top:2px;">
+                            Downloaded: <span style="font-weight:700; color:#4f46e5;">${log.noteTitle}</span> <small>(${log.category})</small>
+                        </div>
+                    </div>
+                `).join("");
+        }
+
+        // 2. Feedbacks List & Delete
+        if (adminFeedbackList) {
+            adminFeedbackList.innerHTML = feedbacks.length === 0 ? '<p style="color:#64748b; font-size:0.85rem;">No student feedbacks yet.</p>' :
+                feedbacks.map(fb => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="font-size:0.9rem;">${fb.name} (${fb.role}) - ${fb.rating}★</strong>
+                            <p style="font-size:0.8rem; color:#64748b; margin:0;">"${fb.message}"</p>
+                        </div>
+                        <button onclick="deleteFeedback(${fb.id})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `).join("");
+        }
+
+        // 3. Live Notes List & Delete
+        if (adminNotesList) {
+            adminNotesList.innerHTML = customNotes.length === 0 ? '<p style="color:#64748b; font-size:0.85rem;">No custom notes live.</p>' :
+                customNotes.map(note => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="font-size:0.9rem;">${note.title}</strong><br>
+                            <small style="color:#4f46e5; font-weight:600;">${note.category}</small>
+                        </div>
+                        <button onclick="deleteNote(${note.id})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </div>
+                `).join("");
+        }
+
+        // 4. Pending Student Submissions & Approve
+        if (adminPendingList) {
+            adminPendingList.innerHTML = pendingNotes.length === 0 ? '<p style="color:#64748b; font-size:0.85rem;">No pending student submissions.</p>' :
+                pendingNotes.map(note => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:8px;">
+                        <div>
+                            <strong style="font-size:0.9rem;">${note.title}</strong> (By: ${note.studentName})<br>
+                            <small style="color:#4f46e5; font-weight:600;">${note.category}</small>
+                            <p style="font-size:0.8rem; color:#64748b; margin:0;">${note.desc}</p>
+                        </div>
+                        <div>
+                            <button onclick="approveNote(${note.id})" style="background:#10b981; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; margin-right:4px;"><i class="fa-solid fa-check"></i> Approve</button>
+                            <button onclick="deletePendingNote(${note.id})" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                `).join("");
+        }
+    }
+
+    renderAdminLists();
+
+    // Direct Notes Upload Handler
+    uploadForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const noteClass = document.getElementById("noteClass").value;
+        const noteSubject = document.getElementById("noteSubject").value;
+
+        const newNote = {
+            id: Date.now(),
+            title: document.getElementById("noteTitle").value,
+            category: `${noteClass} • ${noteSubject}`,
+            desc: document.getElementById("noteDesc").value,
+            link: document.getElementById("noteLink").value,
+            downloads: "1.0k",
+            rating: "5.0"
+        };
+
+        const currentNotes = getCustomNotes();
+        currentNotes.unshift(newNote);
+        localStorage.setItem("studyhub_custom_notes", JSON.stringify(currentNotes));
+
+        alert("🎉 Note Published Live!");
+        uploadForm.reset();
+        renderAdminLists();
+    });
+
+    // Create Mock Test Series Handler
+    testForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("eduvault_token");
+        const title = document.getElementById("adminTestTitle").value;
+        const category = document.getElementById("adminTestCategory").value;
+        const durationMinutes = Number(document.getElementById("adminTestDuration").value);
+        const totalMarks = Number(document.getElementById("adminTestMarks").value);
+        const description = document.getElementById("adminTestDesc").value;
+
+        try {
+            const res = await fetch("/api/admin/mock-test", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ title, category, subject: category, durationMinutes, totalMarks, description })
+            });
+            const data = await res.json();
+            alert("🎉 Mock Test Series Created Successfully!");
+            testForm.reset();
+        } catch(err) {
+            alert("Test created locally.");
+            testForm.reset();
+        }
+    });
+}

@@ -3,89 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | EduVault</title>
+    <title>Admin Portal | EduVault & StudyHub Pro</title>
+    
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #0f172a;
+            --bg-main: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --radius-md: 16px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg-main); color: var(--text-main); }
+        
+        .header { background: rgba(255,255,255,0.85); backdrop-filter:blur(16px); border-bottom:1px solid var(--border-color); padding:16px 24px; position:sticky; top:0; z-index:1000; }
+        .navbar { max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; }
+        .logo { font-size:1.25rem; font-weight:800; color:var(--secondary); text-decoration:none; display:flex; align-items:center; gap:10px; }
+        
+        .btn { padding:10px 18px; border-radius:8px; font-weight:600; cursor:pointer; text-decoration:none; border:none; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s; }
+        .btn-primary { background:var(--primary); color:#fff; }
+        .btn-primary:hover { background:var(--primary-hover); }
+        .btn-outline { border:1px solid var(--border-color); color:var(--text-main); background:#fff; }
+
+        .admin-grid { max-width:1200px; margin:36px auto; padding:0 24px; display:grid; grid-template-columns:1fr 1.5fr; gap:28px; }
+        .card { background:#fff; padding:28px; border-radius:var(--radius-md); border:1px solid var(--border-color); box-shadow:0 4px 20px rgba(0,0,0,0.03); margin-bottom:28px; }
+        .card h2 { font-size:1.3rem; margin-bottom:6px; color:var(--secondary); font-weight:700; }
+        .card p { font-size:0.85rem; color:var(--text-muted); margin-bottom:20px; }
+
+        .input-group { margin-bottom:16px; display:flex; flex-direction:column; gap:6px; }
+        .input-group label { font-size:0.85rem; font-weight:700; color:var(--text-main); }
+        .input-group input, .input-group select, .input-group textarea { padding:12px; border:1px solid var(--border-color); border-radius:8px; font-size:0.9rem; font-family:inherit; outline:none; background:#fff; }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color:var(--primary); }
+
+        .list-item { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; background:#f8fafc; border:1px solid var(--border-color); border-radius:10px; margin-bottom:10px; }
+        .btn-approve { background:#10b981; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:700; }
+        .btn-del { background:#ef4444; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:700; }
+
+        @media (max-width: 900px) { .admin-grid { grid-template-columns:1fr; } }
+    </style>
 </head>
 <body>
 
+    <!-- NAVBAR -->
     <header class="header">
-        <nav class="navbar">
-            <a href="index.html" class="logo"><i class="fa-solid fa-user-shield"></i> EduVault Admin Control</a>
-            <a href="index.html" class="btn btn-outline"><i class="fa-solid fa-globe"></i> Public Portal</a>
-        </nav>
+        <div class="navbar">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-user-shield" style="color:var(--primary);"></i>
+                <span>StudyHub <strong>Admin Portal</strong></span>
+            </a>
+            <a href="index.html" class="btn btn-outline"><i class="fa-solid fa-globe"></i> View Live Website</a>
+        </div>
     </header>
 
-    <main style="max-width:1200px; margin:40px auto; padding:0 24px;">
-        <div style="display:grid; grid-template-columns:1fr 1.5fr; gap:30px; align-items:start;">
-            
-            <!-- CREATE MOCK TEST FORM -->
-            <div class="glass-panel" style="padding:28px;">
-                <h3><i class="fa-solid fa-plus-circle"></i> Create New Mock Test</h3>
-                <form id="adminCreateTestForm" style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
-                    <input type="text" id="testTitle" placeholder="Test Title (e.g. NDA GAT Mock Test 2026)" required class="btn btn-outline" style="text-align:left;">
-                    
-                    <select id="testCategory" class="btn btn-outline" style="text-align:left;">
-                        <option value="NDA">NDA</option>
-                        <option value="JEE">JEE</option>
-                        <option value="NEET">NEET</option>
-                        <option value="UPSC">UPSC</option>
-                        <option value="SSC">SSC</option>
-                    </select>
+    <main class="admin-grid">
+        
+        <!-- LEFT COLUMN: FORMS -->
+        <div>
+            <!-- 1. DIRECT NOTES UPLOADER -->
+            <div class="card">
+                <h2><i class="fa-solid fa-cloud-arrow-up" style="color:var(--primary);"></i> 1. Direct Notes Uploader</h2>
+                <p>Publish verified notes directly to live homepage.</p>
 
-                    <input type="number" id="testDuration" placeholder="Duration (Minutes)" value="30" required class="btn btn-outline" style="text-align:left;">
-                    <input type="number" id="testMarks" placeholder="Total Marks" value="100" required class="btn btn-outline" style="text-align:left;">
-                    
-                    <textarea id="testDescription" rows="3" placeholder="Description & Instructions" class="btn btn-outline" style="text-align:left;"></textarea>
+                <form id="adminUploadForm">
+                    <div class="input-group">
+                        <label>Target Class / Category</label>
+                        <select id="noteClass" required onchange="updateAdminSubjects()">
+                            <option value="Class 9">Class 9</option>
+                            <option value="Class 10">Class 10</option>
+                            <option value="Class 11">Class 11</option>
+                            <option value="Class 12">Class 12</option>
+                            <option value="JEE">JEE Main/Adv</option>
+                            <option value="NEET">NEET Prep</option>
+                            <option value="B.Tech">B.Tech / CS</option>
+                            <option value="UPSC">UPSC / Exams</option>
+                        </select>
+                    </div>
 
-                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-upload"></i> Create Test Live</button>
+                    <div class="input-group">
+                        <label>Select Subject</label>
+                        <select id="noteSubject" required></select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Chapter / Note Title</label>
+                        <input type="text" id="noteTitle" placeholder="e.g. Electrostatics Formula Sheet" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Short Description</label>
+                        <textarea id="noteDesc" rows="3" placeholder="Brief summary of notes..." required></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>PDF Link / Google Drive URL</label>
+                        <input type="text" id="noteLink" placeholder="https://drive.google.com/..." required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;">
+                        <i class="fa-solid fa-upload"></i> Publish Note Live
+                    </button>
                 </form>
             </div>
 
-            <!-- ANALYTICS STATS OVERVIEW -->
-            <div style="display:flex; flex-direction:column; gap:24px;">
-                <div class="glass-card">
-                    <h3>Platform Overview Statistics</h3>
-                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:16px; text-align:center;">
-                        <div style="background:var(--primary-light); padding:16px; border-radius:10px;">
-                            <h4 id="statUsers">--</h4>
-                            <small>Students</small>
+            <!-- 2. CREATE MOCK TEST SERIES FORM -->
+            <div class="card">
+                <h2><i class="fa-solid fa-vial-circle-check" style="color:var(--primary);"></i> 2. Create Mock Test Series</h2>
+                <p>Create new timed mock tests for NDA, JEE, NEET, SSC, or UPSC.</p>
+
+                <form id="adminCreateTestForm">
+                    <div class="input-group">
+                        <label>Test Title</label>
+                        <input type="text" id="adminTestTitle" placeholder="e.g. NDA GAT Full Practice Test 2026" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Exam Category</label>
+                        <select id="adminTestCategory" required>
+                            <option value="NDA">NDA</option>
+                            <option value="JEE">JEE</option>
+                            <option value="NEET">NEET</option>
+                            <option value="SSC">SSC</option>
+                            <option value="UPSC">UPSC</option>
+                            <option value="CUET">CUET</option>
+                            <option value="B.Tech">B.Tech / CS</option>
+                        </select>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="input-group">
+                            <label>Duration (Minutes)</label>
+                            <input type="number" id="adminTestDuration" value="15" min="5" max="200" required>
                         </div>
-                        <div style="background:var(--primary-light); padding:16px; border-radius:10px;">
-                            <h4 id="statTests">--</h4>
-                            <small>Mock Tests</small>
-                        </div>
-                        <div style="background:var(--primary-light); padding:16px; border-radius:10px;">
-                            <h4 id="statAttempts">--</h4>
-                            <small>Attempts</small>
+                        <div class="input-group">
+                            <label>Total Marks</label>
+                            <input type="number" id="adminTestMarks" value="40" required>
                         </div>
                     </div>
-                </div>
+
+                    <div class="input-group">
+                        <label>Description & Instructions</label>
+                        <textarea id="adminTestDesc" rows="2" placeholder="Instructions for students..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;">
+                        <i class="fa-solid fa-plus-circle"></i> Create Test Series Live
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: TRACKERS, REVIEWS & MANAGERS -->
+        <div>
+            <!-- 3. DOWNLOAD ACTIVITY TRACKER ("KISNE KYA DOWNLOAD KIYA") -->
+            <div class="card" style="border:2px solid var(--primary);">
+                <h2><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> 3. Download Activity Tracker</h2>
+                <p>Real-time log of which student downloaded which note and when.</p>
+                <div id="adminDownloadLogsList"></div>
+                <button onclick="clearDownloadLogs()" class="btn btn-outline" style="margin-top:10px; font-size:0.75rem; color:#ef4444;"><i class="fa-solid fa-trash"></i> Clear Download Activity Logs</button>
             </div>
 
+            <!-- 4. STUDENT FEEDBACKS & REVIEWS MODERATOR -->
+            <div class="card">
+                <h2><i class="fa-solid fa-comments" style="color:var(--primary);"></i> 4. Student Reviews & Feedbacks</h2>
+                <p>Read student ratings & delete fake or inappropriate reviews.</p>
+                <div id="adminFeedbackList"></div>
+            </div>
+
+            <!-- 5. PENDING STUDENT SUBMISSIONS QUEUE -->
+            <div class="card">
+                <h2><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary);"></i> 5. Pending Student Submissions</h2>
+                <p>Notes submitted by students waiting for Admin Approval.</p>
+                <div id="adminPendingList"></div>
+            </div>
+
+            <!-- 6. LIVE PUBLISHED NOTES MANAGEMENT -->
+            <div class="card">
+                <h2><i class="fa-solid fa-list-check" style="color:var(--primary);"></i> 6. Live Published Notes</h2>
+                <p>List of all live notes published on website.</p>
+                <div id="adminNotesList"></div>
+            </div>
         </div>
+
     </main>
 
+    <!-- SCRIPTS -->
+    <script src="script.js"></script>
     <script src="js/app.js"></script>
-    <script>
-        async function loadAdminAnalytics() {
-          const token = localStorage.getItem("eduvault_token");
-          if (!token) return;
-
-          try {
-            const res = await fetch("/api/admin/analytics", {
-              headers: { "Authorization": `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (data.stats) {
-              document.getElementById("statUsers").innerText = data.stats.totalUsers;
-              document.getElementById("statTests").innerText = data.stats.totalMockTests;
-              document.getElementById("statAttempts").innerText = data.stats.totalAttempts;
-            }
-          } catch(e) {}
-        }
-        document.addEventListener("DOMContentLoaded", loadAdminAnalytics);
-    </script>
 </body>
 </html>
