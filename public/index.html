@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduVault | AI Study Platform & Smart Notes</title>
+    <title>StudyHub Pro | Smart Notes & PYQs Platform</title>
 
     <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -222,7 +222,7 @@
     <div class="hero-orb-1"></div>
     <div class="hero-orb-2"></div>
 
-    <!-- NAVBAR WITH ALL NEW EDUVAULT LINKS -->
+    <!-- NAVBAR WITH INSTANT SCAN MODAL TRIGGER -->
     <header class="header">
         <nav class="navbar">
             <a href="index.html" class="logo">
@@ -234,13 +234,13 @@
                 <i class="fa-solid fa-bars"></i>
             </div>
 
-            <!-- UPDATED NAVBAR WITH ALL NEW PAGES -->
             <ul class="nav-links" id="navLinks">
                 <li><a href="index.html" class="active"><i class="fa-solid fa-house"></i> Home</a></li>
                 <li><a href="mock-tests.html"><i class="fa-solid fa-vial-circle-check"></i> Mock Tests</a></li>
                 <li><a href="pyq.html"><i class="fa-solid fa-file-signature"></i> PYQs</a></li>
                 <li><a href="one-pagers.html"><i class="fa-solid fa-layer-group"></i> One-Pagers</a></li>
-                <li><a href="scan.html"><i class="fa-solid fa-camera"></i> Scan Notes</a></li>
+                <!-- Direct Instant Camera/PDF Scan Modal Trigger -->
+                <li><a href="javascript:void(0)" onclick="openHomepageScanModal()"><i class="fa-solid fa-camera"></i> Scan Notes</a></li>
                 <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
                 <li><a href="#share"><i class="fa-solid fa-cloud-arrow-up"></i> Share</a></li>
                 <li><a href="#feedback"><i class="fa-solid fa-comments"></i> Reviews</a></li>
@@ -282,7 +282,7 @@
         </div>
     </section>
 
-    <!-- NEW FEATURE HUB CARDS (ALL 5 NEW MODULES VISIBLE HERE) -->
+    <!-- NEW FEATURE HUB CARDS (TAP 1 TO OPEN INSTANT CAMERA/PDF SCANNER MODAL) -->
     <section style="padding:0 24px 50px;">
         <div class="section-header">
             <h2>AI-Powered Learning Modules 🚀</h2>
@@ -290,11 +290,12 @@
         </div>
 
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px;">
-            <a href="scan.html" class="category-card highlight" style="background:linear-gradient(135deg, #4f46e5, #6366f1); color:#fff;">
+            <!-- Instant Camera Scan Trigger (No Page Jumps or Scrolling needed!) -->
+            <div onclick="openHomepageScanModal()" class="category-card highlight" style="background:linear-gradient(135deg, #4f46e5, #6366f1); color:#fff; cursor:pointer;">
                 <div class="cat-icon" style="background:rgba(255,255,255,0.2); color:#fff;"><i class="fa-solid fa-camera"></i></div>
-                <h3>1. Scan Notes → AI</h3>
-                <span style="color:rgba(255,255,255,0.85);">Scan notes with camera to generate tests</span>
-            </a>
+                <h3>1. Scan Notes → AI 📸</h3>
+                <span style="color:rgba(255,255,255,0.85);">Tap to open camera/PDF scanner instantly</span>
+            </div>
 
             <a href="mock-tests.html" class="category-card">
                 <div class="cat-icon"><i class="fa-solid fa-vial-circle-check"></i></div>
@@ -464,7 +465,7 @@
                     <li><a href="mock-tests.html">Mock Tests</a></li>
                     <li><a href="pyq.html">PYQs Practice</a></li>
                     <li><a href="one-pagers.html">One-Pager Formulas</a></li>
-                    <li><a href="scan.html">Scan Notes → AI</a></li>
+                    <li><a href="javascript:void(0)" onclick="openHomepageScanModal()">Scan Notes → AI</a></li>
                 </ul>
             </div>
 

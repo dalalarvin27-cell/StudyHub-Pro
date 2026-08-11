@@ -624,3 +624,27 @@ function initNoteModal() {
     document.getElementById("closeModal")?.addEventListener("click", () => modal.style.display = "none");
     modal?.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
 }
+/* INSTANT HOMEPAGE CAMERA SCAN MODAL TRIGGER */
+window.openHomepageScanModal = function() {
+    const existingModal = document.getElementById("homepageScanModal");
+    if (existingModal) existingModal.remove();
+
+    const modalHTML = `
+        <div id="homepageScanModal" style="display:flex; position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(10px); z-index:3500; align-items:center; justify-content:center; padding:20px; animation:fadeIn 0.3s ease;">
+            <div style="background:#ffffff; width:100%; max-width:550px; border-radius:24px; padding:32px 28px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.8); text-align:center;">
+                <button onclick="document.getElementById('homepageScanModal').remove()" style="position:absolute; top:20px; right:20px; background:none; border:none; font-size:1.6rem; color:#64748b; cursor:pointer;">&times;</button>
+                
+                <i class="fa-solid fa-camera-retro" style="font-size:3rem; color:#4f46e5; margin-bottom:12px;"></i>
+                <h3 style="font-size:1.5rem; color:#0f172a; font-weight:800; margin-bottom:8px;">Scan Notes or Upload PDF 📸📄</h3>
+                <p style="color:#64748b; font-size:0.9rem; margin-bottom:24px;">Capture photos using phone camera or select a PDF notes file from your phone/laptop to generate instant Test Series.</p>
+
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <a href="scan.html" class="btn btn-primary" style="padding:14px; font-size:1rem; border-radius:30px; justify-content:center; text-decoration:none;">
+                        <i class="fa-solid fa-camera"></i> Open Phone Camera / PDF Scanner Studio 🚀
+                    </a>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", modalHTML);
+};
