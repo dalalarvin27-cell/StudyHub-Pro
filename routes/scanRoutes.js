@@ -23,7 +23,6 @@ const { generateQuizFromNotes } = require("../services/quizGenerator");
 const { generateMockTestFromNotes } = require("../services/mockTestGenerator");
 const { generateOnePagerFromNotes } = require("../services/notesGenerator");
 
-// 1. Upload Document & Extract Text
 router.post("/upload", verifyToken, upload.array("images", 10), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
@@ -34,10 +33,7 @@ router.post("/upload", verifyToken, upload.array("images", 10), async (req, res)
     const extractResult = await extractTextFromFile(file.path, file.mimetype, file.originalname);
 
     if (!extractResult.success) {
-      return res.status(400).json({
-        success: false,
-        message: extractResult.error
-      });
+      return res.status(400).json({ success: false, message: extractResult.error });
     }
 
     const imageUrls = req.files.map(f => `/uploads/${f.filename}`);
@@ -53,21 +49,12 @@ router.post("/upload", verifyToken, upload.array("images", 10), async (req, res)
 
     await scanDoc.save();
 
-    res.json({
-      success: true,
-      message: "Text Extracted Successfully",
-      scanDoc
-    });
+    res.json({ success: true, message: "Text Extracted Successfully", scanDoc });
   } catch (err) {
-    console.error("[QUIZ] Scan Upload Route Error:", err);
-    res.status(500).json({
-      success: false,
-      message: err.message || "Failed to process document."
-    });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// 2. Generate Custom Timed Mock Test
 router.post("/:id/generate-test", verifyToken, aiRateLimiter, async (req, res) => {
   try {
     const scanDoc = await ScanDocument.findOne({ _id: req.params.id, userId: req.user.id });
@@ -81,7 +68,7 @@ router.post("/:id/generate-test", verifyToken, aiRateLimiter, async (req, res) =
       questionsCount,
       difficulty,
       durationMinutes,
-      title: `Mock Test: ${scanDoc.title}`
+      title: scanDoc.title
     };
 
     const mockData = await generateMockTestFromNotes(scanDoc.cleanText, config);
@@ -90,7 +77,7 @@ router.post("/:id/generate-test", verifyToken, aiRateLimiter, async (req, res) =
       title: mockData.title,
       category: "Custom Tests",
       subject: "Scanned Notes / PDF",
-      description: "AI-Generated Test derived strictly from your uploaded notes.",
+      description: `AI-Generated Test (${difficulty} Difficulty) derived from your uploaded notes.`,
       totalQuestions: mockData.questions.length,
       totalMarks: mockData.totalMarks,
       durationMinutes: durationMinutes,
@@ -113,19 +100,17 @@ router.post("/:id/generate-test", verifyToken, aiRateLimiter, async (req, res) =
 
     res.json({ success: true, message: "Mock test generated from notes", testId: test._id });
   } catch (err) {
-    console.error("[QUIZ] Generate Test Error:", err.message);
-    res.status(400).json({ success: false, message: err.message || "Failed to generate mock test." });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
-// 3. Generate MCQ Quiz
 router.post("/:id/generate-quiz", verifyToken, aiRateLimiter, async (req, res) => {
   try {
     const scanDoc = await ScanDocument.findOne({ _id: req.params.id, userId: req.user.id });
     if (!scanDoc) return res.status(404).json({ success: false, message: "Scanned document not found." });
 
     const questionsCount = Number(req.body.questionsCount) || 10;
-    const questions = await generateQuizFromNotes(scanDoc.cleanText, { questionsCount });
+    const questions = await generateQuizFromNotes(scanDoc.cleanText, { questionsCount, title: scanDoc.title });
 
     const generated = new GeneratedQuiz({
       userId: req.user.id,
@@ -138,12 +123,10 @@ router.post("/:id/generate-quiz", verifyToken, aiRateLimiter, async (req, res) =
     await generated.save();
     res.json({ success: true, quiz: generated });
   } catch (err) {
-    console.error("[QUIZ] Generate Quiz Error:", err.message);
-    res.status(400).json({ success: false, message: err.message || "Failed to generate quiz." });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
-// 4. Generate One-Pager
 router.post("/:id/generate-one-pager", verifyToken, aiRateLimiter, async (req, res) => {
   try {
     const scanDoc = await ScanDocument.findOne({ _id: req.params.id, userId: req.user.id });
@@ -152,12 +135,10 @@ router.post("/:id/generate-one-pager", verifyToken, aiRateLimiter, async (req, r
     const onePagerData = await generateOnePagerFromNotes(scanDoc.cleanText, scanDoc.title);
     res.json({ success: true, onePager: onePagerData });
   } catch (err) {
-    console.error("[QUIZ] Generate One-Pager Error:", err.message);
-    res.status(400).json({ success: false, message: err.message || "Failed to generate one-pager." });
+    res.status(400).json({ success: false, message: err.message });
   }
 });
 
-// 5. Scan History
 router.get("/history", verifyToken, async (req, res) => {
   try {
     const scans = await ScanDocument.find({ userId: req.user.id }).sort({ createdAt: -1 });
