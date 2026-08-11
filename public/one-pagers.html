@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-Pager Revision Notes & Formulas | EduVault</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- HTML2PDF CDN FOR 1-CLICK PDF DOWNLOAD -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <header class="header">
+        <nav class="navbar">
+            <a href="index.html" class="logo"><i class="fa-solid fa-vault"></i> EduVault</a>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="mock-tests.html"><i class="fa-solid fa-vial-circle-check"></i> Mock Tests</a></li>
+                <li><a href="pyq.html"><i class="fa-solid fa-file-signature"></i> PYQs</a></li>
+                <li><a href="one-pagers.html" class="active"><i class="fa-solid fa-layer-group"></i> One-Pagers</a></li>
+                <li><a href="scan.html"><i class="fa-solid fa-camera"></i> Scan Notes</a></li>
+                <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            </ul>
+            <div id="authContainer"></div>
+        </nav>
+    </header>
+
+    <main style="max-width:1200px; margin:40px auto; padding:0 24px;">
+        <h2 style="margin-bottom:8px;">High-Yield One-Pager Revision Sheets ⚡</h2>
+        <p style="color:var(--text-muted); margin-bottom:32px;">Formula sheets, short tricks, key points & mnemonics optimized for rapid exam revision.</p>
+
+        <div id="onePagersGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); gap:24px;"></div>
+    </main>
+
+    <script src="js/app.js"></script>
+    <script>
+        async function loadOnePagers() {
+          const grid = document.getElementById("onePagersGrid");
+          try {
+            const res = await fetch("/api/one-pagers");
+            const data = await res.json();
+            
+            const items = (data.onePagers && data.onePagers.length > 0) ? data.onePagers : [
+              {
+                title: "Class 12 Physics Formula Sheet",
+                subject: "Physics",
+                topic: "Electrostatics & Magnetism",
+                keyPoints: ["Coulomb Law: F = k*q1*q2/r^2", "Gauss Theorem: Flux = Q/e0", "Capacitance: C = Q/V"],
+                formulas: [{ name: "Electric Field", formula: "E = F / q" }],
+                mnemonics: [{ title: "Right Hand Rule", trick: "Thumb = Current, Fingers = Magnetic Field" }]
+              },
+              {
+                title: "NDA Mathematics Integration Shortcuts",
+                subject: "Mathematics",
+                topic: "Calculus",
+                keyPoints: ["d/dx (sin x) = cos x", "Integration by parts formula: Integral(u dv) = uv - Integral(v du)"],
+                formulas: [{ name: "Definite Integral Property", formula: "Integral(a to b f(x)dx) = Integral(a to b f(a+b-x)dx)" }]
+              }
+            ];
+
+            grid.innerHTML = items.map(item => `
+              <div class="glass-card">
+                <span style="background:var(--primary-light); color:var(--primary); font-weight:700; font-size:0.75rem; padding:4px 10px; border-radius:6px;">${item.subject} • ${item.topic}</span>
+                <h3 style="margin:12px 0 16px;">${item.title}</h3>
+                
+                <h4 style="font-size:0.85rem; color:var(--text-muted);">KEY FORMULAS:</h4>
+                <div style="background:var(--bg-glass); padding:12px; border-radius:8px; font-family:monospace; margin-bottom:16px;">
+                  ${item.formulas ? item.formulas.map(f => `<div><strong>${f.name}:</strong> ${f.formula}</div>`).join("") : 'Formulas available'}
+                </div>
+
+                <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                  <button onclick="downloadOnePagerPDF(this)" class="btn btn-outline" style="padding:6px 12px; font-size:0.8rem;"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                  <button class="btn btn-primary" style="padding:6px 12px; font-size:0.8rem;"><i class="fa-solid fa-bookmark"></i> Bookmark</button>
+                </div>
+              </div>
+            `).join("");
+          } catch(e) {}
+        }
+
+        window.downloadOnePagerPDF = function(btn) {
+            const card = btn.closest(".glass-card");
+            if (!card) return;
+
+            const title = card.querySelector("h3")?.innerText || "EduVault_OnePager";
+            const opt = {
+                margin:       0.5,
+                filename:     `${title.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(card).save();
+        };
+
+        document.addEventListener("DOMContentLoaded", loadOnePagers);
+    </script>
+</body>
+</html>
