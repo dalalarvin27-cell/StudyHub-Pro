@@ -1,76 +1,146 @@
-﻿const Tesseract = require("tesseract.js");
+﻿const fs = require("fs");
 const path = require("path");
-const fs = require("fs");
+const pdfParse = require("pdf-parse");
+const Tesseract = require("tesseract.js");
 
-function extractTextFromPDFBuffer(buffer) {
-  try {
-    const rawString = buffer.toString("binary");
-    let extractedStrings = [];
-    const textMatches = rawString.match(/\(([^()\r\n]*)\)/g);
+// List of PDF internal syntax patterns to detect and scrub
+const PDF_SYNTAX_PATTERNS = [
+  /\/Parent\s+\d+\s+\d+\s+R/gi,
+  /\/Resources\b/gi,
+  /\/Font\b/gi,
+  /\/ProcSet\b/gi,
+  /\/Image[BCI]\b/gi,
+  /\/Producer\b/gi,
+  /\/CreationDate\b/gi,
+  /\/ModDate\b/gi,
+  /\/MediaBox\b/gi,
+  /\/CropBox\b/gi,
+  /\/Type\s*\/[A-Za-z0-9]+/gi,
+  /\/Catalog\b/gi,
+  /\/Pages\s+\d+\s+\d+\s+R/gi,
+  /\b\d+\s+\d+\s+obj\b/gi,
+  /\bendobj\b/gi,
+  /\bstream\b/gi,
+  /\bendstream\b/gi,
+  /\bASCII85Decode\b/gi,
+  /\bFlateDecode\b/gi,
+  /\/Filter\s*\/[A-Za-z0-9]+/gi,
+  /\/Length\s+\d+/gi
+];
 
-    if (textMatches && textMatches.length > 0) {
-      textMatches.forEach(str => {
-        let clean = str.slice(1, -1).trim();
-        const isMetadata = /anonymous|unspecified|ReportLab|PDF|Font|ProcSet|FlateDecode|ASCII85|CreationDate|Producer|Catalog|Parent|Resources|MediaBox/i.test(clean);
-        const isTooShort = clean.length < 2;
-        const isCodeJunk = /\/[A-Z][a-zA-Z0-9]*/.test(clean) || /^\d+\s+\d+\s+R$/.test(clean);
+/**
+ * Validates whether extracted text is meaningful or mostly PDF syntax/garbage.
+ */
+function isGarbageText(text) {
+  if (!text || typeof text !== "string") return true;
+  const trimmed = text.trim();
+  if (trimmed.length < 30) return true;
 
-        if (!isMetadata && !isTooShort && !isCodeJunk) {
-          clean = clean.replace(/\\([()])/g, '$1').replace(/\\\\/g, '\\');
-          extractedStrings.push(clean);
-        }
-      });
+  let syntaxMatches = 0;
+  for (const pattern of PDF_SYNTAX_PATTERNS) {
+    const matches = trimmed.match(pattern);
+    if (matches) {
+      syntaxMatches += matches.length;
     }
-
-    let fullText = extractedStrings.join(" ").replace(/\s+/g, " ").trim();
-    fullText = fullText
-      .replace(/Parent \d+ \d+ R|Resources|ProcSet|ImageB|ImageC|ImageI|Rotate \d+|PageMode|Catalog|CreationDate|ModDate|Producer|ReportLab|FlateDecode|ASCII85Decode|endobj|stream/gi, '')
-      .replace(/[\/\<\>\{\}\[\]]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    return fullText;
-  } catch (err) {
-    return "";
   }
+
+  const words = trimmed.split(/\s+/);
+  if (syntaxMatches >= 3 || (words.length > 0 && syntaxMatches / words.length > 0.05)) {
+    return true;
+  }
+
+  return false;
 }
 
-async function extractTextFromImage(filePath) {
-  try {
-    const ext = path.extname(filePath).toLowerCase();
+/**
+ * Cleans and normalizes extracted text, stripping PDF internal garbage.
+ */
+function cleanExtractedText(rawText) {
+  if (!rawText) return "";
 
-    if (ext === ".pdf") {
-      try {
-        const dataBuffer = fs.readFileSync(filePath);
-        const pdfText = extractTextFromPDFBuffer(dataBuffer);
+  let clean = rawText;
 
-        if (pdfText && pdfText.length > 30) {
-          return pdfText.substring(0, 3000);
-        } else {
-          return "Trigonometry Notes: Fundamental identities sin^2(x) + cos^2(x) = 1. sec^2(x) - tan^2(x) = 1. cosec^2(x) - cot^2(x) = 1. Sine rule a/sin(A) = b/sin(B) = c/sin(C). Cosine rule c^2 = a^2 + b^2 - 2ab*cos(C). Right angle triangle ratios opposite/hypotenuse.";
-        }
-      } catch (pdfErr) {
-        return "Trigonometry Study Notes: Core formulas, angle identities, and solved exam questions.";
+  for (const pattern of PDF_SYNTAX_PATTERNS) {
+    clean = clean.replace(pattern, " ");
+  }
+
+  clean = clean.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, " ");
+  clean = clean.replace(/[ \t]+/g, " ");
+  clean = clean.replace(/\n\s*\n/g, "\n\n");
+  return clean.trim();
+}
+
+/**
+ * Main Document Text Extractor
+ */
+async function extractTextFromFile(filePath, mimeType, originalName = "") {
+  const ext = path.extname(filePath).toLowerCase();
+  const isPdf = mimeType === "application/pdf" || ext === ".pdf";
+
+  console.log(`[QUIZ] File received: ${originalName || path.basename(filePath)}`);
+  console.log(`[QUIZ] File type: ${isPdf ? "application/pdf" : mimeType || ext}`);
+
+  let rawText = "";
+  let ocrRequired = false;
+
+  if (isPdf) {
+    console.log("[QUIZ] Extracting PDF text using pdf-parse...");
+    try {
+      const dataBuffer = fs.readFileSync(filePath);
+      const pdfData = await pdfParse(dataBuffer);
+      rawText = pdfData.text || "";
+
+      console.log(`[QUIZ] Extracted characters: ${rawText.length}`);
+
+      if (rawText.trim().length < 50) {
+        console.log("[QUIZ] OCR required: true (Scanned PDF with minimal text stream)");
+        ocrRequired = true;
+      } else {
+        console.log("[QUIZ] OCR required: false");
       }
+    } catch (err) {
+      console.error("[QUIZ] PDF parsing error:", err.message);
+      ocrRequired = true;
     }
-
-    if (process.env.OCR_PROVIDER === "mock") {
-      return "Trigonometry Notes: sin^2(theta) + cos^2(theta) = 1. tan(theta) = sin(theta)/cos(theta).";
-    }
-
-    const result = await Tesseract.recognize(filePath, "eng", { logger: () => {} });
-
-    let ocrText = result.data.text || "";
-    ocrText = ocrText
-      .replace(/Parent \d+ \d+ R|Resources|ProcSet|ImageB|ImageC|ImageI|Rotate \d+|PageMode|Catalog|CreationDate|ModDate|Producer|ReportLab|FlateDecode/gi, '')
-      .trim();
-
-    return ocrText || "Handwritten Trigonometry Notes: Angle formulas, identities, and practice problems.";
-
-  } catch (err) {
-    console.error("OCR Service Safe Handler caught error:", err.message);
-    return "Study Notes: Trigonometry formulas, definitions, and chapter revision.";
+  } else {
+    console.log("[QUIZ] OCR required: true (Image file)");
+    ocrRequired = true;
   }
+
+  if (ocrRequired && !isPdf) {
+    console.log("[QUIZ] Running Tesseract OCR on image...");
+    try {
+      const result = await Tesseract.recognize(filePath, "eng", { logger: () => {} });
+      rawText = result.data.text || "";
+      console.log(`[QUIZ] OCR Extracted characters: ${rawText.length}`);
+    } catch (ocrErr) {
+      console.error("[QUIZ] OCR Error:", ocrErr.message);
+      rawText = "";
+    }
+  }
+
+  const cleanText = cleanExtractedText(rawText);
+  console.log(`[QUIZ] Clean text characters: ${cleanText.length}`);
+
+  if (isGarbageText(cleanText)) {
+    console.log("[QUIZ] Validation failed: Text is empty, too short, or dominated by PDF syntax.");
+    return {
+      success: false,
+      cleanText: "",
+      error: "Could not read meaningful text from this document. Please upload a clearer PDF/image."
+    };
+  }
+
+  return {
+    success: true,
+    cleanText,
+    charCount: cleanText.length,
+    ocrRequired
+  };
 }
 
-module.exports = { extractTextFromImage };
+module.exports = {
+  extractTextFromFile,
+  cleanExtractedText,
+  isGarbageText
+};
