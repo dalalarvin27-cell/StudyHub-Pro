@@ -19,32 +19,31 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Route Modules Import
-let authRoutes, mockTestRoutes, pyqRoutes, onePagerRoutes, scanRoutes, attemptRoutes, bookmarkRoutes, adminRoutes, noteRoutes, feedbackRoutes;
+// Direct Route Imports
+const authRoutes = require("./routes/authRoutes");
+const mockTestRoutes = require("./routes/mockTestRoutes");
+const pyqRoutes = require("./routes/pyqRoutes");
+const onePagerRoutes = require("./routes/onePagerRoutes");
+const scanRoutes = require("./routes/scanRoutes");
+const attemptRoutes = require("./routes/attemptRoutes");
+const bookmarkRoutes = require("./routes/bookmarkRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const noteRoutes = require("./routes/noteRoutes");
+const feedbackRoutes = require("./routes/feedbackRoutes");
 
-try { authRoutes = require("./routes/authRoutes"); } catch(e) { console.warn("authRoutes:", e.message); }
-try { mockTestRoutes = require("./routes/mockTestRoutes"); } catch(e) { console.warn("mockTestRoutes:", e.message); }
-try { pyqRoutes = require("./routes/pyqRoutes"); } catch(e) { console.warn("pyqRoutes:", e.message); }
-try { onePagerRoutes = require("./routes/onePagerRoutes"); } catch(e) { console.warn("onePagerRoutes:", e.message); }
-try { scanRoutes = require("./routes/scanRoutes"); } catch(e) { console.warn("scanRoutes:", e.message); }
-try { attemptRoutes = require("./routes/attemptRoutes"); } catch(e) { console.warn("attemptRoutes:", e.message); }
-try { bookmarkRoutes = require("./routes/bookmarkRoutes"); } catch(e) { console.warn("bookmarkRoutes:", e.message); }
-try { adminRoutes = require("./routes/adminRoutes"); } catch(e) { console.warn("adminRoutes:", e.message); }
-try { noteRoutes = require("./routes/noteRoutes"); } catch(e) { console.warn("noteRoutes:", e.message); }
-try { feedbackRoutes = require("./routes/feedbackRoutes"); } catch(e) { console.warn("feedbackRoutes:", e.message); }
+// Mount API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/mock-tests", mockTestRoutes);
+app.use("/api/pyq", pyqRoutes);
+app.use("/api/one-pagers", onePagerRoutes);
+app.use("/api/scan", scanRoutes);
+app.use("/api/attempts", attemptRoutes);
+app.use("/api/bookmarks", bookmarkRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/notes", noteRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
-if (authRoutes) app.use("/api/auth", authRoutes);
-if (mockTestRoutes) app.use("/api/mock-tests", mockTestRoutes);
-if (pyqRoutes) app.use("/api/pyq", pyqRoutes);
-if (onePagerRoutes) app.use("/api/one-pagers", onePagerRoutes);
-if (scanRoutes) app.use("/api/scan", scanRoutes);
-if (attemptRoutes) app.use("/api/attempts", attemptRoutes);
-if (bookmarkRoutes) app.use("/api/bookmarks", bookmarkRoutes);
-if (adminRoutes) app.use("/api/admin", adminRoutes);
-if (noteRoutes) app.use("/api/notes", noteRoutes);
-if (feedbackRoutes) app.use("/api/feedback", feedbackRoutes);
-
-// API 404 JSON Handler (Guarantees API routes NEVER return HTML pages!)
+// API 404 JSON Handler
 app.use("/api/*", (req, res) => {
   res.status(404).json({
     success: false,
