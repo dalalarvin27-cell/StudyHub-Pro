@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Scan Notes -> Test Series Generator | EduVault</title>
+    <title>Mobile Scan / PDF Notes -> Custom Test Generator | EduVault</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -18,62 +18,89 @@
                 <li><a href="mock-tests.html"><i class="fa-solid fa-vial-circle-check"></i> Mock Tests</a></li>
                 <li><a href="pyq.html"><i class="fa-solid fa-file-signature"></i> PYQs</a></li>
                 <li><a href="one-pagers.html"><i class="fa-solid fa-layer-group"></i> One-Pagers</a></li>
-                <li><a href="scan.html" class="active"><i class="fa-solid fa-camera"></i> Scan Notes</a></li>
+                <li><a href="scan.html" class="active"><i class="fa-solid fa-camera"></i> Scan / PDF Notes</a></li>
                 <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
             </ul>
             <div id="authContainer"></div>
         </nav>
     </header>
 
-    <main style="max-width:900px; margin:40px auto; padding:0 24px;">
+    <main style="max-width:950px; margin:40px auto; padding:0 24px;">
         <div class="glass-panel" style="padding:36px; text-align:center;">
             <i class="fa-solid fa-camera-retro" style="font-size:3rem; color:var(--primary); margin-bottom:16px;"></i>
-            <h2>Mobile Camera Scan ➔ AI Test Series 📸</h2>
-            <p style="color:var(--text-muted); margin-bottom:28px;">Capture handwritten pages using phone camera to generate a Timed Test Series strictly derived from your notes.</p>
+            <h2>Scan Photos or Upload PDF Notes ➔ Custom Test Generator 📸📄</h2>
+            <p style="color:var(--text-muted); margin-bottom:28px;">Capture handwritten pages using phone camera or upload PDF files to generate a custom timed Test Series.</p>
 
             <form id="scanUploadForm" style="display:flex; flex-direction:column; gap:20px; align-items:center;">
+                <!-- Accept Camera Photos AND PDF Files -->
                 <input type="file" id="cameraInput" accept="image/*,application/pdf" multiple style="display:none;" onchange="handleFileSelect(event)">
                 
                 <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
-                    <button type="button" onclick="document.getElementById('cameraInput').click()" class="btn btn-primary"><i class="fa-solid fa-camera"></i> Open Phone Camera / Gallery</button>
+                    <button type="button" onclick="document.getElementById('cameraInput').click()" class="btn btn-primary" style="padding:14px 28px; font-size:1rem;">
+                        <i class="fa-solid fa-camera"></i> Open Phone Camera / Upload PDF
+                    </button>
                 </div>
 
-                <div id="imagePreviewGrid" style="display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;"></div>
+                <div id="fileSelectionStatus" style="font-weight:700; color:var(--primary); font-size:0.9rem;"></div>
+                <div id="imagePreviewGrid" style="display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; justify-content:center;"></div>
 
-                <button type="submit" id="btnRunOCR" class="btn btn-primary" style="display:none;"><i class="fa-solid fa-wand-magic-sparkles"></i> Process OCR & Extract Notes</button>
+                <button type="submit" id="btnRunOCR" class="btn btn-primary" style="display:none; padding:12px 28px;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Process OCR & Extract Notes Text
+                </button>
             </form>
         </div>
 
-        <!-- OCR Extracted Text & Test Series Launcher Section -->
+        <!-- OCR Extracted Text & FULL CUSTOM TEST CONFIGURATION SECTION -->
         <section id="ocrResultSection" style="display:none; margin-top:40px;">
             <div class="glass-card">
                 <h3>Extracted Notes Verification</h3>
                 <textarea id="extractedTextDisplay" rows="5" style="width:100%; margin-top:12px; padding:12px; border-radius:8px; border:1px solid var(--border-color);"></textarea>
 
-                <div style="background:var(--primary-light); padding:20px; border-radius:12px; margin-top:20px;">
-                    <h4 style="margin-bottom:12px; color:var(--primary);"><i class="fa-solid fa-sliders"></i> Configure Test Series Timer & Questions:</h4>
+                <div style="background:var(--primary-light); padding:24px; border-radius:16px; margin-top:24px; border:1px solid rgba(79,70,229,0.2);">
+                    <h3 style="margin-bottom:16px; color:var(--primary); font-size:1.2rem;"><i class="fa-solid fa-sliders"></i> Custom Test Series Configuration:</h3>
                     
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:20px;">
+                        <!-- 1. Difficulty Level -->
                         <div>
-                            <label style="font-size:0.85rem; font-weight:700;">Number of Questions:</label>
-                            <select id="scanQCount" class="btn btn-outline" style="width:100%; margin-top:4px; text-align:left;">
-                                <option value="5">5 Questions (5 Min Timer)</option>
-                                <option value="10" selected>10 Questions (10 Min Timer)</option>
-                                <option value="20">20 Questions (20 Min Timer)</option>
+                            <label style="font-size:0.88rem; font-weight:700; color:var(--secondary);">🎯 Difficulty Level:</label>
+                            <select id="scanDifficulty" class="btn btn-outline" style="width:100%; margin-top:6px; text-align:left; background:#fff;">
+                                <option value="Easy">Easy (Conceptual Basic)</option>
+                                <option value="Medium" selected>Medium (Exam Standard)</option>
+                                <option value="Hard">Hard (Advanced Tricky)</option>
+                                <option value="Mixed">Mixed (Easy + Medium + Hard)</option>
                             </select>
                         </div>
+
+                        <!-- 2. Number of Questions & Total Marks -->
                         <div>
-                            <label style="font-size:0.85rem; font-weight:700;">Difficulty Level:</label>
-                            <select id="scanDifficulty" class="btn btn-outline" style="width:100%; margin-top:4px; text-align:left;">
-                                <option value="Easy">Easy</option>
-                                <option value="Medium" selected>Medium</option>
-                                <option value="Hard">Hard</option>
+                            <label style="font-size:0.88rem; font-weight:700; color:var(--secondary);">📝 Questions & Marks:</label>
+                            <select id="scanQCount" class="btn btn-outline" style="width:100%; margin-top:6px; text-align:left; background:#fff;">
+                                <option value="5">5 Questions (20 Marks)</option>
+                                <option value="10" selected>10 Questions (40 Marks)</option>
+                                <option value="15">15 Questions (60 Marks)</option>
+                                <option value="20">20 Questions (80 Marks)</option>
+                                <option value="30">30 Questions (120 Marks)</option>
+                                <option value="50">50 Questions (200 Marks)</option>
+                            </select>
+                        </div>
+
+                        <!-- 3. Countdown Timer Duration -->
+                        <div>
+                            <label style="font-size:0.88rem; font-weight:700; color:var(--secondary);">⏱️ Countdown Timer Duration:</label>
+                            <select id="scanTimerDuration" class="btn btn-outline" style="width:100%; margin-top:6px; text-align:left; background:#fff;">
+                                <option value="5">5 Minutes Countdown</option>
+                                <option value="10" selected>10 Minutes Countdown</option>
+                                <option value="15">15 Minutes Countdown</option>
+                                <option value="20">20 Minutes Countdown</option>
+                                <option value="30">30 Minutes Countdown</option>
+                                <option value="45">45 Minutes Countdown</option>
+                                <option value="60">60 Minutes (1 Hour) Countdown</option>
                             </select>
                         </div>
                     </div>
 
-                    <button onclick="launchScannedTestSeries()" class="btn btn-primary" style="width:100%; justify-content:center; padding:14px;">
-                        <i class="fa-solid fa-play"></i> Generate & Launch Test Series Now 🚀
+                    <button onclick="launchCustomScannedTestSeries()" class="btn btn-primary" style="width:100%; justify-content:center; padding:14px; font-size:1rem; border-radius:30px;">
+                        <i class="fa-solid fa-play"></i> Generate & Launch Custom Test Series Now 🚀
                     </button>
                 </div>
             </div>
@@ -83,7 +110,7 @@
         <div id="testOverlay" class="test-overlay" style="display:none;">
             <div class="test-header">
                 <div>
-                    <h3 id="testTitle">Scanned Notes Test Series</h3>
+                    <h3 id="testTitle">Scanned Notes Custom Test Series</h3>
                     <span id="testProgress" style="font-size:0.85rem; color:var(--text-muted);">Question 1 of 10</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:20px;">
@@ -130,11 +157,18 @@
         function handleFileSelect(e) {
           selectedFiles = Array.from(e.target.files);
           const grid = document.getElementById("imagePreviewGrid");
-          grid.innerHTML = selectedFiles.map(f => `
-            <img src="${URL.createObjectURL(f)}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--primary);">
-          `).join("");
-
+          const status = document.getElementById("fileSelectionStatus");
+          
           if (selectedFiles.length > 0) {
+            status.innerText = `Selected ${selectedFiles.length} file(s) for scanning.`;
+            grid.innerHTML = selectedFiles.map(f => {
+              if (f.type.includes("pdf")) {
+                return `<div style="padding:14px; background:#eef2ff; border-radius:10px; font-weight:700; color:#4f46e5;"><i class="fa-solid fa-file-pdf" style="font-size:1.8rem;"></i><br>${f.name}</div>`;
+              } else {
+                return `<img src="${URL.createObjectURL(f)}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--primary);">`;
+              }
+            }).join("");
+
             document.getElementById("btnRunOCR").style.display = "inline-flex";
           }
         }
@@ -147,7 +181,7 @@
           const formData = new FormData();
           selectedFiles.forEach(f => formData.append("images", f));
 
-          document.getElementById("btnRunOCR").innerText = "Processing OCR...";
+          document.getElementById("btnRunOCR").innerText = "Processing OCR & Reading Notes...";
 
           try {
             const res = await fetch("/api/scan/upload", {
@@ -161,31 +195,37 @@
             currentScanDoc = data.scanDoc;
             document.getElementById("ocrResultSection").style.display = "block";
             document.getElementById("extractedTextDisplay").value = data.scanDoc.cleanText;
-            document.getElementById("btnRunOCR").innerText = "OCR Completed!";
+            document.getElementById("btnRunOCR").innerText = "OCR Scan Completed!";
           } catch(err) {
             alert(err.message || "OCR failed.");
           }
         });
 
-        async function launchScannedTestSeries() {
+        async function launchCustomScannedTestSeries() {
           const token = localStorage.getItem("eduvault_token");
-          if (!currentScanDoc) return alert("Pehle camera se photo scan karein.");
+          if (!currentScanDoc) return alert("Pehle photos ya PDF upload karke scan karein.");
 
-          const qCount = document.getElementById("scanQCount").value;
-          const diff = document.getElementById("scanDifficulty").value;
+          const difficulty = document.getElementById("scanDifficulty").value;
+          const qCount = Number(document.getElementById("scanQCount").value);
+          const durationMins = Number(document.getElementById("scanTimerDuration").value);
 
           try {
             const res = await fetch(`/api/scan/${currentScanDoc._id}/generate-test`, {
               method: "POST",
               headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-              body: JSON.stringify({ questionsCount: qCount, difficulty: diff, durationMinutes: qCount })
+              body: JSON.stringify({ 
+                questionsCount: qCount, 
+                difficulty: difficulty, 
+                durationMinutes: durationMins,
+                totalMarks: qCount * 4
+              })
             });
             const data = await res.json();
             if (data.testId) {
-              startTest(data.testId); // Direct Launch Full Screen Timed Test Series!
+              startTest(data.testId); // Launch Full Screen Timed Test Series!
             }
           } catch(e) {
-            alert("Test generation error.");
+            alert("Custom Test generation error.");
           }
         }
     </script>
