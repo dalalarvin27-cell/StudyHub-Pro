@@ -329,3 +329,39 @@ async function showTestResultModal(attemptId, results) {
 }
 
 document.addEventListener("DOMContentLoaded", () => loadMockTests());
+/* COUNTDOWN TIMER LOGIC (SUPPORTS UP TO 200 MINUTES) */
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+
+  timerInterval = setInterval(() => {
+    if (isTestSubmitted) {
+      clearInterval(timerInterval);
+      return;
+    }
+
+    secondsRemaining--;
+
+    const hrs = Math.floor(secondsRemaining / 3600);
+    const mins = Math.floor((secondsRemaining % 3600) / 60);
+    const secs = secondsRemaining % 60;
+
+    const pad = (n) => (n < 10 ? '0' : '') + n;
+    
+    const timerElem = document.getElementById("timerDisplay");
+    
+    if (timerElem) {
+      if (hrs > 0) {
+        timerElem.innerText = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+      } else {
+        timerElem.innerText = `${pad(mins)}:${pad(secs)}`;
+      }
+    }
+
+    if (secondsRemaining <= 0) {
+      clearInterval(timerInterval);
+      if (timerElem) timerElem.innerText = "00:00";
+      alert("⏱️ Time is Up! Submitting test series automatically.");
+      submitTest();
+    }
+  }, 1000);
+}

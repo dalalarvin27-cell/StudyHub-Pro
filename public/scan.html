@@ -42,11 +42,13 @@
     </header>
 
     <main style="max-width:950px; margin:40px auto; padding:0 24px;">
+        <!-- MAIN SCAN / UPLOAD CARD WITH SIZE WARNING BADGE -->
         <div class="glass-panel" style="padding:36px; text-align:center;">
             <i class="fa-solid fa-camera-retro" style="font-size:3rem; color:var(--primary); margin-bottom:16px;"></i>
             <h2>Scan Photos or Upload PDF Notes ➔ Custom Test Series 📸📄</h2>
-            <p style="color:var(--text-muted); margin-bottom:16px;">Capture handwritten pages using phone camera or upload PDF files to generate a fresh timed Test Series.</p>
+            <p style="color:var(--text-muted); margin-bottom:16px;">Capture handwritten pages using phone camera or upload PDF files to generate a custom timed Test Series.</p>
 
+            <!-- FILE SIZE WARNING BADGE -->
             <div style="margin-bottom:24px;">
                 <span style="background:rgba(245, 158, 11, 0.1); color:#d97706; padding:6px 16px; border-radius:20px; font-size:0.82rem; font-weight:700; border:1px solid rgba(245, 158, 11, 0.3);">
                     <i class="fa-solid fa-triangle-exclamation"></i> Max Allowed File Size: 4.5 MB per file
@@ -54,6 +56,7 @@
             </div>
 
             <form id="scanUploadForm" style="display:flex; flex-direction:column; gap:20px; align-items:center;">
+                <!-- Accept both Camera Photos and PDF Documents -->
                 <input type="file" id="cameraInput" accept="image/*,application/pdf" multiple style="display:none;" onchange="handleFileSelect(event)">
                 
                 <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
@@ -80,18 +83,19 @@
                 <div style="background:var(--primary-light); padding:24px; border-radius:16px; margin-top:24px; border:1px solid rgba(79,70,229,0.2);">
                     <h3 style="margin-bottom:16px; color:var(--primary); font-size:1.2rem;"><i class="fa-solid fa-sliders"></i> Custom Test Series Configuration:</h3>
                     
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:20px;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:20px;">
                         <!-- 1. Difficulty Level -->
                         <div>
                             <label style="font-size:0.88rem; font-weight:700; color:var(--secondary);">🎯 Difficulty Level:</label>
                             <select id="scanDifficulty" class="btn btn-outline" style="width:100%; margin-top:6px; text-align:left; background:#fff;">
-                                <option value="Easy">Easy (Basic Concepts)</option>
-                                <option value="Medium" selected>Medium (Application Standard)</option>
-                                <option value="Hard">Hard (Deep Multi-Step)</option>
+                                <option value="Easy">Easy (Conceptual Basic)</option>
+                                <option value="Medium" selected>Medium (Exam Standard)</option>
+                                <option value="Hard">Hard (Advanced Tricky)</option>
+                                <option value="Mixed">Mixed (Easy + Medium + Hard)</option>
                             </select>
                         </div>
 
-                        <!-- 2. Number of Questions & Marks -->
+                        <!-- 2. Number of Questions & Total Marks -->
                         <div>
                             <label style="font-size:0.88rem; font-weight:700; color:var(--secondary);">📝 Questions & Marks:</label>
                             <select id="scanQCount" class="btn btn-outline" style="width:100%; margin-top:6px; text-align:left; background:#fff;">
@@ -99,22 +103,31 @@
                                 <option value="10" selected>10 Questions (40 Marks)</option>
                                 <option value="15">15 Questions (60 Marks)</option>
                                 <option value="20">20 Questions (80 Marks)</option>
+                                <option value="30">30 Questions (120 Marks)</option>
+                                <option value="50">50 Questions (200 Marks)</option>
                             </select>
                         </div>
 
-                        <!-- 3. RESTORED SELECTABLE TIMER DURATION (5, 10, 15 MINUTES) -->
+                        <!-- 3. CUSTOM COUNTDOWN TIMER (5 MINS TO 200 MINS MAX) -->
                         <div>
-                            <label style="font-size:0.88rem; font-weight:700; color:var(--secondary);">⏱️ Countdown Timer Limit:</label>
-                            <select id="scanTimerDuration" class="btn btn-outline" style="width:100%; margin-top:6px; text-align:left; background:#fff;">
+                            <label style="font-size:0.88rem; font-weight:700; color:var(--secondary);">⏱️ Countdown Timer (Max 200 Mins):</label>
+                            <select id="scanTimerDuration" class="btn btn-outline" style="width:100%; margin-top:6px; text-align:left; background:#fff;" onchange="toggleCustomTimerInput(this)">
                                 <option value="5">5 Minutes Countdown</option>
                                 <option value="10" selected>10 Minutes Countdown</option>
                                 <option value="15">15 Minutes Countdown</option>
+                                <option value="30">30 Minutes Countdown</option>
+                                <option value="45">45 Minutes Countdown</option>
+                                <option value="60">60 Minutes (1 Hour)</option>
+                                <option value="120">120 Minutes (2 Hours)</option>
+                                <option value="200">200 Minutes (Max Limit)</option>
+                                <option value="custom">✏️ Enter Custom Minutes (Up to 200 Mins)</option>
                             </select>
+                            <input type="number" id="customTimerInput" placeholder="Enter minutes (1 - 200)" min="1" max="200" style="display:none; width:100%; margin-top:8px; padding:10px 14px; border-radius:8px; border:1px solid var(--border-color); background:#fff; font-size:0.9rem;">
                         </div>
                     </div>
 
                     <button onclick="launchCustomScannedTestSeries()" class="btn btn-primary" style="width:100%; justify-content:center; padding:14px; font-size:1rem; border-radius:30px;">
-                        <i class="fa-solid fa-play"></i> Generate & Launch Fresh Test Series 🚀
+                        <i class="fa-solid fa-play"></i> Generate & Launch Custom Test Series Now 🚀
                     </button>
                 </div>
             </div>
@@ -124,14 +137,14 @@
         <div id="testOverlay" class="test-overlay" style="display:none;">
             <div class="test-header">
                 <div>
-                    <h3 id="testTitle">Scanned Notes Test Series</h3>
+                    <h3 id="testTitle">Scanned Notes Custom Test Series</h3>
                     <span id="testProgress" style="font-size:0.85rem; color:var(--text-muted);">Question 1 of 10</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:20px;">
                     <div style="font-size:1.2rem; font-weight:800; color:var(--primary);">
                         <i class="fa-regular fa-clock"></i> <span id="timerDisplay">10:00</span>
                     </div>
-                    <button onclick="confirmSubmitTest()" class="btn btn-primary" id="btnManualSubmit">Submit Test</button>
+                    <button onclick="confirmSubmitTest()" class="btn btn-primary">Submit Test</button>
                 </div>
             </div>
 
@@ -173,6 +186,16 @@
                 icon.classList.toggle("fa-xmark");
             }
         });
+
+        function toggleCustomTimerInput(selectElem) {
+            const customInput = document.getElementById("customTimerInput");
+            if (selectElem.value === "custom") {
+                customInput.style.display = "block";
+                customInput.focus();
+            } else {
+                customInput.style.display = "none";
+            }
+        }
     </script>
 
     <!-- LOGIC SCRIPTS -->
@@ -180,6 +203,7 @@
     <script src="js/app.js"></script>
     <script src="js/mockTestEngine.js"></script>
 
+    <!-- PAGE SPECIFIC SCAN ENGINE CONTROLLER -->
     <script>
         let selectedFiles = [];
         let currentScanDoc = null;
@@ -198,7 +222,7 @@
 
             for (let f of files) {
                 if (f.size > MAX_FILE_SIZE_BYTES) {
-                    alert(`⚠️ File "${f.name}" (${formatFileSize(f.size)}) exceeds the 4.5 MB limit!\n\nPlease upload a file under 4.5 MB.`);
+                    alert(`⚠️ File "${f.name}" (${formatFileSize(f.size)}) exceeds the 4.5 MB limit!\n\nPlease upload a file smaller than 4.5 MB.`);
                     e.target.value = "";
                     selectedFiles = [];
                     status.innerText = "❌ Upload cancelled: Exceeds 4.5 MB limit.";
@@ -286,7 +310,19 @@
 
             const difficulty = document.getElementById("scanDifficulty").value;
             const qCount = Number(document.getElementById("scanQCount").value);
-            const durationMins = Number(document.getElementById("scanTimerDuration").value);
+            
+            // Read Custom Timer Input
+            let timerSelect = document.getElementById("scanTimerDuration").value;
+            let durationMins = 10;
+
+            if (timerSelect === "custom") {
+                durationMins = Number(document.getElementById("customTimerInput").value) || 10;
+            } else {
+                durationMins = Number(timerSelect);
+            }
+
+            // Cap strictly at MAX 200 Minutes
+            durationMins = Math.min(200, Math.max(1, durationMins));
 
             try {
                 const res = await fetch(`/api/scan/${currentScanDoc._id}/generate-test`, {
