@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Scan Notes -> AI Generator | EduVault</title>
+    <title>Mobile Scan Notes -> Test Series Generator | EduVault</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -28,14 +28,14 @@
     <main style="max-width:900px; margin:40px auto; padding:0 24px;">
         <div class="glass-panel" style="padding:36px; text-align:center;">
             <i class="fa-solid fa-camera-retro" style="font-size:3rem; color:var(--primary); margin-bottom:16px;"></i>
-            <h2>Scan Notes → AI Content Generator 📸</h2>
-            <p style="color:var(--text-muted); margin-bottom:28px;">Capture handwritten pages using phone camera or upload images from gallery to extract OCR text and generate instant Mock Tests & One-Pagers.</p>
+            <h2>Mobile Camera Scan ➔ AI Test Series 📸</h2>
+            <p style="color:var(--text-muted); margin-bottom:28px;">Capture handwritten pages using phone camera to generate a Timed Test Series strictly derived from your notes.</p>
 
             <form id="scanUploadForm" style="display:flex; flex-direction:column; gap:20px; align-items:center;">
                 <input type="file" id="cameraInput" accept="image/*,application/pdf" multiple style="display:none;" onchange="handleFileSelect(event)">
                 
                 <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
-                    <button type="button" onclick="document.getElementById('cameraInput').click()" class="btn btn-primary"><i class="fa-solid fa-camera"></i> Open Camera / Gallery</button>
+                    <button type="button" onclick="document.getElementById('cameraInput').click()" class="btn btn-primary"><i class="fa-solid fa-camera"></i> Open Phone Camera / Gallery</button>
                 </div>
 
                 <div id="imagePreviewGrid" style="display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;"></div>
@@ -44,23 +44,85 @@
             </form>
         </div>
 
-        <!-- OCR Extracted Text Display & AI Choice Section -->
+        <!-- OCR Extracted Text & Test Series Launcher Section -->
         <section id="ocrResultSection" style="display:none; margin-top:40px;">
             <div class="glass-card">
-                <h3>Extracted Text Verification</h3>
-                <textarea id="extractedTextDisplay" rows="6" style="width:100%; margin-top:12px; padding:12px; border-radius:8px; border:1px solid var(--border-color);"></textarea>
+                <h3>Extracted Notes Verification</h3>
+                <textarea id="extractedTextDisplay" rows="5" style="width:100%; margin-top:12px; padding:12px; border-radius:8px; border:1px solid var(--border-color);"></textarea>
 
-                <h4 style="margin:24px 0 16px;">Choose AI Generator Action:</h4>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
-                    <button onclick="generateFromScan('test')" class="btn btn-primary"><i class="fa-solid fa-vial"></i> Generate Mock Test</button>
-                    <button onclick="generateFromScan('quiz')" class="btn btn-secondary"><i class="fa-solid fa-circle-question"></i> Generate Quick Quiz</button>
-                    <button onclick="generateFromScan('onepager')" class="btn btn-outline"><i class="fa-solid fa-file-invoice"></i> Generate One-Pager</button>
+                <div style="background:var(--primary-light); padding:20px; border-radius:12px; margin-top:20px;">
+                    <h4 style="margin-bottom:12px; color:var(--primary);"><i class="fa-solid fa-sliders"></i> Configure Test Series Timer & Questions:</h4>
+                    
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+                        <div>
+                            <label style="font-size:0.85rem; font-weight:700;">Number of Questions:</label>
+                            <select id="scanQCount" class="btn btn-outline" style="width:100%; margin-top:4px; text-align:left;">
+                                <option value="5">5 Questions (5 Min Timer)</option>
+                                <option value="10" selected>10 Questions (10 Min Timer)</option>
+                                <option value="20">20 Questions (20 Min Timer)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:0.85rem; font-weight:700;">Difficulty Level:</label>
+                            <select id="scanDifficulty" class="btn btn-outline" style="width:100%; margin-top:4px; text-align:left;">
+                                <option value="Easy">Easy</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="launchScannedTestSeries()" class="btn btn-primary" style="width:100%; justify-content:center; padding:14px;">
+                        <i class="fa-solid fa-play"></i> Generate & Launch Test Series Now 🚀
+                    </button>
                 </div>
             </div>
         </section>
+
+        <!-- Full-screen Test Overlay Container -->
+        <div id="testOverlay" class="test-overlay" style="display:none;">
+            <div class="test-header">
+                <div>
+                    <h3 id="testTitle">Scanned Notes Test Series</h3>
+                    <span id="testProgress" style="font-size:0.85rem; color:var(--text-muted);">Question 1 of 10</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <div style="font-size:1.2rem; font-weight:800; color:var(--primary);">
+                        <i class="fa-regular fa-clock"></i> <span id="timerDisplay">10:00</span>
+                    </div>
+                    <button onclick="confirmSubmitTest()" class="btn btn-primary">Submit Test</button>
+                </div>
+            </div>
+
+            <div class="test-body">
+                <div style="padding:32px; overflow-y:auto;">
+                    <div id="questionContainer" class="glass-panel" style="padding:28px;">
+                        <h3 id="qText" style="margin-bottom:20px;">Question loading...</h3>
+                        <div id="qOptions" style="display:flex; flex-direction:column; gap:12px;"></div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; margin-top:24px; flex-wrap:wrap; gap:12px;">
+                        <div>
+                            <button onclick="markForReview()" class="btn btn-outline"><i class="fa-solid fa-bookmark"></i> Mark for Review</button>
+                            <button onclick="clearAnswer()" class="btn btn-outline">Clear Answer</button>
+                        </div>
+                        <div>
+                            <button onclick="prevQuestion()" class="btn btn-outline">Previous</button>
+                            <button onclick="saveAndNext()" class="btn btn-primary">Save & Next <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-palette">
+                    <h4>Question Palette</h4>
+                    <div class="palette-grid" id="paletteGrid"></div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script src="js/app.js"></script>
+    <script src="js/mockTestEngine.js"></script>
     <script>
         let selectedFiles = [];
         let currentScanDoc = null;
@@ -80,7 +142,7 @@
         document.getElementById("scanUploadForm").addEventListener("submit", async (e) => {
           e.preventDefault();
           const token = localStorage.getItem("eduvault_token");
-          if (!token) return alert("Please log in to upload notes.");
+          if (!token) return alert("Test generate karne ke liye Log In zaroori hai.");
 
           const formData = new FormData();
           selectedFiles.forEach(f => formData.append("images", f));
@@ -105,27 +167,25 @@
           }
         });
 
-        async function generateFromScan(type) {
+        async function launchScannedTestSeries() {
           const token = localStorage.getItem("eduvault_token");
-          if (!currentScanDoc) return alert("Please run OCR scan first.");
+          if (!currentScanDoc) return alert("Pehle camera se photo scan karein.");
 
-          if (type === 'test') {
+          const qCount = document.getElementById("scanQCount").value;
+          const diff = document.getElementById("scanDifficulty").value;
+
+          try {
             const res = await fetch(`/api/scan/${currentScanDoc._id}/generate-test`, {
               method: "POST",
               headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-              body: JSON.stringify({ questionsCount: 10, difficulty: "Medium" })
+              body: JSON.stringify({ questionsCount: qCount, difficulty: diff, durationMinutes: qCount })
             });
             const data = await res.json();
-            alert("Mock test generated from your scanned notes!");
-            window.location.href = "mock-tests.html";
-          } else if (type === 'onepager') {
-            const res = await fetch(`/api/scan/${currentScanDoc._id}/generate-one-pager`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-            });
-            const data = await res.json();
-            alert("One-Pager Revision Sheet created!");
-            window.location.href = "one-pagers.html";
+            if (data.testId) {
+              startTest(data.testId); // Direct Launch Full Screen Timed Test Series!
+            }
+          } catch(e) {
+            alert("Test generation error.");
           }
         }
     </script>
