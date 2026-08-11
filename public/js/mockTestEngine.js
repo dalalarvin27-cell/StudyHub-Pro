@@ -1,6 +1,6 @@
 /**
  * EduVault Mock Test Frontend Engine
- * Supports Custom Timer (5m, 15m, 30m, 60m, 120m & custom typed minutes)
+ * Handles custom timer durations, auto-submit, manual submit, and API calls
  */
 
 let timerInterval = null;
@@ -54,10 +54,18 @@ window.generateAndLaunchCustomTest = async function(formData) {
     localStorage.removeItem("currentQuiz");
     sessionStorage.removeItem("currentQuiz");
 
-    const response = await fetch("/api/mock-tests/generate", {
+    // Try /api/scan first, fallback to /api/mock-tests/generate
+    let response = await fetch("/api/scan", {
       method: "POST",
       body: formData
     });
+
+    if (!response.ok) {
+      response = await fetch("/api/mock-tests/generate", {
+        method: "POST",
+        body: formData
+      });
+    }
 
     const result = await response.json();
 
@@ -75,7 +83,7 @@ window.generateAndLaunchCustomTest = async function(formData) {
 };
 
 /**
- * Format Time (Supports HH:MM:SS for long custom timers)
+ * Format Time Display (HH:MM:SS or MM:SS)
  */
 function formatTimeDisplay(totalSecs) {
   const hrs = Math.floor(totalSecs / 3600);

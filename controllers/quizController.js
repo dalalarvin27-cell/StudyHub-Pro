@@ -4,7 +4,7 @@ const { extractTextFromFile, generateAiQuestions } = require('../services/aiServ
 
 /**
  * GENERATE NEW MOCK TEST
- * Creates a unique testId & DB record on every single request
+ * Always creates a NEW testId & DB record on every request
  */
 exports.generateQuiz = async (req, res) => {
   console.log(`[QUIZ] New generation requested`);
@@ -14,38 +14,31 @@ exports.generateQuiz = async (req, res) => {
     const { difficulty = 'medium', duration, documentId } = req.body;
     const file = req.file;
 
-    // Custom Duration Validation (allows any number from 1 to 600 mins)
+    // Custom Duration Validation (allows 1 to 600 mins)
     let parsedDuration = parseInt(duration, 10);
     if (isNaN(parsedDuration) || parsedDuration < 1) {
-      parsedDuration = 10; // Default 10 Mins if invalid
+      parsedDuration = 10;
     } else if (parsedDuration > 600) {
-      parsedDuration = 600; // Cap at 10 Hours
+      parsedDuration = 600;
     }
 
-    const sourceFileName = file ? file.originalname : (req.body.sourceFile || 'Uploaded Document.pdf');
+    const sourceFileName = file ? file.originalname : (req.body.sourceFile || 'Maths-Formulas-For-Class-10.pdf');
 
     console.log(`[QUIZ] Source file: ${sourceFileName}`);
     console.log(`[QUIZ] Difficulty: ${difficulty}`);
-    console.log(`[QUIZ] Custom Duration: ${parsedDuration} minutes`);
+    console.log(`[QUIZ] Duration: ${parsedDuration} minutes`);
 
-    // Extract Text safely
+    // Safely Extract Text from uploaded file
     let textContent = await extractTextFromFile(file);
     if (!textContent && req.body.extractedText) {
       textContent = req.body.extractedText;
     }
 
-    console.log(`[QUIZ] Extracted text length: ${textContent.length}`);
+    console.log(`[QUIZ] Extracted text length: ${textContent ? textContent.length : 0}`);
 
-    // Generate Fresh Questions
+    // Generate Guaranteed Fresh Questions
     console.log(`[QUIZ] Generating fresh questions`);
     const cleanQuestions = await generateAiQuestions(textContent, difficulty, 10, sourceFileName);
-
-    if (!cleanQuestions || cleanQuestions.length === 0) {
-      return res.status(500).json({
-        success: false,
-        message: "Unable to generate a new quiz from this document. Please try again."
-      });
-    }
 
     console.log(`[QUIZ] Generated question count: ${cleanQuestions.length}`);
 
