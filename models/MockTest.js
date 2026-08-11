@@ -15,7 +15,7 @@ const questionSchema = new mongoose.Schema({
   }],
   correctAnswer: { 
     type: String, 
-    required: true // Store index as string ("0", "1", "2", "3") or exact option text
+    required: true 
   },
   explanation: { 
     type: String, 
@@ -51,7 +51,8 @@ const mockTestSchema = new mongoose.Schema({
   },
   duration: { 
     type: Number, 
-    enum: [5, 10, 15], 
+    min: 1,
+    max: 600, // Custom duration up to 10 hours (600 mins)
     default: 10 
   },
   questions: [questionSchema],

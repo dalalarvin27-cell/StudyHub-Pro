@@ -41,21 +41,24 @@
           </select>
         </div>
 
+        <!-- Custom Timer Selector -->
         <div>
-          <label class="block font-bold text-sm text-gray-700 mb-1">⏱️ Countdown Timer Duration</label>
-          <div class="flex space-x-6 mt-2">
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input type="radio" name="scanTimer" value="5">
-              <span class="font-medium">5 Minutes</span>
-            </label>
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input type="radio" name="scanTimer" value="10" checked>
-              <span class="font-medium">10 Minutes</span>
-            </label>
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input type="radio" name="scanTimer" value="15">
-              <span class="font-medium">15 Minutes</span>
-            </label>
+          <label class="block font-bold text-sm text-gray-700 mb-1">⏱️ Countdown Timer Duration (Minutes)</label>
+          <p class="text-xs text-gray-500 mb-2">Choose a preset or type your custom timer duration below:</p>
+          
+          <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-3">
+            <button type="button" class="timer-preset-btn px-3 py-2 border rounded-lg font-semibold bg-gray-50 hover:bg-blue-50 hover:border-blue-500 active" data-val="5">5 Mins</button>
+            <button type="button" class="timer-preset-btn px-3 py-2 border rounded-lg font-semibold bg-gray-50 hover:bg-blue-50 hover:border-blue-500" data-val="15">15 Mins</button>
+            <button type="button" class="timer-preset-btn px-3 py-2 border rounded-lg font-semibold bg-gray-50 hover:bg-blue-50 hover:border-blue-500" data-val="30">30 Mins</button>
+            <button type="button" class="timer-preset-btn px-3 py-2 border rounded-lg font-semibold bg-gray-50 hover:bg-blue-50 hover:border-blue-500" data-val="60">60 Mins</button>
+            <button type="button" class="timer-preset-btn px-3 py-2 border rounded-lg font-semibold bg-gray-50 hover:bg-blue-50 hover:border-blue-500" data-val="120">120 Mins</button>
+          </div>
+
+          <!-- Custom Type Input -->
+          <div class="flex items-center space-x-3">
+            <span class="text-sm font-semibold text-gray-600">Or Type Custom Duration:</span>
+            <input type="number" id="customDurationInput" min="1" max="600" value="10" placeholder="e.g. 45" class="w-32 border border-blue-400 p-2 rounded-lg font-bold text-center text-blue-800" />
+            <span class="text-sm text-gray-500 font-medium">Minutes</span>
           </div>
         </div>
 
@@ -74,6 +77,21 @@
       const fileInput = document.getElementById("scanFileInput");
       const fileStatus = document.getElementById("fileStatusText");
       const generateBtn = document.getElementById("generateCustomTestBtn");
+      const customDurationInput = document.getElementById("customDurationInput");
+      const presetBtns = document.querySelectorAll(".timer-preset-btn");
+
+      // Preset Timer Buttons Handler
+      presetBtns.forEach(btn => {
+        btn.addEventListener("click", function() {
+          presetBtns.forEach(b => b.classList.remove("bg-blue-600", "text-white", "border-blue-600"));
+          this.classList.add("bg-blue-600", "text-white", "border-blue-600");
+          customDurationInput.value = this.getAttribute("data-val");
+        });
+      });
+
+      customDurationInput?.addEventListener("input", function() {
+        presetBtns.forEach(b => b.classList.remove("bg-blue-600", "text-white", "border-blue-600"));
+      });
 
       fileInput?.addEventListener("change", function(e) {
         if (e.target.files && e.target.files[0]) {
@@ -90,8 +108,7 @@
         }
 
         const difficulty = document.getElementById("scanDifficulty").value;
-        const durationRadio = document.querySelector('input[name="scanTimer"]:checked');
-        const duration = durationRadio ? durationRadio.value : "10";
+        const duration = parseInt(customDurationInput.value, 10) || 10;
 
         const formData = new FormData();
         formData.append("file", fileInput.files[0]);

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const MockTest = require('../models/MockTest');
-const { extractTextFromBuffer, generateAiQuestions } = require('../services/aiService');
+const { extractTextFromFile, generateAiQuestions } = require('../services/aiService');
 
 /**
  * GENERATE NEW MOCK TEST
@@ -11,45 +11,36 @@ exports.generateQuiz = async (req, res) => {
 
   try {
     const userId = req.user ? (req.user._id || req.user.id) : null;
-    const { difficulty = 'medium', duration = 10, documentId } = req.body;
+    const { difficulty = 'medium', duration, documentId } = req.body;
     const file = req.file;
 
-    // Validate Duration (5, 10, 15)
-    const parsedDuration = parseInt(duration, 10);
-    const validDurations = [5, 10, 15];
-    const finalDuration = validDurations.includes(parsedDuration) ? parsedDuration : 10;
+    // Custom Duration Validation (allows any number from 1 to 600 mins)
+    let parsedDuration = parseInt(duration, 10);
+    if (isNaN(parsedDuration) || parsedDuration < 1) {
+      parsedDuration = 10; // Default 10 Mins if invalid
+    } else if (parsedDuration > 600) {
+      parsedDuration = 600; // Cap at 10 Hours
+    }
 
     const sourceFileName = file ? file.originalname : (req.body.sourceFile || 'Uploaded Document.pdf');
 
     console.log(`[QUIZ] Source file: ${sourceFileName}`);
     console.log(`[QUIZ] Difficulty: ${difficulty}`);
-    console.log(`[QUIZ] Duration: ${finalDuration}`);
+    console.log(`[QUIZ] Custom Duration: ${parsedDuration} minutes`);
 
-    // Extract Text Fresh
-    let textContent = '';
-    if (file && file.buffer) {
-      textContent = await extractTextFromBuffer(file.buffer, file.mimetype);
-    } else if (req.body.extractedText) {
+    // Extract Text safely
+    let textContent = await extractTextFromFile(file);
+    if (!textContent && req.body.extractedText) {
       textContent = req.body.extractedText;
-    } else {
-      textContent = `Sample document content for ${sourceFileName}. Contains key definitions, conceptual principles, and practice problems for student evaluation.`;
-    }
-
-    if (!textContent || textContent.trim().length < 10) {
-      return res.status(400).json({
-        success: false,
-        message: "Unable to extract readable text from document. Please upload a clearer PDF or photo."
-      });
     }
 
     console.log(`[QUIZ] Extracted text length: ${textContent.length}`);
 
-    // Generate Fresh Questions via AI
+    // Generate Fresh Questions
     console.log(`[QUIZ] Generating fresh questions`);
-    const cleanQuestions = await generateAiQuestions(textContent, difficulty, 10);
+    const cleanQuestions = await generateAiQuestions(textContent, difficulty, 10, sourceFileName);
 
     if (!cleanQuestions || cleanQuestions.length === 0) {
-      // DO NOT RETURN AN OLD CACHED QUIZ
       return res.status(500).json({
         success: false,
         message: "Unable to generate a new quiz from this document. Please try again."
@@ -68,7 +59,7 @@ exports.generateQuiz = async (req, res) => {
       documentId: documentId || newTestId.toString(),
       sourceFile: sourceFileName,
       difficulty: difficulty.toLowerCase(),
-      duration: finalDuration,
+      duration: parsedDuration,
       questions: cleanQuestions,
       createdAt: new Date()
     });
@@ -100,7 +91,6 @@ exports.generateQuiz = async (req, res) => {
 
 /**
  * GET MOCK TEST BY ID
- * Solves "Mock test not found" by checking _id, testId, and documentId
  */
 exports.getMockTestById = async (req, res) => {
   try {

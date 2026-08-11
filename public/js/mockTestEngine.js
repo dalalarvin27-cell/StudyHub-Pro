@@ -1,15 +1,12 @@
 /**
  * EduVault Mock Test Frontend Engine
- * Handles Timer, Auto-Submit, Manual Submit, and Quiz Navigation
+ * Supports Custom Timer (5m, 15m, 30m, 60m, 120m & custom typed minutes)
  */
 
 let timerInterval = null;
 let currentSecondsLeft = 0;
 let isTestSubmitted = false;
 
-/**
- * Launch Test Series
- */
 window.startTest = function(testDataOrId) {
   try {
     console.log("[MOCK ENGINE] Launching test...", testDataOrId);
@@ -52,12 +49,8 @@ window.startTest = function(testDataOrId) {
   }
 };
 
-/**
- * Generate & Launch Custom Test
- */
 window.generateAndLaunchCustomTest = async function(formData) {
   try {
-    // Clear stale state
     localStorage.removeItem("currentQuiz");
     sessionStorage.removeItem("currentQuiz");
 
@@ -82,7 +75,21 @@ window.generateAndLaunchCustomTest = async function(formData) {
 };
 
 /**
- * Initialize Test Timer (5, 10, 15 mins)
+ * Format Time (Supports HH:MM:SS for long custom timers)
+ */
+function formatTimeDisplay(totalSecs) {
+  const hrs = Math.floor(totalSecs / 3600);
+  const mins = Math.floor((totalSecs % 3600) / 60);
+  const secs = totalSecs % 60;
+
+  if (hrs > 0) {
+    return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+/**
+ * Initialize Test Timer
  */
 window.initTestTimer = function(durationInMins) {
   const duration = parseInt(durationInMins, 10) || 10;
@@ -91,6 +98,10 @@ window.initTestTimer = function(durationInMins) {
 
   const timerDisplay = document.getElementById("timerDisplay");
   if (timerInterval) clearInterval(timerInterval);
+
+  if (timerDisplay) {
+    timerDisplay.innerText = formatTimeDisplay(currentSecondsLeft);
+  }
 
   timerInterval = setInterval(() => {
     if (isTestSubmitted) return;
@@ -102,25 +113,17 @@ window.initTestTimer = function(durationInMins) {
     } else {
       currentSecondsLeft--;
       if (timerDisplay) {
-        const m = Math.floor(currentSecondsLeft / 60);
-        const s = currentSecondsLeft % 60;
-        timerDisplay.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        timerDisplay.innerText = formatTimeDisplay(currentSecondsLeft);
       }
     }
   }, 1000);
 };
 
-/**
- * Auto Submit on 00:00
- */
 window.autoSubmitMockTest = function() {
   alert("⏰ Time is up! Your test is being submitted automatically.");
   window.processMockTestSubmission();
 };
 
-/**
- * Manual Submit Button Listener with Confirmation
- */
 window.manualSubmitMockTest = function() {
   const confirmed = window.confirm("Are you sure you want to submit the test?");
   if (confirmed) {
@@ -129,21 +132,15 @@ window.manualSubmitMockTest = function() {
   }
 };
 
-/**
- * Process Submission & Lock Options
- */
 window.processMockTestSubmission = function() {
   isTestSubmitted = true;
 
-  // Lock options
   const inputs = document.querySelectorAll('input[type="radio"]');
   inputs.forEach(i => i.disabled = true);
 
-  // Hide Submit Button
   const submitBtn = document.getElementById("manualSubmitBtn");
   if (submitBtn) submitBtn.style.display = "none";
 
-  // Compute Score
   const cached = localStorage.getItem("currentQuiz");
   if (cached) {
     try {
