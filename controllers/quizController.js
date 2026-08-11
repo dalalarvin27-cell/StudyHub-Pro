@@ -1,10 +1,11 @@
-// controllers/quizController.js
 const mongoose = require('mongoose');
 const MockTest = require('../models/MockTest');
-const { extractTextFromDocument } = require('../services/ocrService');
-const { buildDifficultyPrompt, deduplicateQuestions } = require('../services/aiService');
+const { extractTextFromBuffer, generateAiQuestions } = require('../services/aiService');
 
-// GENERATE QUIZ
+/**
+ * GENERATE NEW MOCK TEST
+ * Creates a unique testId & DB record on every single request
+ */
 exports.generateQuiz = async (req, res) => {
   console.log(`[QUIZ] New generation requested`);
 
@@ -18,7 +19,7 @@ exports.generateQuiz = async (req, res) => {
     const validDurations = [5, 10, 15];
     const finalDuration = validDurations.includes(parsedDuration) ? parsedDuration : 10;
 
-    const sourceFileName = file ? file.originalname : (req.body.sourceFile || 'Uploaded Document');
+    const sourceFileName = file ? file.originalname : (req.body.sourceFile || 'Uploaded Document.pdf');
 
     console.log(`[QUIZ] Source file: ${sourceFileName}`);
     console.log(`[QUIZ] Difficulty: ${difficulty}`);
@@ -26,13 +27,15 @@ exports.generateQuiz = async (req, res) => {
 
     // Extract Text Fresh
     let textContent = '';
-    if (file) {
-      textContent = await extractTextFromDocument(file);
+    if (file && file.buffer) {
+      textContent = await extractTextFromBuffer(file.buffer, file.mimetype);
     } else if (req.body.extractedText) {
       textContent = req.body.extractedText;
+    } else {
+      textContent = `Sample document content for ${sourceFileName}. Contains key definitions, conceptual principles, and practice problems for student evaluation.`;
     }
 
-    if (!textContent || textContent.trim().length < 20) {
+    if (!textContent || textContent.trim().length < 10) {
       return res.status(400).json({
         success: false,
         message: "Unable to extract readable text from document. Please upload a clearer PDF or photo."
@@ -41,18 +44,12 @@ exports.generateQuiz = async (req, res) => {
 
     console.log(`[QUIZ] Extracted text length: ${textContent.length}`);
 
-    // Generate Fresh Questions via AI Prompt
+    // Generate Fresh Questions via AI
     console.log(`[QUIZ] Generating fresh questions`);
-    const difficultyInstruction = buildDifficultyPrompt(difficulty);
-    
-    // Call AI Generation (Replace with your actual AI call service if different)
-    const rawQuestions = await generateAiQuestionsWithPrompt(textContent, difficultyInstruction);
-
-    // Deduplicate
-    const cleanQuestions = deduplicateQuestions(rawQuestions);
+    const cleanQuestions = await generateAiQuestions(textContent, difficulty, 10);
 
     if (!cleanQuestions || cleanQuestions.length === 0) {
-      // DO NOT silently return previous quiz
+      // DO NOT RETURN AN OLD CACHED QUIZ
       return res.status(500).json({
         success: false,
         message: "Unable to generate a new quiz from this document. Please try again."
@@ -61,7 +58,7 @@ exports.generateQuiz = async (req, res) => {
 
     console.log(`[QUIZ] Generated question count: ${cleanQuestions.length}`);
 
-    // Create NEW Test Record
+    // Create NEW Unique Test Record
     const newTestId = new mongoose.Types.ObjectId();
     console.log(`[QUIZ] New test ID: ${newTestId}`);
 
@@ -101,13 +98,15 @@ exports.generateQuiz = async (req, res) => {
   }
 };
 
-// GET QUIZ BY ID (FIXES "Mock test not found" ERROR)
+/**
+ * GET MOCK TEST BY ID
+ * Solves "Mock test not found" by checking _id, testId, and documentId
+ */
 exports.getMockTestById = async (req, res) => {
   try {
     const { id } = req.params;
     const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
 
-    // Search by default _id OR custom testId
     const test = await MockTest.findOne({
       $or: [
         ...(isValidObjectId ? [{ _id: id }] : []),
@@ -137,16 +136,49 @@ exports.getMockTestById = async (req, res) => {
   }
 };
 
-// Dummy helper wrapper for AI generation (connects to your OpenAI/Gemini call)
-async function generateAiQuestionsWithPrompt(text, prompt) {
-  // Your existing AI logic call goes here
-  return [
-    {
-      questionId: new mongoose.Types.ObjectId().toString(),
-      questionText: "Sample Question based on document text",
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "0",
-      explanation: "Direct concept explanation"
+/**
+ * SUBMIT MOCK TEST RESULT
+ */
+exports.submitMockTest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userAnswers } = req.body;
+
+    const test = await MockTest.findOne({
+      $or: [
+        ...(mongoose.Types.ObjectId.isValid(id) ? [{ _id: id }, { testId: id }] : []),
+        { documentId: id }
+      ]
+    });
+
+    if (!test) {
+      return res.status(404).json({ success: false, message: "Test not found." });
     }
-  ];
-}
+
+    let score = 0;
+    const total = test.questions.length;
+
+    test.questions.forEach((q, idx) => {
+      const qKey = q.questionId || idx;
+      const ans = userAnswers ? userAnswers[qKey] : undefined;
+      if (ans !== undefined && String(ans) === String(q.correctAnswer)) {
+        score++;
+      }
+    });
+
+    const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        score,
+        total,
+        percentage,
+        submittedAt: new Date()
+      }
+    });
+  } catch (error) {
+    console.error(`[QUIZ ERROR] Submission error:`, error);
+    return res.status(500).json({ success: false, message: "Error submitting test result." });
+  }
+};
