@@ -1,6 +1,5 @@
 /**
  * EduVault Mock Test Frontend Engine
- * Handles custom timer durations, auto-submit, manual submit, and API calls
  */
 
 let timerInterval = null;
@@ -54,14 +53,13 @@ window.generateAndLaunchCustomTest = async function(formData) {
     localStorage.removeItem("currentQuiz");
     sessionStorage.removeItem("currentQuiz");
 
-    // Try /api/scan first, fallback to /api/mock-tests/generate
-    let response = await fetch("/api/scan", {
+    let response = await fetch("/api/mock-tests/generate", {
       method: "POST",
       body: formData
     });
 
     if (!response.ok) {
-      response = await fetch("/api/mock-tests/generate", {
+      response = await fetch("/api/scan", {
         method: "POST",
         body: formData
       });
@@ -78,13 +76,10 @@ window.generateAndLaunchCustomTest = async function(formData) {
     }
   } catch (err) {
     console.error("[MOCK ENGINE] Generation failed:", err);
-    alert("Unable to generate a new quiz from this document. Please try again.");
+    alert("Generation Error: " + (err.message || "Unable to generate a new quiz. Please try again."));
   }
 };
 
-/**
- * Format Time Display (HH:MM:SS or MM:SS)
- */
 function formatTimeDisplay(totalSecs) {
   const hrs = Math.floor(totalSecs / 3600);
   const mins = Math.floor((totalSecs % 3600) / 60);
@@ -96,9 +91,6 @@ function formatTimeDisplay(totalSecs) {
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 }
 
-/**
- * Initialize Test Timer
- */
 window.initTestTimer = function(durationInMins) {
   const duration = parseInt(durationInMins, 10) || 10;
   currentSecondsLeft = duration * 60;
