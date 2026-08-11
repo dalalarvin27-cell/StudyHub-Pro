@@ -1,65 +1,20 @@
-﻿const mongoose = require('mongoose');
-
-const questionSchema = new mongoose.Schema({
-  questionId: { 
-    type: String, 
-    default: () => new mongoose.Types.ObjectId().toString() 
-  },
-  questionText: { 
-    type: String, 
-    required: true 
-  },
-  options: [{ 
-    type: String, 
-    required: true 
-  }],
-  correctAnswer: { 
-    type: String, 
-    required: true 
-  },
-  explanation: { 
-    type: String, 
-    default: '' 
-  }
-});
+﻿const mongoose = require("mongoose");
 
 const mockTestSchema = new mongoose.Schema({
-  testId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    default: () => new mongoose.Types.ObjectId(),
-    required: true,
-    unique: true,
-    index: true
-  },
-  userId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User',
-    required: false
-  },
-  documentId: { 
-    type: String, 
-    default: null 
-  },
-  sourceFile: { 
-    type: String, 
-    required: true 
-  },
-  difficulty: { 
-    type: String, 
-    enum: ['easy', 'medium', 'hard'], 
-    default: 'medium' 
-  },
-  duration: { 
-    type: Number, 
-    min: 1,
-    max: 600, // Custom duration up to 10 hours (600 mins)
-    default: 10 
-  },
-  questions: [questionSchema],
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
-  }
+  title: { type: String, required: true },
+  category: { type: String, required: true },
+  subject: { type: String, default: "Full Test" },
+  description: { type: String },
+  totalQuestions: { type: Number, required: true, default: 10 },
+  totalMarks: { type: Number, required: true, default: 100 },
+  durationMinutes: { type: Number, required: true, default: 10 },
+  difficulty: { type: String, enum: ["Easy", "Medium", "Hard", "Mixed"], default: "Medium" },
+  negativeMarking: { type: Number, default: 0.33 },
+  instructions: [{ type: String }],
+  isPractice: { type: Boolean, default: true },
+  generatedFromScanId: { type: mongoose.Schema.Types.ObjectId, ref: "ScanDocument" },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('MockTest', mockTestSchema);
+module.exports = mongoose.models.MockTest || mongoose.model("MockTest", mockTestSchema);
