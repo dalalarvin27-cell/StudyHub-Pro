@@ -1,48 +1,52 @@
 ﻿// services/aiService.js
 
 /**
- * Build prompt matrix based on selected difficulty
+ * Difficulty-specific system instructions
  */
 function buildDifficultyPrompt(difficulty) {
-  switch (difficulty.toLowerCase()) {
-    case 'easy':
-      return `
+  const level = (difficulty || 'medium').toLowerCase();
+  
+  if (level === 'easy') {
+    return `
 DIFFICULTY LEVEL: EASY
-- Focus on basic definitions, direct concepts, simple recall, and standard terminology.
-- Options should have clear, distinct choices with minimal ambiguity.
+- Focus on basic definitions, direct factual recall, and simple fundamental concepts.
+- Options must be straightforward and clearly distinguishable.
 `;
-    case 'medium':
-      return `
-DIFFICULTY LEVEL: MEDIUM
-- Focus on conceptual understanding, practical application, and cause-and-effect reasoning.
-- Include scenarios that test moderate comprehension of the source material.
-`;
-    case 'hard':
-      return `
+  } else if (level === 'hard') {
+    return `
 DIFFICULTY LEVEL: HARD
-- Focus on deep conceptual analysis, multi-step logical reasoning, complex application, and tricky edge cases.
-- Include closely related choices that require careful distinction and deep understanding.
+- Focus on deep conceptual understanding, multi-step logical reasoning, practical application, and tricky edge cases.
+- Options must include closely related plausible distractors that require careful analysis.
 `;
-    default:
-      return `DIFFICULTY LEVEL: MEDIUM`;
   }
+  
+  // Default Medium
+  return `
+DIFFICULTY LEVEL: MEDIUM
+- Focus on conceptual comprehension, moderate problem-solving, and application of concepts.
+- Options should test sound understanding of the subject matter.
+`;
 }
 
 /**
- * Deduplicate questions in the generated array
+ * Filter out duplicate questions
  */
 function deduplicateQuestions(questions) {
+  if (!Array.isArray(questions)) return [];
+  
   const seenTexts = new Set();
-  const unique = [];
+  const uniqueQuestions = [];
 
   for (const q of questions) {
-    const normalizedText = q.questionText.trim().toLowerCase();
-    if (!seenTexts.has(normalizedText)) {
-      seenTexts.add(normalizedText);
-      unique.push(q);
+    if (!q || !q.questionText) continue;
+    const normalized = q.questionText.trim().toLowerCase();
+    
+    if (!seenTexts.has(normalized)) {
+      seenTexts.add(normalized);
+      uniqueQuestions.push(q);
     }
   }
-  return unique;
+  return uniqueQuestions;
 }
 
 module.exports = {
