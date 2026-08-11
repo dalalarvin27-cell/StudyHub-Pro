@@ -1,5 +1,5 @@
 // ==========================================================================
-// STUDYHUB PRO - FULL ENGINE (ALL FEATURES INTACT + NEW DESIGN HANDLERS)
+// EDUVAULT / STUDYHUB PRO - FULL UNIFIED ENGINE WITH PROFILE AVATAR FIX
 // ==========================================================================
 
 const CLASS_SUBJECTS_MAP = {
@@ -36,54 +36,54 @@ document.addEventListener("DOMContentLoaded", () => {
     initAdminPanel();
 });
 
-/* QUICK SEARCH PILL HANDLER (NEW DESIGN FEATURE) */
-window.quickSearch = function(term) {
-    const input = document.getElementById("heroSearchInput") || document.querySelector(".search-box input");
-    if (input) {
-        input.value = term;
-        const noteCards = document.querySelectorAll(".note-card");
-        noteCards.forEach((card) => {
-            const title = card.querySelector("h3")?.innerText.toLowerCase() || "";
-            const desc = card.querySelector("p")?.innerText.toLowerCase() || "";
-            const tag = card.querySelector(".note-tag")?.innerText.toLowerCase() || "";
-
-            card.style.display = (title.includes(term.toLowerCase()) || desc.includes(term.toLowerCase()) || tag.includes(term.toLowerCase())) ? "flex" : "none";
-        });
-        document.getElementById("notes")?.scrollIntoView({ behavior: "smooth" });
-    }
-};
-
 /* -------------------------------------------------------------------------
-   1. AUTHENTICATION & MOBILE GOOGLE LOGIN
+   1. UNIFIED AUTHENTICATION & CIRCLE PROFILE AVATAR FIX
    ------------------------------------------------------------------------- */
 function initAuthSystem() {
-    const user = JSON.parse(localStorage.getItem("studyhub_user"));
-    const authButtons = document.querySelectorAll(".auth-buttons");
+    let user = JSON.parse(localStorage.getItem("eduvault_user")) || JSON.parse(localStorage.getItem("studyhub_user"));
+    let token = localStorage.getItem("eduvault_token");
 
-    authButtons.forEach(container => {
+    // Auto-sync token if logged in via Google simulation
+    if (user && !token) {
+        token = "dummy_token_" + Date.now();
+        localStorage.setItem("eduvault_token", token);
+        localStorage.setItem("eduvault_user", JSON.stringify(user));
+        localStorage.setItem("studyhub_user", JSON.stringify(user));
+    }
+
+    const containers = document.querySelectorAll(".auth-buttons, #authContainer");
+
+    containers.forEach(container => {
         if (user) {
+            const avatarUrl = user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name)}`;
             container.innerHTML = `
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <img src="${user.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.name}" 
-                         alt="User" style="width:32px; height:34px; border-radius:50%; border:2px solid #4f46e5;">
+                <div class="user-avatar-badge" style="display:inline-flex; align-items:center; gap:8px; background:rgba(79, 70, 229, 0.08); padding:4px 10px 4px 6px; border-radius:30px; border:1px solid rgba(79, 70, 229, 0.25);">
+                    <img src="${avatarUrl}" alt="${user.name}" style="width:34px; height:34px; border-radius:50%; object-fit:cover; border:2px solid #4f46e5; background:#fff;">
                     <span style="font-weight:700; font-size:0.85rem; color:#0f172a;">${user.name.split(" ")[0]}</span>
-                    <button onclick="handleLogout()" class="btn btn-outline" style="padding: 4px 10px; font-size:0.75rem;">Logout</button>
+                    <button onclick="handleLogout()" class="btn btn-outline" title="Logout" style="padding:4px 8px; font-size:0.75rem; border-radius:20px; background:#fff; margin-left:4px;">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
                 </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <a href="login.html" class="btn btn-outline">Log In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
             `;
         }
     });
 
     document.addEventListener("click", (e) => {
-        const btn = e.target.closest(".btn-social, .btn-primary");
-        if (btn && (btn.innerText.includes("Google") || btn.innerText.includes("GitHub") || btn.innerText.includes("Sign In"))) {
-            if (!user && e.target.closest("form") === null) {
-                handleGoogleLogin();
-            }
+        const btn = e.target.closest(".btn-social");
+        if (btn && (btn.innerText.includes("Google") || btn.innerText.includes("GitHub"))) {
+            handleGoogleLogin();
         }
     });
 }
 
 window.handleLogout = function() {
+    localStorage.removeItem("eduvault_token");
+    localStorage.removeItem("eduvault_user");
     localStorage.removeItem("studyhub_user");
     alert("Logged out successfully!");
     window.location.reload();
@@ -103,7 +103,7 @@ function handleGoogleLogin() {
                     </div>
                     <button onclick="document.getElementById('googleAccountModal').remove()" style="background:none; border:none; font-size:1.5rem; color:#64748b; cursor:pointer;">&times;</button>
                 </div>
-                <p style="font-size:0.88rem; color:#64748b; margin-bottom:20px;">Choose an account to continue to <strong>StudyHub Pro</strong></p>
+                <p style="font-size:0.88rem; color:#64748b; margin-bottom:20px;">Choose an account to continue to <strong>StudyHub Pro / EduVault</strong></p>
                 
                 <div onclick="selectGoogleAccount('Arvin Kumar', 'arvin.student@gmail.com')" style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:10px; cursor:pointer; background:#f8fafc;">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Arvin" style="width:40px; height:40px; border-radius:50%;">
@@ -133,11 +133,14 @@ function handleGoogleLogin() {
 }
 
 window.selectGoogleAccount = function(name, email) {
-    const userObj = { name: name, email: email, avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}` };
+    const userObj = { name: name, email: email, avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}` };
+    localStorage.setItem("eduvault_user", JSON.stringify(userObj));
     localStorage.setItem("studyhub_user", JSON.stringify(userObj));
+    localStorage.setItem("eduvault_token", "token_" + Date.now());
+
     document.getElementById("googleAccountModal")?.remove();
     alert(`🎉 Signed in successfully as ${name}!`);
-    window.location.href = "index.html";
+    initAuthSystem();
 };
 
 window.promptCustomAccount = function() {
@@ -181,8 +184,24 @@ function initNotesRendering() {
     `).join("");
 }
 
+window.quickSearch = function(term) {
+    const input = document.getElementById("heroSearchInput") || document.querySelector(".search-box input");
+    if (input) {
+        input.value = term;
+        const noteCards = document.querySelectorAll(".note-card");
+        noteCards.forEach((card) => {
+            const title = card.querySelector("h3")?.innerText.toLowerCase() || "";
+            const desc = card.querySelector("p")?.innerText.toLowerCase() || "";
+            const tag = card.querySelector(".note-tag")?.innerText.toLowerCase() || "";
+
+            card.style.display = (title.includes(term.toLowerCase()) || desc.includes(term.toLowerCase()) || tag.includes(term.toLowerCase())) ? "flex" : "none";
+        });
+        document.getElementById("notes")?.scrollIntoView({ behavior: "smooth" });
+    }
+};
+
 /* -------------------------------------------------------------------------
-   3. INTERACTIVE CLASS -> SUBJECT SELECTOR (NO JUMP FIX)
+   3. INTERACTIVE CLASS -> SUBJECT SELECTOR
    ------------------------------------------------------------------------- */
 function initCategoryFilter() {
     document.querySelectorAll(".category-card").forEach((card) => {
@@ -561,7 +580,7 @@ function initDownloadSystem() {
             const cardTitle = card?.querySelector("h3")?.innerText || document.getElementById("modalTitle")?.innerText || "Notes";
             const category = card?.querySelector(".note-tag")?.innerText || document.getElementById("modalTag")?.innerText || "General";
             
-            const user = JSON.parse(localStorage.getItem("studyhub_user"));
+            const user = JSON.parse(localStorage.getItem("eduvault_user")) || JSON.parse(localStorage.getItem("studyhub_user"));
 
             const logEntry = {
                 id: Date.now(),
@@ -624,6 +643,7 @@ function initNoteModal() {
     document.getElementById("closeModal")?.addEventListener("click", () => modal.style.display = "none");
     modal?.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
 }
+
 /* INSTANT HOMEPAGE CAMERA SCAN MODAL TRIGGER */
 window.openHomepageScanModal = function() {
     const existingModal = document.getElementById("homepageScanModal");

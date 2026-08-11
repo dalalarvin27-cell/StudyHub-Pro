@@ -3,17 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Scan / PDF Notes -> Custom Test Generator | EduVault</title>
+    <title>Mobile Scan / PDF Notes -> Custom Test Series Generator | EduVault</title>
+    
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
+    <!-- NAVBAR WITH AUTH PROFILE AVATAR CONTAINER -->
     <header class="header">
         <nav class="navbar">
-            <a href="index.html" class="logo"><i class="fa-solid fa-vault"></i> EduVault</a>
-            <ul class="nav-links">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <span>StudyHub <strong>Pro</strong></span>
+            </a>
+
+            <div class="mobile-toggle" id="mobileToggle">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+
+            <ul class="nav-links" id="navLinks">
                 <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
                 <li><a href="mock-tests.html"><i class="fa-solid fa-vial-circle-check"></i> Mock Tests</a></li>
                 <li><a href="pyq.html"><i class="fa-solid fa-file-signature"></i> PYQs</a></li>
@@ -21,22 +33,27 @@
                 <li><a href="scan.html" class="active"><i class="fa-solid fa-camera"></i> Scan / PDF Notes</a></li>
                 <li><a href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
             </ul>
-            <div id="authContainer"></div>
+
+            <div class="auth-buttons" id="authContainer">
+                <a href="login.html" class="btn btn-outline">Log In</a>
+                <a href="signup.html" class="btn btn-primary">Sign Up</a>
+            </div>
         </nav>
     </header>
 
     <main style="max-width:950px; margin:40px auto; padding:0 24px;">
+        <!-- MAIN SCAN / UPLOAD CARD -->
         <div class="glass-panel" style="padding:36px; text-align:center;">
             <i class="fa-solid fa-camera-retro" style="font-size:3rem; color:var(--primary); margin-bottom:16px;"></i>
-            <h2>Scan Photos or Upload PDF Notes ➔ Custom Test Generator 📸📄</h2>
+            <h2>Scan Photos or Upload PDF Notes ➔ Custom Test Series 📸📄</h2>
             <p style="color:var(--text-muted); margin-bottom:28px;">Capture handwritten pages using phone camera or upload PDF files to generate a custom timed Test Series.</p>
 
             <form id="scanUploadForm" style="display:flex; flex-direction:column; gap:20px; align-items:center;">
-                <!-- Accept Camera Photos AND PDF Files -->
+                <!-- Accept both Camera Photos and PDF Documents -->
                 <input type="file" id="cameraInput" accept="image/*,application/pdf" multiple style="display:none;" onchange="handleFileSelect(event)">
                 
                 <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
-                    <button type="button" onclick="document.getElementById('cameraInput').click()" class="btn btn-primary" style="padding:14px 28px; font-size:1rem;">
+                    <button type="button" onclick="document.getElementById('cameraInput').click()" class="btn btn-primary" style="padding:14px 28px; font-size:1rem; border-radius:30px;">
                         <i class="fa-solid fa-camera"></i> Open Phone Camera / Upload PDF
                     </button>
                 </div>
@@ -44,17 +61,17 @@
                 <div id="fileSelectionStatus" style="font-weight:700; color:var(--primary); font-size:0.9rem;"></div>
                 <div id="imagePreviewGrid" style="display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; justify-content:center;"></div>
 
-                <button type="submit" id="btnRunOCR" class="btn btn-primary" style="display:none; padding:12px 28px;">
+                <button type="submit" id="btnRunOCR" class="btn btn-primary" style="display:none; padding:12px 28px; border-radius:30px;">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> Process OCR & Extract Notes Text
                 </button>
             </form>
         </div>
 
-        <!-- OCR Extracted Text & FULL CUSTOM TEST CONFIGURATION SECTION -->
+        <!-- OCR RESULT & CUSTOM TEST SERIES CONFIGURATION SECTION -->
         <section id="ocrResultSection" style="display:none; margin-top:40px;">
             <div class="glass-card">
-                <h3>Extracted Notes Verification</h3>
-                <textarea id="extractedTextDisplay" rows="5" style="width:100%; margin-top:12px; padding:12px; border-radius:8px; border:1px solid var(--border-color);"></textarea>
+                <h3>Extracted Notes Text Verification</h3>
+                <textarea id="extractedTextDisplay" rows="5" style="width:100%; margin-top:12px; padding:12px; border-radius:8px; border:1px solid var(--border-color); font-family:inherit; font-size:0.9rem;"></textarea>
 
                 <div style="background:var(--primary-light); padding:24px; border-radius:16px; margin-top:24px; border:1px solid rgba(79,70,229,0.2);">
                     <h3 style="margin-bottom:16px; color:var(--primary); font-size:1.2rem;"><i class="fa-solid fa-sliders"></i> Custom Test Series Configuration:</h3>
@@ -106,7 +123,7 @@
             </div>
         </section>
 
-        <!-- Full-screen Test Overlay Container -->
+        <!-- FULL-SCREEN TEST SERIES OVERLAY CONTAINER -->
         <div id="testOverlay" class="test-overlay" style="display:none;">
             <div class="test-header">
                 <div>
@@ -148,85 +165,135 @@
         </div>
     </main>
 
+    <!-- MOBILE MENU TOGGLE SCRIPT -->
+    <script>
+        document.getElementById("mobileToggle")?.addEventListener("click", () => {
+            const navLinks = document.getElementById("navLinks");
+            navLinks?.classList.toggle("active");
+            const icon = document.querySelector("#mobileToggle i");
+            if (icon) {
+                icon.classList.toggle("fa-bars");
+                icon.classList.toggle("fa-xmark");
+            }
+        });
+    </script>
+
+    <!-- LOGIC SCRIPTS -->
+    <script src="script.js"></script>
     <script src="js/app.js"></script>
     <script src="js/mockTestEngine.js"></script>
+
+    <!-- PAGE SPECIFIC SCAN ENGINE CONTROLLER -->
     <script>
         let selectedFiles = [];
         let currentScanDoc = null;
 
         function handleFileSelect(e) {
-          selectedFiles = Array.from(e.target.files);
-          const grid = document.getElementById("imagePreviewGrid");
-          const status = document.getElementById("fileSelectionStatus");
-          
-          if (selectedFiles.length > 0) {
-            status.innerText = `Selected ${selectedFiles.length} file(s) for scanning.`;
-            grid.innerHTML = selectedFiles.map(f => {
-              if (f.type.includes("pdf")) {
-                return `<div style="padding:14px; background:#eef2ff; border-radius:10px; font-weight:700; color:#4f46e5;"><i class="fa-solid fa-file-pdf" style="font-size:1.8rem;"></i><br>${f.name}</div>`;
-              } else {
-                return `<img src="${URL.createObjectURL(f)}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--primary);">`;
-              }
-            }).join("");
+            selectedFiles = Array.from(e.target.files);
+            const grid = document.getElementById("imagePreviewGrid");
+            const status = document.getElementById("fileSelectionStatus");
+            
+            if (selectedFiles.length > 0) {
+                status.innerText = `Selected ${selectedFiles.length} file(s) for scanning.`;
+                grid.innerHTML = selectedFiles.map(f => {
+                    if (f.type.includes("pdf")) {
+                        return `<div style="padding:14px; background:#eef2ff; border-radius:10px; font-weight:700; color:#4f46e5; border:1px solid #c7d2fe;"><i class="fa-solid fa-file-pdf" style="font-size:1.8rem; margin-bottom:4px;"></i><br>${f.name}</div>`;
+                    } else {
+                        return `<img src="${URL.createObjectURL(f)}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid var(--primary);">`;
+                    }
+                }).join("");
 
-            document.getElementById("btnRunOCR").style.display = "inline-flex";
-          }
+                document.getElementById("btnRunOCR").style.display = "inline-flex";
+            }
         }
 
-        document.getElementById("scanUploadForm").addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const token = localStorage.getItem("eduvault_token");
-          if (!token) return alert("Test generate karne ke liye Log In zaroori hai.");
+        document.getElementById("scanUploadForm")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            let user = JSON.parse(localStorage.getItem("eduvault_user")) || JSON.parse(localStorage.getItem("studyhub_user"));
+            let token = localStorage.getItem("eduvault_token");
 
-          const formData = new FormData();
-          selectedFiles.forEach(f => formData.append("images", f));
+            // Prompt Google Login if not logged in
+            if (!user) {
+                if (typeof handleGoogleLogin === "function") {
+                    handleGoogleLogin();
+                } else {
+                    alert("Test generate karne ke liye Login zaroori hai.");
+                    window.location.href = "login.html";
+                }
+                return;
+            }
 
-          document.getElementById("btnRunOCR").innerText = "Processing OCR & Reading Notes...";
+            if (selectedFiles.length === 0) return alert("Pehle camera se photo khinchein ya PDF select karein.");
 
-          try {
-            const res = await fetch("/api/scan/upload", {
-              method: "POST",
-              headers: { "Authorization": `Bearer ${token}` },
-              body: formData
-            });
-            const data = await res.json();
-            if (!data.success) throw new Error(data.message);
+            const formData = new FormData();
+            selectedFiles.forEach(f => formData.append("images", f));
 
-            currentScanDoc = data.scanDoc;
-            document.getElementById("ocrResultSection").style.display = "block";
-            document.getElementById("extractedTextDisplay").value = data.scanDoc.cleanText;
-            document.getElementById("btnRunOCR").innerText = "OCR Scan Completed!";
-          } catch(err) {
-            alert(err.message || "OCR failed.");
-          }
+            const btn = document.getElementById("btnRunOCR");
+            btn.innerText = "Processing OCR & Reading Notes...";
+
+            try {
+                const res = await fetch("/api/scan/upload", {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message);
+
+                currentScanDoc = data.scanDoc;
+                document.getElementById("ocrResultSection").style.display = "block";
+                document.getElementById("extractedTextDisplay").value = data.scanDoc.cleanText;
+                btn.innerText = "OCR Scan Completed!";
+                document.getElementById("ocrResultSection").scrollIntoView({ behavior: "smooth" });
+            } catch(err) {
+                btn.innerText = "Process OCR & Extract Notes Text";
+                alert(err.message || "OCR processing failed.");
+            }
         });
 
         async function launchCustomScannedTestSeries() {
-          const token = localStorage.getItem("eduvault_token");
-          if (!currentScanDoc) return alert("Pehle photos ya PDF upload karke scan karein.");
+            let user = JSON.parse(localStorage.getItem("eduvault_user")) || JSON.parse(localStorage.getItem("studyhub_user"));
+            let token = localStorage.getItem("eduvault_token");
 
-          const difficulty = document.getElementById("scanDifficulty").value;
-          const qCount = Number(document.getElementById("scanQCount").value);
-          const durationMins = Number(document.getElementById("scanTimerDuration").value);
-
-          try {
-            const res = await fetch(`/api/scan/${currentScanDoc._id}/generate-test`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-              body: JSON.stringify({ 
-                questionsCount: qCount, 
-                difficulty: difficulty, 
-                durationMinutes: durationMins,
-                totalMarks: qCount * 4
-              })
-            });
-            const data = await res.json();
-            if (data.testId) {
-              startTest(data.testId); // Launch Full Screen Timed Test Series!
+            if (!user) {
+                if (typeof handleGoogleLogin === "function") {
+                    handleGoogleLogin();
+                } else {
+                    window.location.href = "login.html";
+                }
+                return;
             }
-          } catch(e) {
-            alert("Custom Test generation error.");
-          }
+
+            if (!currentScanDoc) return alert("Pehle photos ya PDF upload karke OCR scan karein.");
+
+            const difficulty = document.getElementById("scanDifficulty").value;
+            const qCount = Number(document.getElementById("scanQCount").value);
+            const durationMins = Number(document.getElementById("scanTimerDuration").value);
+
+            try {
+                const res = await fetch(`/api/scan/${currentScanDoc._id}/generate-test`, {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json", 
+                        "Authorization": `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ 
+                        questionsCount: qCount, 
+                        difficulty: difficulty, 
+                        durationMinutes: durationMins,
+                        totalMarks: qCount * 4
+                    })
+                });
+                const data = await res.json();
+                if (data.testId) {
+                    startTest(data.testId); // Direct Launch Full Screen Timed Test Series!
+                } else {
+                    alert("Test generation failed: " + (data.message || "Unknown error"));
+                }
+            } catch(e) {
+                alert("Custom Test generation error: " + e.message);
+            }
         }
     </script>
 </body>
