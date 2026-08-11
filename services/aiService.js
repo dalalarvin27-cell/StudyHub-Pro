@@ -1,23 +1,51 @@
-﻿async function callAIProvider(prompt, systemInstruction = "") {
-  const provider = process.env.AI_PROVIDER || "mock";
-  const apiKey = process.env.AI_API_KEY;
-  if (!apiKey || provider === "mock") return null;
-  try {
-    if (provider === "openai") {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model: process.env.AI_MODEL || "gpt-4o-mini",
-          messages: [{ role: "system", content: systemInstruction || "You are EduVault AI." }, { role: "user", content: prompt }],
-          temperature: 0.7
-        })
-      });
-      const data = await response.json();
-      return data.choices?.[0]?.message?.content || null;
-    }
-  } catch (err) {
-    return null;
+﻿// services/aiService.js
+
+/**
+ * Build prompt matrix based on selected difficulty
+ */
+function buildDifficultyPrompt(difficulty) {
+  switch (difficulty.toLowerCase()) {
+    case 'easy':
+      return `
+DIFFICULTY LEVEL: EASY
+- Focus on basic definitions, direct concepts, simple recall, and standard terminology.
+- Options should have clear, distinct choices with minimal ambiguity.
+`;
+    case 'medium':
+      return `
+DIFFICULTY LEVEL: MEDIUM
+- Focus on conceptual understanding, practical application, and cause-and-effect reasoning.
+- Include scenarios that test moderate comprehension of the source material.
+`;
+    case 'hard':
+      return `
+DIFFICULTY LEVEL: HARD
+- Focus on deep conceptual analysis, multi-step logical reasoning, complex application, and tricky edge cases.
+- Include closely related choices that require careful distinction and deep understanding.
+`;
+    default:
+      return `DIFFICULTY LEVEL: MEDIUM`;
   }
 }
-module.exports = { callAIProvider };
+
+/**
+ * Deduplicate questions in the generated array
+ */
+function deduplicateQuestions(questions) {
+  const seenTexts = new Set();
+  const unique = [];
+
+  for (const q of questions) {
+    const normalizedText = q.questionText.trim().toLowerCase();
+    if (!seenTexts.has(normalizedText)) {
+      seenTexts.add(normalizedText);
+      unique.push(q);
+    }
+  }
+  return unique;
+}
+
+module.exports = {
+  buildDifficultyPrompt,
+  deduplicateQuestions
+};

@@ -1,18 +1,36 @@
-﻿const mongoose = require("mongoose");
-const mockTestSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  category: { type: String, required: true },
-  subject: { type: String, default: "Full Test" },
-  description: { type: String },
-  totalQuestions: { type: Number, required: true, default: 10 },
-  totalMarks: { type: Number, required: true, default: 100 },
-  durationMinutes: { type: Number, required: true, default: 30 },
-  difficulty: { type: String, enum: ["Easy", "Medium", "Hard", "Mixed"], default: "Medium" },
-  negativeMarking: { type: Number, default: 0.33 },
-  instructions: [{ type: String }],
-  isPractice: { type: Boolean, default: true },
-  generatedFromScanId: { type: mongoose.Schema.Types.ObjectId, ref: "ScanDocument" },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+﻿// models/Quiz.js
+const mongoose = require('mongoose');
+
+const questionSchema = new mongoose.Schema({
+  questionId: { type: String, required: true },
+  questionText: { type: String, required: true },
+  options: [{ type: String, required: true }],
+  correctAnswer: { type: String, required: true }, // e.g. option index or option string
+  explanation: { type: String }
+});
+
+const quizSchema = new mongoose.Schema({
+  testId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    default: () => new mongoose.Types.ObjectId(),
+    unique: true,
+    required: true 
+  },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  documentId: { type: String },
+  sourceFile: { type: String, required: true },
+  difficulty: { 
+    type: String, 
+    enum: ['easy', 'medium', 'hard'], 
+    required: true 
+  },
+  duration: { 
+    type: Number, 
+    enum: [5, 10, 15], 
+    required: true 
+  },
+  questions: [questionSchema],
   createdAt: { type: Date, default: Date.now }
 });
-module.exports = mongoose.models.MockTest || mongoose.model("MockTest", mockTestSchema);
+
+module.exports = mongoose.model('Quiz', quizSchema);
