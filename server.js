@@ -8,6 +8,8 @@ const errorHandler = require("./middleware/errorHandler");
 const { seedDatabaseIfEmpty } = require("./services/dbSeeder");
 
 const app = express();
+app.set("trust proxy", 1); // Fix for Render X-Forwarded-For rate-limit warning
+
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
@@ -17,7 +19,6 @@ app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Safe Route Handlers
 let authRoutes, mockTestRoutes, pyqRoutes, onePagerRoutes, scanRoutes, attemptRoutes, bookmarkRoutes, adminRoutes, noteRoutes, feedbackRoutes;
 
 try { authRoutes = require("./routes/authRoutes"); } catch(e) {}
