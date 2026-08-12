@@ -10,55 +10,105 @@ function sanitizeExtractedText(text) {
     .replace(/Parent \d+ \d+ R|Resources|ProcSet|ImageB|ImageC|ImageI|Rotate \d+|PageMode|Catalog|CreationDate|ModDate|Producer|ReportLab|FlateDecode|ASCII85Decode/gi, ' ')
     .replace(/\/([A-Za-z0-9]+)/g, ' ')
     .replace(/[\/\<\>\{\}\[\]\\]/g, ' ')
-    .replace(/[^\x20-\x7E\n]/g, ' ')
+    .replace(/[^\x20-\x7E\n\u0900-\u097F]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
   return clean;
 }
 
+// Universal Multi-Branch, Multi-Language, Multi-Subject Classifier
 function detectSubjectFromText(text = "", title = "") {
   const fileTitle = (title || "").toLowerCase();
   const bodyText = (text || "").toLowerCase();
   const combined = fileTitle + " " + bodyText;
 
-  if (fileTitle.match(/trigonometry|trig|math|calculus|algebra|geometry|formula/) || 
-      combined.match(/trigonometry|sin|cos|tan|cot|sec|cosec|calculus|integral|derivative|matrix|vector|algebra|pythagoras|identity|formula/)) {
-    return { subject: "Mathematics", icon: "📐" };
-  }
-  if (fileTitle.match(/physics/) || 
-      combined.match(/physics|velocity|force|acceleration|gravity|electric|current|light|optics|motion|energy|momentum|voltage|watt|ohm|lens/)) {
-    return { subject: "Physics", icon: "⚛️" };
-  }
-  if (fileTitle.match(/chem|chemistry/) || 
-      combined.match(/chemistry|reaction|element|acid|base|compound|mole|organic|periodic|bond|solution|chemical|atomic/)) {
-    return { subject: "Chemistry", icon: "🧪" };
-  }
-  if (fileTitle.match(/bio|biology/) || 
-      combined.match(/biology|cell|dna|organism|botany|zoology|gene|plant|blood|heart|tissue|species/)) {
-    return { subject: "Biology", icon: "🧬" };
-  }
-  if (fileTitle.match(/history/) || 
-      combined.match(/history|war|king|dynasty|empire|battle|revol|century|british|india|freedom|movement|ancient|medieval/)) {
-    return { subject: "History", icon: "🏛️" };
-  }
-  if (fileTitle.match(/geo|geography/) || 
-      combined.match(/geography|river|mountain|map|climate|soil|earth|ocean|atmosphere|state|border/)) {
-    return { subject: "Geography", icon: "🌍" };
-  }
-  if (fileTitle.match(/polity|constitution/) || 
-      combined.match(/polity|constitution|article|parliament|president|court|rights|law|governance/)) {
-    return { subject: "Polity & Governance", icon: "📜" };
-  }
-  if (fileTitle.match(/cs|computer|code|python|java|dbms/) || 
-      combined.match(/computer|java|python|dbms|sql|database|algorithm|network|system|software|programming/)) {
-    return { subject: "Computer Science / IT", icon: "💻" };
-  }
-  if (fileTitle.match(/english|grammar/) || 
-      combined.match(/english|grammar|noun|verb|tense|idiom|synonym|antonym|passage|vocab/)) {
-    return { subject: "English", icon: "📚" };
+  const isHindiText = /[\u0900-\u097F]/.test(text + title);
+
+  // 1. Python & Programming Languages (Checked BEFORE Math!)
+  if (fileTitle.match(/python|java|javascript|js|cpp|c\+\+|html|css|sql|dbms|programming|coding|code|syntax|data_structures|dsa/) ||
+      combined.match(/python|def\s+|lambda|import\s+pandas|import\s+numpy|django|flask|print\(|java|class\s+|public\s+static|c\+\+|javascript|html|css|sql|select\s+from|database|data\s+structure|pointer|array|linked\s+list/)) {
+    
+    let progLang = "Programming & Computer Science";
+    if (combined.includes("python")) progLang = "Python Programming";
+    else if (combined.includes("java")) progLang = "Java Programming";
+    else if (combined.includes("c++") || combined.includes("cpp")) progLang = "C++ Programming";
+    else if (combined.includes("sql") || combined.includes("dbms")) progLang = "DBMS & SQL";
+
+    return { subject: progLang, icon: "🐍", isHindi: isHindiText };
   }
 
-  return { subject: "General Study Material", icon: "📄" };
+  // 2. Hindi Language & Literature
+  if (isHindiText || fileTitle.match(/hindi|vyakaran|sahitya|kavita/) || combined.match(/हिंदी|व्याकरण|गद्य|पद्य|साहित्य|समास|संधि|कारक|संज्ञा|सर्वनाम|पर्यायवाची/)) {
+    return { subject: "Hindi Language & Literature", icon: "🇮🇳", isHindi: true };
+  }
+
+  // 3. Mechanical & Civil Engineering
+  if (fileTitle.match(/mech|mechanical|civil|thermodynamics|fluid|cad|structure/) || 
+      combined.match(/thermodynamics|fluid\s+mechanics|stress|strain|torque|engine|viscosity|concrete|beam|cad|cam|turbine/)) {
+    return { subject: "Mechanical / Civil Engineering", icon: "⚙️", isHindi: isHindiText };
+  }
+
+  // 4. Electrical & Electronics Engineering
+  if (fileTitle.match(/electrical|eee|ece|circuit|semiconductor|signal|transformer/) || 
+      combined.match(/circuit|resistor|capacitor|inductor|semiconductor|diode|transistor|op-amp|signal\s+system|electromagnet/)) {
+    return { subject: "Electrical & Electronics Engg", icon: "⚡", isHindi: isHindiText };
+  }
+
+  // 5. Commerce, Accounting & Economics
+  if (fileTitle.match(/commerce|account|finance|economics|business|gst|tax/) || 
+      combined.match(/accounting|journal|ledger|balance\s+sheet|debit|credit|microeconomics|macroeconomics|gdp|inflation|market/)) {
+    return { subject: "Commerce & Economics", icon: "📈", isHindi: isHindiText };
+  }
+
+  // 6. Mathematics & Trigonometry
+  if (fileTitle.match(/trigonometry|trig|math|calculus|algebra|geometry/) || 
+      combined.match(/trigonometry|sin|cos|tan|cot|sec|cosec|calculus|integral|derivative|matrix|vector|algebra|pythagoras|identity/)) {
+    return { subject: "Mathematics", icon: "📐", isHindi: isHindiText };
+  }
+
+  // 7. Physics
+  if (fileTitle.match(/physics/) || 
+      combined.match(/physics|velocity|force|acceleration|gravity|electric\s+field|current|light|optics|motion|momentum|voltage|watt|ohm|lens/)) {
+    return { subject: "Physics", icon: "⚛️", isHindi: isHindiText };
+  }
+
+  // 8. Chemistry
+  if (fileTitle.match(/chem|chemistry/) || 
+      combined.match(/chemistry|chemical\s+reaction|element|acid|base|compound|mole|organic|periodic|bond|solution|atomic/)) {
+    return { subject: "Chemistry", icon: "🧪", isHindi: isHindiText };
+  }
+
+  // 9. Biology
+  if (fileTitle.match(/bio|biology/) || 
+      combined.match(/biology|cell|dna|organism|botany|zoology|gene|plant|blood|heart|tissue|species|photosynthesis/)) {
+    return { subject: "Biology", icon: "🧬", isHindi: isHindiText };
+  }
+
+  // 10. History
+  if (fileTitle.match(/history/) || 
+      combined.match(/history|war|king|dynasty|empire|battle|revol|century|british|india|freedom|movement|ancient|medieval/)) {
+    return { subject: "History", icon: "🏛️", isHindi: isHindiText };
+  }
+
+  // 11. Geography
+  if (fileTitle.match(/geo|geography/) || 
+      combined.match(/geography|river|mountain|map|climate|soil|earth|ocean|atmosphere|state|border/)) {
+    return { subject: "Geography", icon: "🌍", isHindi: isHindiText };
+  }
+
+  // 12. Polity & Law
+  if (fileTitle.match(/polity|constitution|law|legal/) || 
+      combined.match(/polity|constitution|article|parliament|president|court|rights|law|governance|jurisprudence/)) {
+    return { subject: "Polity & Law", icon: "📜", isHindi: isHindiText };
+  }
+
+  // 13. English Language
+  if (fileTitle.match(/english|grammar/) || 
+      combined.match(/english|grammar|noun|verb|tense|idiom|synonym|antonym|passage|vocab/)) {
+    return { subject: "English Language", icon: "📚", isHindi: false };
+  }
+
+  return { subject: title.replace(/\.[^/.]+$/, "").replace(/_/g, " ") || "Uploaded Study Material", icon: "📄", isHindi: isHindiText };
 }
 
 async function generateQuizFromNotes(cleanText, options = {}) {
@@ -68,44 +118,21 @@ async function generateQuizFromNotes(cleanText, options = {}) {
   const sanitizedNotes = sanitizeExtractedText(cleanText);
   const subjectInfo = detectSubjectFromText(sanitizedNotes, title);
 
-  console.log(`[QUIZ] Generating balanced Exam-Paper (Definitions + Numerical Solving) for "${title}" (${subjectInfo.subject})...`);
+  console.log(`[QUIZ] Generating test for "${title}" | Subject: ${subjectInfo.subject} | Language: ${subjectInfo.isHindi ? 'Hindi' : 'English'}`);
 
   let questions = [];
 
-  // 1. AI Call if API Key configured
   if (process.env.AI_API_KEY && process.env.AI_PROVIDER !== "mock") {
-    let diffPrompt = "EASY: 50% basic definitions & 50% simple single-step formula calculations.";
-    if (difficulty === "hard") {
-      diffPrompt = "HARD: 50% deep conceptual theory & 50% complex multi-step numerical problem solving.";
-    } else if (difficulty === "medium") {
-      diffPrompt = "MEDIUM: 50% conceptual understanding & 50% application-based step-by-step solving questions.";
-    }
+    const langInstruction = subjectInfo.isHindi ? "Generate the questions and options in HINDI language." : "Generate the questions and options in ENGLISH language.";
+    
+    const systemPrompt = `You are an expert exam paper generator for ${subjectInfo.subject}. ${langInstruction}
+Generate a balanced test paper containing BOTH:
+1. Definition & Conceptual Theory Questions
+2. Output Prediction / Problem Solving Questions (where students calculate or trace code/formulas on paper)
 
-    const systemPrompt = `You are an expert exam paper generator. You MUST generate an authentic exam paper containing BOTH:
-1. Theory, Laws & Definition Questions
-2. Numerical & Problem-Solving Calculation Questions (where students calculate values using formulas on paper)
+Base all questions STRICTLY on the document content provided. Do NOT default to Mathematics unless the document is actually Mathematics.`;
 
-Strictly base all questions on the document content provided below. Do not invent unrelated facts. Do not generate duplicate questions.`;
-
-    const userPrompt = `Generate exactly ${numQuestions} UNIQUE multiple choice questions (MCQs) for ${subjectInfo.subject}.
-${diffPrompt}
-
-QUESTION TYPE MIX REQUIREMENT:
-- Include Definition, Laws & Theory Questions
-- Include Step-by-Step Numerical/Calculation Solving Questions (give values and ask students to solve for missing variable using paper/pen)
-
-Return ONLY a valid JSON array of question objects without markdown code blocks:
-[
-  {
-    "questionText": "Question statement (include numerical values if calculation question)",
-    "options": ["Option A", "Option B", "Option C", "Option D"],
-    "correctAnswer": 0,
-    "explanation": "Step-by-step calculation or concept explanation"
-  }
-]
-
-Document Content:
-${sanitizedNotes.substring(0, 8000)}`;
+    const userPrompt = `Generate exactly ${numQuestions} UNIQUE multiple choice questions (MCQs) for ${subjectInfo.subject}.\nDifficulty: ${difficulty}.\nReturn ONLY a valid JSON array: [{"questionText": "string", "options":["A","B","C","D"], "correctAnswer": 0, "explanation":"string"}]\n\nDocument Content:\n${sanitizedNotes.substring(0, 8000)}`;
 
     const aiResult = await callAIProvider(userPrompt, systemPrompt);
 
@@ -120,71 +147,44 @@ ${sanitizedNotes.substring(0, 8000)}`;
     }
   }
 
-  // 2. Universal Dynamic Fallback Generator with ALL-SUBJECT EXAM PAPER MIX!
   if (questions.length === 0) {
     const sentences = sanitizedNotes
-      .split(/(?<=[.?!])\s+/)
+      .split(/(?<=[.?!।])\s+/)
       .map(s => s.trim())
-      .filter(s => s.length > 12 && s.length < 250 && !/obj|Parent|ProcSet|Decode/i.test(s));
+      .filter(s => s.length > 10 && s.length < 250 && !/obj|Parent|ProcSet|Decode/i.test(s));
 
     let diffOffset = 0;
     if (difficulty === "medium") diffOffset = 3;
     if (difficulty === "hard") diffOffset = 7;
 
-    // Authentic All-Subject Exam Paper Banks (Definitions + Copy Solving Numericals)
-    const balancedSubjectBanks = {
-      "Physics": [
-        // Theory / Definition
-        { text: "Which fundamental law of physics states that force is equal to mass times acceleration (F = ma)?", opts: ["Newton's Second Law of Motion", "Newton's First Law of Motion", "Newton's Third Law of Motion", "Law of Gravitation"], correct: 0, exp: "Newton's Second Law states F = ma." },
-        // Numerical Solving (Pen & Paper)
-        { text: "Numerical Problem: Solve on paper — A body of mass m = 10 kg accelerates at a = 3 m/s². Calculate the Force F.", opts: ["30 N", "13 N", "3.33 N", "300 N"], correct: 0, exp: "F = m * a = 10 kg * 3 m/s² = 30 N." },
-        // Theory
-        { text: "What is the SI unit of electric current?", opts: ["Ampere (A)", "Volt (V)", "Ohm (Ω)", "Watt (W)"], correct: 0, exp: "Electric current SI unit is Ampere." },
-        // Numerical Solving
-        { text: "Calculation Problem: An electric bulb operates at V = 220 V with current I = 0.5 A. Calculate Resistance R using V = IR.", opts: ["440 Ω", "110 Ω", "220.5 Ω", "1100 Ω"], correct: 0, exp: "R = V / I = 220 V / 0.5 A = 440 Ω." },
-        // Numerical Solving
-        { text: "Numerical Problem: Calculate Kinetic Energy (E = 1/2 * m * v²) for an object of mass m = 4 kg moving at velocity v = 5 m/s.", opts: ["50 J", "20 J", "100 J", "10 J"], correct: 0, exp: "E = 1/2 * 4 * (5)² = 2 * 25 = 50 Joules." },
-        // Numerical Solving
-        { text: "Solving Problem: A force F = 50 N displaces an object by d = 4 m in direction of force. Calculate Work Done (W = F * d).", opts: ["200 J", "12.5 J", "54 J", "20 J"], correct: 0, exp: "Work W = F * d = 50 N * 4 m = 200 Joules." }
+    const subjectTopicBanks = {
+      "Python Programming": [
+        { text: "In Python, which keyword is used to define a user-defined function?", opts: ["def", "function", "func", "define"], correct: 0, exp: "The 'def' keyword is used to declare functions in Python." },
+        { text: "Code Output Question: Solve on paper — What is the output of print(3 * '2') in Python?", opts: ["222", "6", "Error", "33"], correct: 0, exp: "String multiplication in Python repeats the string: '2' * 3 = '222'." },
+        { text: "Which data structure in Python is mutable and enclosed in square brackets []?", opts: ["List", "Tuple", "Dictionary", "Set"], correct: 0, exp: "Lists in Python are mutable and created using square brackets []." },
+        { text: "Predict Output: What will type([1, 2, 3]) return in Python?", opts: ["<class 'list'>", "<class 'tuple'>", "<class 'array'>", "<class 'dict'>"], correct: 0, exp: "[1, 2, 3] is a list object in Python." },
+        { text: "Which builtin function returns the number of items in a list or string in Python?", opts: ["len()", "count()", "size()", "length()"], correct: 0, exp: "len() function returns length of sequences in Python." }
       ],
-      "Mathematics": [
-        { text: "What is the fundamental identity for sin²(x) + cos²(x)?", opts: ["1", "0", "2", "-1"], correct: 0, exp: "Pythagorean identity: sin²(x) + cos²(x) = 1." },
-        { text: "Numerical Problem: If sin(θ) = 3/5 in a right triangle, calculate the value of cos(θ) on paper.", opts: ["4/5", "3/4", "5/3", "4/3"], correct: 0, exp: "cos(θ) = √(1 - sin²(θ)) = √(1 - 9/25) = √(16/25) = 4/5." },
-        { text: "What is tan(x) equal to in terms of sine and cosine?", opts: ["sin(x) / cos(x)", "cos(x) / sin(x)", "1 / sin(x)", "sin(x) * cos(x)"], correct: 0, exp: "By definition, tangent tan(x) = sin(x) / cos(x)." },
-        { text: "Calculation Problem: If a = 6 and b = 8 in a right-angled triangle, find hypotenuse c using c = √(a² + b²).", opts: ["10", "14", "12", "100"], correct: 0, exp: "c = √(6² + 8²) = √(36 + 64) = √100 = 10." },
-        { text: "Solving Problem: Evaluate f(x) = 2x² + 3x - 5 when x = 3.", opts: ["22", "18", "25", "15"], correct: 0, exp: "f(3) = 2(3)² + 3(3) - 5 = 2(9) + 9 - 5 = 18 + 9 - 5 = 22." }
+      "Hindi Language & Literature": [
+        { text: "हिंदी व्याकरण में स्वर वर्णों की कुल संख्या कितनी मानी गई है?", opts: ["11", "13", "33", "52"], correct: 0, exp: "मानक हिंदी व्याकरण में मुख्य स्वरों की संख्या 11 है।" },
+        { text: "दो वर्णों के मेल से होने वाले विकार या परिवर्तन को क्या कहते हैं?", opts: ["संधि", "समास", "कारक", "उपसर्ग"], correct: 0, exp: "दो समीपवर्ती वर्णों के मेल से जो विकार होता है, उसे संधि कहते हैं।" },
+        { text: "जिस समास में दोनों पद प्रधान होते हैं, उसे क्या कहा जाता है?", opts: ["द्वंद्व समास", "द्विगु समास", "तत्पुरुष समास", "अव्ययीभाव समास"], correct: 0, exp: "द्वंद्व समास में दोनों पद (माता-पिता, राम-लक्ष्मण) प्रधान होते हैं।" }
       ],
-      "Chemistry": [
-        { text: "What is the pH value of pure distilled water at 25°C?", opts: ["7", "0", "14", "1"], correct: 0, exp: "Distilled water is neutral with pH 7." },
-        { text: "Numerical Calculation: Calculate molar mass of Carbon Dioxide (CO₂) given C = 12 g/mol and O = 16 g/mol.", opts: ["44 g/mol", "28 g/mol", "32 g/mol", "56 g/mol"], correct: 0, exp: "Molar mass = 12 + 2(16) = 12 + 32 = 44 g/mol." },
-        { text: "Solving Problem: Calculate moles in 36g of Water (H₂O) where molar mass = 18 g/mol (Moles = Mass / Molar Mass).", opts: ["2 moles", "0.5 moles", "18 moles", "3 moles"], correct: 0, exp: "Moles = 36g / 18g/mol = 2 moles." }
+      "Computer Science / IT": [
+        { text: "Which SQL command is used to retrieve data from a database table?", opts: ["SELECT", "FETCH", "GET", "EXTRACT"], correct: 0, exp: "SELECT query is used to retrieve rows from database tables." },
+        { text: "Which data structure follows the Last-In, First-Out (LIFO) order?", opts: ["Stack", "Queue", "Tree", "Graph"], correct: 0, exp: "Stack follows LIFO order for push and pop operations." }
+      ],
+      "Mechanical / Civil Engineering": [
+        { text: "What is the formula for Stress (σ) in solid mechanics?", opts: ["Force / Area (F / A)", "Force * Distance", "Mass * Acceleration", "Work / Time"], correct: 0, exp: "Stress = Force per unit Area (σ = F/A)." },
+        { text: "Which thermodynamic cycle is considered the most efficient ideal gas cycle?", opts: ["Carnot Cycle", "Rankine Cycle", "Otto Cycle", "Diesel Cycle"], correct: 0, exp: "Carnot cycle has maximum possible efficiency between two temperatures." }
+      ],
+      "Electrical & Electronics Engg": [
+        { text: "What is Ohm's Law formula for Voltage (V)?", opts: ["V = I * R", "V = I / R", "V = I² * R", "V = R / I"], correct: 0, exp: "Ohm's Law: Voltage = Current * Resistance (V = IR)." },
+        { text: "Which semiconductor device converts Alternating Current (AC) to Direct Current (DC)?", opts: ["Rectifier (Diode)", "Transformer", "Inductor", "Capacitor"], correct: 0, exp: "Diodes in a rectifier circuit convert AC to DC." }
       ]
     };
 
-    const bank = balancedSubjectBanks[subjectInfo.subject] || [];
-
-    const easyTemplates = [
-      (kw, sent) => ({ q: `[Definition / Theory] In ${subjectInfo.subject}, what is directly defined by "${kw}"?`, ans: sent }),
-      (kw, sent, idx) => ({ q: `[Solving Problem] Practice Calculation #${idx + 1}: If variable X = ${idx + 2} and Y = ${(idx + 1) * 5}, evaluate value using formula derived from "${kw}".`, ans: `Calculated value = ${(idx + 2) * (idx + 1) * 5}` }),
-      (kw, sent) => ({ q: `[Concept Check] According to your ${subjectInfo.subject} notes, which rule applies to "${kw}"?`, ans: sent })
-    ];
-
-    const mediumTemplates = [
-      (kw, sent, idx) => ({ q: `[Step-by-Step Solving] Given in ${subjectInfo.subject}: Apply formula for "${kw}" on paper with initial value = ${idx + 5}. Solve for result.`, ans: `Step-by-step solved value = ${(idx + 5) * 12}` }),
-      (kw, sent) => ({ q: `[Theory & Application] In ${subjectInfo.subject}, how is "${kw}" correctly stated?`, ans: sent }),
-      (kw, sent, idx) => ({ q: `[Numerical Problem] Calculate quantitative value for topic "${kw}" when rate of change = ${idx + 3}.`, ans: `Evaluated result = ${(idx + 3) * 10}` })
-    ];
-
-    const hardTemplates = [
-      (kw, sent, idx) => ({ q: `[Advanced Multi-step Solving] Complex Numerical: Integrate/Solve equation for "${kw}" given boundary condition = ${(idx + 1) * 10}. Solve on notebook.`, ans: `Evaluated multi-step answer = ${(idx + 1) * 10 * 2.5}` }),
-      (kw, sent) => ({ q: `[Deep Theory Analysis] Evaluating ${subjectInfo.subject} principles, which statement is critically valid for "${kw}"?`, ans: sent }),
-      (kw, sent, idx) => ({ q: `[Analytical Calculation] Solve for unknown variable Z in ${subjectInfo.subject} relation "${kw}" with parameters = ${idx + 7}.`, ans: `Calculated Z value = ${(idx + 7) * 8}` })
-    ];
-
-    let templates = mediumTemplates;
-    if (difficulty === "easy" || difficulty === "low") templates = easyTemplates;
-    if (difficulty === "hard") templates = hardTemplates;
-
+    const bank = subjectTopicBanks[subjectInfo.subject] || [];
     const seenQuestions = new Set();
 
     for (let i = 0; i < numQuestions; i++) {
@@ -193,39 +193,56 @@ ${sanitizedNotes.substring(0, 8000)}`;
       const words = sentence.split(" ").filter(w => w.length > 3);
       const keyWord = words.length > 0 ? words[(i * 3 + diffOffset) % words.length] : `Concept ${i + 1}`;
 
-      const tIndex = (i + diffOffset) % templates.length;
-      const template = templates[tIndex];
-
       let qObj;
 
-      if (sentence && sentence.length > 15) {
-        const tempResult = template(keyWord, sentence, i);
-        const isSolvingQ = (i % 2 === 1); // 50% mix between theory and numerical solving!
-
-        if (isSolvingQ) {
-          const numA = (i + 1) * 5;
-          const numB = (i + 2) * 4;
-          const correctVal = numA * numB;
-          
+      if (sentence && sentence.length > 12) {
+        if (subjectInfo.isHindi) {
           qObj = {
-            questionText: `[Numerical Solving Q${i + 1}] Solve on Paper: In ${subjectInfo.subject} notes for "${keyWord}", given values A = ${numA} and B = ${numB}. Calculate product value A * B.`,
-            options: [
-              `${correctVal}`,
-              `${correctVal + 10}`,
-              `${correctVal - 15}`,
-              `${numA + numB}`
-            ],
-            correctAnswer: 0,
-            explanation: `Step-by-step paper calculation: Value = A * B = ${numA} * ${numB} = ${correctVal}.`
-          };
-        } else {
-          qObj = {
-            questionText: tempResult.q,
+            questionText: `[${subjectInfo.subject} ${subjectInfo.icon}] आपके नोट्स के अनुसार: "${keyWord}" के संबंध में कौन सा कथन सही है?`,
             options: [
               sentence,
-              `The inverse property of ${keyWord} in ${subjectInfo.subject}`,
-              `An unverified condition when evaluating ${keyWord}`,
-              `None of the above statements apply`
+              `यह ${keyWord} का विपरीत नियम प्रस्तुत करता है`,
+              `यह एक अमान्य सिद्धांत है`,
+              `उपरोक्त में से कोई नहीं`
+            ],
+            correctAnswer: 0,
+            explanation: `आपके अपलोड किए गए ${subjectInfo.subject} नोट्स से: "${sentence}"`
+          };
+        } else if (subjectInfo.subject.includes("Programming") || subjectInfo.subject.includes("Computer")) {
+          const isCodeOutputQ = (i % 2 === 1);
+          if (isCodeOutputQ) {
+            qObj = {
+              questionText: `[Code / Output Analysis Q${i + 1}] Trace on Paper: Regarding "${keyWord}" in ${subjectInfo.subject}, what is the correct syntax / output behavior?`,
+              options: [
+                sentence,
+                `Causes a SyntaxError due to invalid ${keyWord} declaration`,
+                `Returns None without executing ${keyWord}`,
+                `None of the above`
+              ],
+              correctAnswer: 0,
+              explanation: `Derived from your ${subjectInfo.subject} notes: "${sentence}"`
+            };
+          } else {
+            qObj = {
+              questionText: `[${subjectInfo.subject} ${subjectInfo.icon}] Regarding "${keyWord}": Which statement correctly explains its behavior?`,
+              options: [
+                sentence,
+                `The inverse behavior of ${keyWord} in programming`,
+                `An undefined keyword in standard syntax`,
+                `None of the above`
+              ],
+              correctAnswer: 0,
+              explanation: `Derived from your ${subjectInfo.subject} notes: "${sentence}"`
+            };
+          }
+        } else {
+          qObj = {
+            questionText: `[${subjectInfo.subject} ${subjectInfo.icon}] Regarding "${keyWord}": Which option correctly states the concept?`,
+            options: [
+              sentence,
+              `The inverse formula of ${keyWord} in ${subjectInfo.subject}`,
+              `Non-applicable condition in standard ${subjectInfo.subject}`,
+              `None of the above`
             ],
             correctAnswer: 0,
             explanation: `Derived from your uploaded ${subjectInfo.subject} notes: "${sentence}"`
@@ -234,22 +251,25 @@ ${sanitizedNotes.substring(0, 8000)}`;
       } else if (i < bank.length) {
         const bItem = bank[(i + diffOffset) % bank.length];
         qObj = {
-          questionText: `[${difficulty.toUpperCase()}] ${bItem.text}`,
+          questionText: `[${subjectInfo.subject} ${subjectInfo.icon}] ${bItem.text}`,
           options: bItem.opts,
           correctAnswer: bItem.correct,
           explanation: bItem.exp
         };
       } else {
+        const defaultQText = subjectInfo.isHindi 
+          ? `[${subjectInfo.subject} ${subjectInfo.icon}] प्रश्न ${i + 1}: अपलोड की गई अध्ययन सामग्री "${subjectInfo.subject}" का मुख्य विषय क्या है?`
+          : `[${subjectInfo.subject} ${subjectInfo.icon}] Question ${i + 1} (${difficulty.toUpperCase()} Level): What is the core concept covered in this ${subjectInfo.subject} material?`;
+
+        const defaultOptions = subjectInfo.isHindi
+          ? [`${subjectInfo.subject} के मुख्य नियम, परिभाषाएं एवं अध्याय के हल`, `अन्य विषय की ऐतिहासिक घटनाएं`, `अमान्य माप त्रुटियां`, `उपरोक्त में से कोई नहीं`]
+          : [`Core principles, syntax, definitions, and solved problems of ${subjectInfo.subject}`, `Unrelated historical events outside ${subjectInfo.subject}`, `Measurement errors in non-standard units`, `None of the above`];
+
         qObj = {
-          questionText: `[${subjectInfo.subject} ${subjectInfo.icon}] Question ${i + 1} (${difficulty.toUpperCase()} Level): Which statement accurately reflects the ${subjectInfo.subject} principle for topic #${i + 1}?`,
-          options: [
-            `Core concept #${i + 1} and fundamental theorem of ${subjectInfo.subject}`,
-            `Incorrect boundary value for topic #${i + 1}`,
-            `Unrelated experimental error in non-standard units`,
-            `None of the above`
-          ],
+          questionText: defaultQText,
+          options: defaultOptions,
           correctAnswer: 0,
-          explanation: `Derived from your uploaded ${subjectInfo.subject} study material.`
+          explanation: `Derived from your uploaded ${subjectInfo.subject} study notes.`
         };
       }
 
