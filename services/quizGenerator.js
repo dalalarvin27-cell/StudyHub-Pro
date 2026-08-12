@@ -68,20 +68,43 @@ async function generateQuizFromNotes(cleanText, options = {}) {
   const sanitizedNotes = sanitizeExtractedText(cleanText);
   const subjectInfo = detectSubjectFromText(sanitizedNotes, title);
 
-  console.log(`[QUIZ] New Generation Requested: "${title}" | Subject: ${subjectInfo.subject} | Difficulty: ${difficulty} | QCount: ${numQuestions}`);
+  console.log(`[QUIZ] Generating balanced (Theory + Numerical Solving) test for "${title}" (${subjectInfo.subject})...`);
 
   let questions = [];
 
   if (process.env.AI_API_KEY && process.env.AI_PROVIDER !== "mock") {
-    let diffPrompt = "EASY: basic definitions and direct recall questions.";
+    let diffPrompt = "EASY: 50% basic definitions & 50% simple single-step formula calculations.";
     if (difficulty === "hard") {
-      diffPrompt = "HARD: deep concepts, multi-step reasoning, tricky application problems, and subtle distractor choices.";
+      diffPrompt = "HARD: 50% deep conceptual theory & 50% complex multi-step numerical problem solving.";
     } else if (difficulty === "medium") {
-      diffPrompt = "MEDIUM: conceptual understanding and application-based questions.";
+      diffPrompt = "MEDIUM: 50% conceptual understanding & 50% application-based step-by-step solving questions.";
     }
 
-    const systemPrompt = `You are an expert exam paper generator. Generate a quiz strictly from the document content provided below. Use ONLY information contained in the document. Do not invent facts. Do NOT generate duplicate questions.`;
-    const userPrompt = `Generate exactly ${numQuestions} UNIQUE multiple choice questions (MCQs) for ${subjectInfo.subject}.\n${diffPrompt}\nReturn ONLY a valid JSON array: [{"questionText": "string", "options":["A","B","C","D"], "correctAnswer": 0, "explanation":"string"}]\n\nDocument Content:\n${sanitizedNotes.substring(0, 8000)}`;
+    const systemPrompt = `You are an expert exam paper generator. You MUST generate a balanced quiz containing BOTH:
+1. Theory & Definition Questions
+2. Numerical & Problem-Solving Calculation Questions (where students calculate values using formulas on paper)
+
+Strictly base all questions on the document content provided below. Do not invent unrelated facts. Do not generate duplicate questions.`;
+
+    const userPrompt = `Generate exactly ${numQuestions} UNIQUE multiple choice questions (MCQs) for ${subjectInfo.subject}.
+${diffPrompt}
+
+QUESTION TYPE MIX REQUIREMENT:
+- Include Definition & Theory Questions
+- Include Step-by-Step Numerical/Calculation Solving Questions (give values and ask students to solve for missing variable using paper/pen)
+
+Return ONLY a valid JSON array of question objects without markdown code blocks:
+[
+  {
+    "questionText": "Question statement (include numerical values if calculation question)",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correctAnswer": 0,
+    "explanation": "Step-by-step calculation or concept explanation"
+  }
+]
+
+Document Content:
+${sanitizedNotes.substring(0, 8000)}`;
 
     const aiResult = await callAIProvider(userPrompt, systemPrompt);
 
@@ -96,7 +119,7 @@ async function generateQuizFromNotes(cleanText, options = {}) {
     }
   }
 
-  // Universal Dynamic Fallback Generator (Guarantees 50 Unique Questions & Difficulty Variation!)
+  // Dynamic Fallback Generator with BOTH Theory & Numerical Solving Questions!
   if (questions.length === 0) {
     const sentences = sanitizedNotes
       .split(/(?<=[.?!])\s+/)
@@ -107,44 +130,45 @@ async function generateQuizFromNotes(cleanText, options = {}) {
     if (difficulty === "medium") diffOffset = 3;
     if (difficulty === "hard") diffOffset = 7;
 
-    const subjectTopicBanks = {
+    const balancedSubjectBanks = {
       "Mathematics": [
-        { text: "What is the fundamental identity for sin²(x) + cos²(x)?", opts: ["1", "0", "2", "-1"], correct: 0, exp: "Pythagorean identity: sin²(x) + cos²(x) = 1." },
-        { text: "What is tan(x) equal to in terms of sine and cosine?", opts: ["sin(x) / cos(x)", "cos(x) / sin(x)", "1 / sin(x)", "sin(x) * cos(x)"], correct: 0, exp: "tangent tan(x) = sin(x) / cos(x)." },
-        { text: "Which formula represents sec²(x) in terms of tan(x)?", opts: ["1 + tan²(x)", "1 - tan²(x)", "tan²(x) - 1", "1 / tan²(x)"], correct: 0, exp: "sec²(x) = 1 + tan²(x)." },
-        { text: "In a right triangle, what is sin(θ) equal to?", opts: ["Opposite / Hypotenuse", "Adjacent / Hypotenuse", "Opposite / Adjacent", "Hypotenuse / Opposite"], correct: 0, exp: "Sine ratio = Opposite / Hypotenuse." },
-        { text: "What is the value of sin(90°) or sin(π/2)?", opts: ["1", "0", "0.5", "Undefined"], correct: 0, exp: "sin(90°) = 1." },
-        { text: "What is cosec²(x) - cot²(x) equal to?", opts: ["1", "0", "2", "-1"], correct: 0, exp: "cosec²(x) - cot²(x) = 1." },
-        { text: "What is the value of cos(0°)?", opts: ["1", "0", "-1", "0.5"], correct: 0, exp: "cos(0°) = 1." },
-        { text: "What is the value of tan(45°)?", opts: ["1", "0", "√3", "1/√3"], correct: 0, exp: "tan(45°) = 1." }
+        { text: "What is the fundamental trigonometric identity for sin²(x) + cos²(x)?", opts: ["1", "0", "2", "-1"], correct: 0, exp: "Pythagorean identity: sin²(x) + cos²(x) = 1." },
+        { text: "Numerical Problem: If sin(θ) = 3/5 in a right triangle, calculate the value of cos(θ) on paper.", opts: ["4/5", "3/4", "5/3", "4/3"], correct: 0, exp: "cos(θ) = √(1 - sin²(θ)) = √(1 - 9/25) = √(16/25) = 4/5." },
+        { text: "What is tan(x) equal to in terms of sine and cosine?", opts: ["sin(x) / cos(x)", "cos(x) / sin(x)", "1 / sin(x)", "sin(x) * cos(x)"], correct: 0, exp: "By definition, tangent tan(x) = sin(x) / cos(x)." },
+        { text: "Calculation Problem: If a = 6 and b = 8 in a right-angled triangle, find the hypotenuse c using c = √(a² + b²).", opts: ["10", "14", "12", "100"], correct: 0, exp: "c = √(6² + 8²) = √(36 + 64) = √100 = 10." },
+        { text: "Solving Problem: Evaluate f(x) = 2x² + 3x - 5 when x = 3.", opts: ["22", "18", "25", "15"], correct: 0, exp: "f(3) = 2(3)² + 3(3) - 5 = 2(9) + 9 - 5 = 18 + 9 - 5 = 22." },
+        { text: "Which formula represents sec²(x) in terms of tan(x)?", opts: ["1 + tan²(x)", "1 - tan²(x)", "tan²(x) - 1", "1 / tan²(x)"], correct: 0, exp: "sec²(x) = 1 + tan²(x)." }
       ],
       "Physics": [
         { text: "Which equation represents Newton's Second Law of Motion?", opts: ["F = ma", "E = mc²", "v = u + at", "W = F * d"], correct: 0, exp: "Newton's second law states Force = mass * acceleration." },
-        { text: "What is the SI unit of electric current?", opts: ["Ampere (A)", "Volt (V)", "Ohm (Ω)", "Watt (W)"], correct: 0, exp: "Electric current SI unit is Ampere." }
+        { text: "Numerical Calculation: A force is applied to a body of mass m = 5 kg causing an acceleration a = 4 m/s². Solve for Force F.", opts: ["20 N", "9 N", "1.25 N", "40 N"], correct: 0, exp: "Using F = m * a: F = 5 kg * 4 m/s² = 20 N." },
+        { text: "What is the SI unit of electric current?", opts: ["Ampere (A)", "Volt (V)", "Ohm (Ω)", "Watt (W)"], correct: 0, exp: "Electric current SI unit is Ampere." },
+        { text: "Solving Problem: If voltage V = 220 V and current I = 2 A, calculate the resistance R using Ohm's Law (V = IR).", opts: ["110 Ω", "440 Ω", "218 Ω", "100 Ω"], correct: 0, exp: "R = V / I = 220 V / 2 A = 110 Ω." }
       ],
       "Chemistry": [
-        { text: "What is the pH value of pure distilled water at 25°C?", opts: ["7", "0", "14", "1"], correct: 0, exp: "Distilled water is neutral with pH 7." }
+        { text: "What is the pH value of pure distilled water at 25°C?", opts: ["7", "0", "14", "1"], correct: 0, exp: "Distilled water is neutral with pH 7." },
+        { text: "Numerical Calculation: Calculate the molar mass of Water (H₂O) given atomic masses H = 1 g/mol and O = 16 g/mol.", opts: ["18 g/mol", "17 g/mol", "32 g/mol", "34 g/mol"], correct: 0, exp: "Molar mass = 2(1) + 16 = 18 g/mol." }
       ]
     };
 
-    const bank = subjectTopicBanks[subjectInfo.subject] || [];
+    const bank = balancedSubjectBanks[subjectInfo.subject] || [];
 
     const easyTemplates = [
-      (kw, sent) => ({ q: `[Easy Concept] In ${subjectInfo.subject}, what is directly stated regarding "${kw}"?`, ans: sent }),
-      (kw, sent) => ({ q: `[Basic Definition] Which option correctly identifies the core definition of "${kw}"?`, ans: sent }),
-      (kw, sent) => ({ q: `[Recall Question] According to your ${subjectInfo.subject} notes, what is true about "${kw}"?`, ans: sent })
+      (kw, sent) => ({ q: `[Definition / Theory] In ${subjectInfo.subject}, what is directly defined by "${kw}"?`, ans: sent }),
+      (kw, sent, idx) => ({ q: `[Solving Problem] Practice Calculation #${idx + 1}: If variable X = ${idx + 2} and Y = ${(idx + 1) * 5}, evaluate the value using formula derived from "${kw}".`, ans: `Calculated value = ${(idx + 2) * (idx + 1) * 5}` }),
+      (kw, sent) => ({ q: `[Concept Check] According to your ${subjectInfo.subject} notes, which rule applies to "${kw}"?`, ans: sent })
     ];
 
     const mediumTemplates = [
-      (kw, sent) => ({ q: `[Application] In ${subjectInfo.subject}, how is "${kw}" applied in problem solving?`, ans: sent }),
-      (kw, sent) => ({ q: `[Conceptual Analysis] Which option represents the valid relationship for "${kw}"?`, ans: sent }),
-      (kw, sent) => ({ q: `[Standard Practice] Based on the ${subjectInfo.subject} notes, what property applies to "${kw}"?`, ans: sent })
+      (kw, sent, idx) => ({ q: `[Step-by-Step Solving] Given in ${subjectInfo.subject}: Apply formula for "${kw}" on paper with initial value = ${idx + 5}. Solve for result.`, ans: `Step-by-step solved value = ${(idx + 5) * 12}` }),
+      (kw, sent) => ({ q: `[Theory & Application] In ${subjectInfo.subject}, how is "${kw}" correctly stated?`, ans: sent }),
+      (kw, sent, idx) => ({ q: `[Numerical Problem] Calculate the quantitative value for topic "${kw}" when rate of change = ${idx + 3}.`, ans: `Evaluated result = ${(idx + 3) * 10}` })
     ];
 
     const hardTemplates = [
-      (kw, sent) => ({ q: `[Advanced Analysis] Evaluating ${subjectInfo.subject} principles, which statement is critically valid for "${kw}"?`, ans: sent }),
-      (kw, sent) => ({ q: `[Multi-step Reasoning] What is the boundary condition required when calculating "${kw}"?`, ans: sent }),
-      (kw, sent) => ({ q: `[Complex Concept] In advanced ${subjectInfo.subject} theory, which non-trivial relation holds for "${kw}"?`, ans: sent })
+      (kw, sent, idx) => ({ q: `[Advanced Multi-step Solving] Complex Numerical: Integrate/Solve the equation for "${kw}" given boundary condition = ${(idx + 1) * 10}. Solve on notebook.`, ans: `Evaluated multi-step answer = ${(idx + 1) * 10 * 2.5}` }),
+      (kw, sent) => ({ q: `[Deep Theory Analysis] Evaluating ${subjectInfo.subject} principles, which statement is critically valid for "${kw}"?`, ans: sent }),
+      (kw, sent, idx) => ({ q: `[Analytical Calculation] Solve for unknown variable Z in ${subjectInfo.subject} relation "${kw}" with parameters = ${idx + 7}.`, ans: `Calculated Z value = ${(idx + 7) * 8}` })
     ];
 
     let templates = mediumTemplates;
@@ -165,18 +189,38 @@ async function generateQuizFromNotes(cleanText, options = {}) {
       let qObj;
 
       if (sentence && sentence.length > 15) {
-        const tempResult = template(keyWord, sentence);
-        qObj = {
-          questionText: tempResult.q,
-          options: [
-            sentence,
-            `The inverse property of ${keyWord} in ${subjectInfo.subject}`,
-            `An unverified condition when evaluating ${keyWord}`,
-            `None of the above statements apply`
-          ],
-          correctAnswer: 0,
-          explanation: `Derived from your uploaded ${subjectInfo.subject} notes: "${sentence}"`
-        };
+        const tempResult = template(keyWord, sentence, i);
+        const isSolvingQ = (i % 2 === 1); // 50% mix between theory and solving!
+
+        if (isSolvingQ) {
+          const numA = (i + 1) * 4;
+          const numB = (i + 2) * 5;
+          const correctVal = numA * numB;
+          
+          qObj = {
+            questionText: `[Numerical Solving Q${i + 1}] Solve on Paper: In ${subjectInfo.subject} notes for "${keyWord}", given values A = ${numA} and B = ${numB}. Calculate product value A * B.`,
+            options: [
+              `${correctVal}`,
+              `${correctVal + 10}`,
+              `${correctVal - 15}`,
+              `${numA + numB}`
+            ],
+            correctAnswer: 0,
+            explanation: `Step-by-step paper calculation: Value = A * B = ${numA} * ${numB} = ${correctVal}.`
+          };
+        } else {
+          qObj = {
+            questionText: tempResult.q,
+            options: [
+              sentence,
+              `The inverse property of ${keyWord} in ${subjectInfo.subject}`,
+              `An unverified condition when evaluating ${keyWord}`,
+              `None of the above statements apply`
+            ],
+            correctAnswer: 0,
+            explanation: `Derived from your uploaded ${subjectInfo.subject} notes: "${sentence}"`
+          };
+        }
       } else if (i < bank.length) {
         const bItem = bank[(i + diffOffset) % bank.length];
         qObj = {
